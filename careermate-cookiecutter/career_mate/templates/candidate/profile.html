@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block title %}Candidate Profile | CareerMate AI{% endblock %}
+
+{% block content %}
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-badge">C</div>
+      <span>CareerMate</span>
+    </div>
+
+    <nav class="nav-menu">
+      <a class="nav-link" href="{% url 'candidate_dashboard' %}">📊 Dashboard</a>
+      <a class="nav-link active" href="{% url 'candidate_profile' %}">👤 Profile</a>
+      <a class="nav-link" href="{% url 'candidate_resume' %}">📄 Resume</a>
+      <a class="nav-link" href="{% url 'candidate_jobs' %}">💼 Jobs</a>
+      <a class="nav-link" href="{% url 'candidate_ats_score' %}">📈 ATS Score</a>
+      <a class="nav-link" href="{% url 'candidate_career_path' %}">🎯 Career Path</a>
+    </nav>
+
+    <div class="nav-meta">
+      <div class="user-mini">
+        <div class="avatar avatar-small">AS</div>
+        <strong>{{ profile.name }}</strong>
+        <span>Candidate</span>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main-panel">
+    <header class="topbar">
+      <div>
+        <h1 class="page-title">{{ page_title }}</h1>
+        <p class="page-subtitle">Manage your personal and professional details.</p>
+      </div>
+
+      <div class="header-actions">
+        <a class="secondary-btn" href="{% url 'candidate_profile' %}">Edit Profile</a>
+        <a class="primary-btn" href="{% url 'candidate_dashboard' %}">Save Changes</a>
+      </div>
+    </header>
+
+    <section class="profile-layout">
+      <div class="profile-card">
+        <div class="avatar-box">
+          <div class="avatar">AS</div>
+          <div>
+            <h2 class="profile-name">{{ profile.name }}</h2>
+            <p class="profile-role">{{ profile.role }}</p>
+          </div>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="label">Email</div>
+            <div class="value">{{ profile.email }}</div>
+          </div>
+          <div class="info-item">
+            <div class="label">Phone</div>
+            <div class="value">{{ profile.phone }}</div>
+          </div>
+          <div class="info-item">
+            <div class="label">Location</div>
+            <div class="value">{{ profile.location }}</div>
+          </div>
+          <div class="info-item">
+            <div class="label">Experience</div>
+            <div class="value">{{ profile.experience }}</div>
+          </div>
+          <div class="info-item">
+            <div class="label">Education</div>
+            <div class="value">{{ profile.education }}</div>
+          </div>
+          <div class="info-item">
+            <div class="label">Status</div>
+            <div class="value">{{ profile.resume_status }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-card">
+        <h3>Skills</h3>
+        <div class="skill-list">
+          {% for skill in profile.skills %}
+          <div class="skill-row">
+            <span class="skill-name">{{ skill }}</span>
+            <span class="badge info">Active</span>
+          </div>
+          {% endfor %}
+        </div>
+
+        <div class="resume-box" style="margin-top: 24px;">
+          <h4>Resume Summary</h4>
+          <p style="margin: 0; color: var(--muted); line-height: 1.6;">
+            Candidate profile is up to date, uploaded resume has been analyzed, and improvement suggestions are ready.
+          </p>
+          <div style="margin-top: 16px; display: flex; justify-content: space-between; align-items: center;">
+            <span class="badge success">Updated {{ profile.last_updated }}</span>
+            <span class="badge info">ATS 87%</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+{% endblock %}

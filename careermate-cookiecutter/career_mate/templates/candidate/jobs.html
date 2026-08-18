@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}Jobs | CareerMate AI{% endblock %}
+
+{% block content %}
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-badge">C</div>
+      <span>CareerMate</span>
+    </div>
+
+    <nav class="nav-menu">
+      <a class="nav-link" href="{% url 'candidate_dashboard' %}">📊 Dashboard</a>
+      <a class="nav-link" href="{% url 'candidate_profile' %}">👤 Profile</a>
+      <a class="nav-link" href="{% url 'candidate_resume' %}">📄 Resume</a>
+      <a class="nav-link active" href="{% url 'candidate_jobs' %}">💼 Jobs</a>
+      <a class="nav-link" href="{% url 'candidate_ats_score' %}">📈 ATS Score</a>
+      <a class="nav-link" href="{% url 'candidate_career_path' %}">🎯 Career Path</a>
+    </nav>
+
+    <div class="nav-meta">
+      <div class="user-mini">
+        <div class="avatar avatar-small">AS</div>
+        <strong>{{ candidate_name }}</strong>
+        <span>Candidate</span>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main-panel">
+    <header class="topbar">
+      <div>
+        <h1 class="page-title">{{ page_title }}</h1>
+        <p class="page-subtitle">Matched job openings based on your profile and skills.</p>
+      </div>
+      <div class="header-actions">
+        <a class="primary-btn" href="{% url 'candidate_ats_score' %}">Check ATS</a>
+      </div>
+    </header>
+
+    <section class="page-card">
+      <div class="list-block">
+        <ul>
+          {% for job in jobs %}
+          <li>
+            <div>
+              <strong>{{ job.title }}</strong><br>
+              <span style="color: var(--muted);">{{ job.company }} · {{ job.location }} · {{ job.type }}</span>
+            </div>
+            <span class="badge {{ job.badge }}">{{ job.match }} Match</span>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </section>
+  </main>
+</div>
+{% endblock %}

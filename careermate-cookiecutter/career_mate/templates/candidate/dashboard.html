@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block title %}Candidate Dashboard | CareerMate AI{% endblock %}
+
+{% block content %}
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-badge">C</div>
+      <span>CareerMate</span>
+    </div>
+
+    <nav class="nav-menu">
+      <a class="nav-link active" href="{% url 'candidate_dashboard' %}">📊 Dashboard</a>
+      <a class="nav-link" href="{% url 'candidate_profile' %}">👤 Profile</a>
+      <a class="nav-link" href="{% url 'candidate_resume' %}">📄 Resume</a>
+      <a class="nav-link" href="{% url 'candidate_jobs' %}">💼 Jobs</a>
+      <a class="nav-link" href="{% url 'candidate_ats_score' %}">📈 ATS Score</a>
+      <a class="nav-link" href="{% url 'candidate_career_path' %}">🎯 Career Path</a>
+    </nav>
+
+    <div class="nav-meta">
+      <div class="user-mini">
+        <div class="avatar avatar-small">AS</div>
+        <strong>{{ candidate_name }}</strong>
+        <span>Candidate</span>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main-panel">
+    <header class="topbar">
+      <div>
+        <h1 class="page-title">{{ page_title }}</h1>
+        <p class="page-subtitle">Welcome back! Your profile is growing every day.</p>
+      </div>
+
+      <div class="header-actions">
+        <div class="search-box">Search jobs, skills, or resumes</div>
+        <a class="primary-btn" href="{% url 'candidate_resume' %}">Upload Resume</a>
+      </div>
+    </header>
+
+    <section class="grid stats-grid">
+      {% for stat in stats %}
+      <div class="stat-card">
+        <div class="label">
+          <span>{{ stat.label }}</span>
+          <span>↗</span>
+        </div>
+        <div class="value">{{ stat.value }}</div>
+        <div class="trend">{{ stat.trend }}</div>
+      </div>
+      {% endfor %}
+    </section>
+
+    <section class="grid content-grid" style="margin-top: 22px;">
+      <div class="card">
+        <div class="hero-banner">
+          <div>
+            <h2>Career growth starts with clarity</h2>
+            <p>Your resume is strong, your job matches are improving, and AI feedback is helping you target better opportunities.</p>
+          </div>
+          <div class="hero-illustration"></div>
+        </div>
+
+        <div style="margin-top: 20px;">
+          <h3>Skill Progress</h3>
+          <div class="skill-list">
+            {% for skill in skills %}
+            <div class="skill-row">
+              <div style="display: flex; align-items: center; flex: 1;">
+                <span class="skill-name">{{ skill.name }}</span>
+                <div class="progress"><span style="width: {{ skill.value }}%;"></span></div>
+              </div>
+              <strong>{{ skill.value }}%</strong>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Recommended Jobs</h3>
+        <div class="job-list">
+          {% for job in jobs %}
+          <div class="job-row">
+            <div>
+              <strong>{{ job.title }}</strong><br>
+              <small style="color: var(--muted);">{{ job.company }}</small>
+            </div>
+            <span class="badge {{ job.badge }}">{{ job.status }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+
+    <section class="grid content-grid" style="margin-top: 22px;">
+      <div class="card">
+        <h3>Recent Activity</h3>
+        <div class="activity-list">
+          {% for item in activities %}
+          <div class="activity-row">
+            <span>{{ item.text }}</span>
+            <small style="color: var(--muted);">{{ item.time }}</small>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Career Snapshot</h3>
+        <div class="detail-list">
+          <div class="detail-row">
+            <span>Resume Health</span>
+            <span class="badge success">Excellent</span>
+          </div>
+          <div class="detail-row">
+            <span>Learning Goal</span>
+            <span class="badge info">Backend Track</span>
+          </div>
+          <div class="detail-row">
+            <span>Next Step</span>
+            <span class="badge warning">Apply to 3 jobs</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+{% endblock %}

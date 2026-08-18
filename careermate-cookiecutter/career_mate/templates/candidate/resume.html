@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}Resume Center | CareerMate AI{% endblock %}
+
+{% block content %}
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-badge">C</div>
+      <span>CareerMate</span>
+    </div>
+
+    <nav class="nav-menu">
+      <a class="nav-link" href="{% url 'candidate_dashboard' %}">📊 Dashboard</a>
+      <a class="nav-link" href="{% url 'candidate_profile' %}">👤 Profile</a>
+      <a class="nav-link active" href="{% url 'candidate_resume' %}">📄 Resume</a>
+      <a class="nav-link" href="{% url 'candidate_jobs' %}">💼 Jobs</a>
+      <a class="nav-link" href="{% url 'candidate_ats_score' %}">📈 ATS Score</a>
+      <a class="nav-link" href="{% url 'candidate_career_path' %}">🎯 Career Path</a>
+    </nav>
+
+    <div class="nav-meta">
+      <div class="user-mini">
+        <div class="avatar avatar-small">AS</div>
+        <strong>{{ candidate_name }}</strong>
+        <span>Candidate</span>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main-panel">
+    <header class="topbar">
+      <div>
+        <h1 class="page-title">{{ page_title }}</h1>
+        <p class="page-subtitle">Upload, review, and improve your resume for better roles.</p>
+      </div>
+      <div class="header-actions">
+        <a class="secondary-btn" href="{% url 'candidate_ats_score' %}">View ATS</a>
+        <a class="primary-btn" href="{% url 'candidate_resume' %}">Upload Resume</a>
+      </div>
+    </header>
+
+    <section class="page-card">
+      <div class="feature-grid">
+        <div class="feature-box">
+          <h4>Resume File</h4>
+          <p><strong>{{ resume.file_name }}</strong></p>
+          <p style="margin-top: 12px;">Status: <span class="badge success">{{ resume.status }}</span></p>
+        </div>
+        <div class="feature-box">
+          <h4>Last Updated</h4>
+          <p>{{ resume.last_updated }}</p>
+          <p style="margin-top: 12px;">ATS Score: <span class="badge info">{{ resume.score }}%</span></p>
+        </div>
+      </div>
+
+      <div class="list-block">
+        <h3>Summary</h3>
+        <p style="color: var(--muted); line-height: 1.7;">{{ resume.summary }}</p>
+      </div>
+
+      <div class="list-block">
+        <h3>Key Skills Detected</h3>
+        <div class="skill-list">
+          {% for keyword in resume.keywords %}
+          <div class="skill-row">
+            <span class="skill-name">{{ keyword }}</span>
+            <span class="badge info">Matched</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+{% endblock %}

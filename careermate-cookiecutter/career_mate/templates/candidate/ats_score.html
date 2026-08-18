@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}ATS Score | CareerMate AI{% endblock %}
+
+{% block content %}
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-badge">C</div>
+      <span>CareerMate</span>
+    </div>
+
+    <nav class="nav-menu">
+      <a class="nav-link" href="{% url 'candidate_dashboard' %}">📊 Dashboard</a>
+      <a class="nav-link" href="{% url 'candidate_profile' %}">👤 Profile</a>
+      <a class="nav-link" href="{% url 'candidate_resume' %}">📄 Resume</a>
+      <a class="nav-link" href="{% url 'candidate_jobs' %}">💼 Jobs</a>
+      <a class="nav-link active" href="{% url 'candidate_ats_score' %}">📈 ATS Score</a>
+      <a class="nav-link" href="{% url 'candidate_career_path' %}">🎯 Career Path</a>
+    </nav>
+
+    <div class="nav-meta">
+      <div class="user-mini">
+        <div class="avatar avatar-small">AS</div>
+        <strong>{{ candidate_name }}</strong>
+        <span>Candidate</span>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main-panel">
+    <header class="topbar">
+      <div>
+        <h1 class="page-title">{{ page_title }}</h1>
+        <p class="page-subtitle">Track how well your resume matches the job requirements.</p>
+      </div>
+      <div class="header-actions">
+        <a class="primary-btn" href="{% url 'candidate_resume' %}">Improve Resume</a>
+      </div>
+    </header>
+
+    <section class="page-card">
+      <div class="metric-row">
+        {% for metric in metrics %}
+        <div class="metric-box">
+          <span>{{ metric.label }}</span>
+          <strong>{{ metric.value }}</strong>
+          <p style="margin: 8px 0 0; color: var(--muted);">{{ metric.detail }}</p>
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="list-block">
+        <h3>Suggested Improvements</h3>
+        <ul>
+          {% for suggestion in suggestions %}
+          <li>
+            <span>{{ suggestion }}</span>
+            <span class="badge info">Action</span>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </section>
+  </main>
+</div>
+{% endblock %}
