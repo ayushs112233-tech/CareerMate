@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Register | CareerMate AI{% endblock %}
+
+{% block content %}
+<section class="auth-card" aria-labelledby="register-heading">
+    <p class="eyebrow">Start your journey</p>
+    <h1 id="register-heading">Create an account</h1>
+    <p class="auth-intro">Build your CareerMate profile in a few moments.</p>
+    <form method="post" class="auth-form">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {% for field in form %}
+            <div class="field-group">
+                {{ field.label_tag }}
+                {{ field }}
+                {{ field.errors }}
+                {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+            </div>
+        {% endfor %}
+        <button type="submit" class="primary-button">Create account</button>
+    </form>
+    <p class="auth-switch">Already have an account? <a href="{% url 'accounts:login' %}">Log in</a>.</p>
+</section>
+{% endblock %}

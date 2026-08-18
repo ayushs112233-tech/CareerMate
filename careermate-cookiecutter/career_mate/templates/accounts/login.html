@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Log in | CareerMate AI{% endblock %}
+
+{% block content %}
+<section class="auth-card" aria-labelledby="login-heading">
+    <p class="eyebrow">Welcome back</p>
+    <h1 id="login-heading">Log in to CareerMate</h1>
+    <p class="auth-intro">Continue building a career you’re proud of.</p>
+    <form method="post" class="auth-form">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {% for field in form %}
+            <div class="field-group">
+                {{ field.label_tag }}
+                {{ field }}
+                {{ field.errors }}
+            </div>
+        {% endfor %}
+        <button type="submit" class="primary-button">Log in</button>
+    </form>
+    <p class="auth-switch">Need an account? <a href="{% url 'accounts:register' %}">Register</a>.</p>
+</section>
+{% endblock %}
