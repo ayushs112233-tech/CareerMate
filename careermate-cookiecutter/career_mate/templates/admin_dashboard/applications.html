@@ -1,0 +1,113 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}Application Management{% endblock %}
+{% block page_title %}Job Applications Workflow{% endblock %}
+
+{% block content %}
+<div class="cm-card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center gap-2">
+      <i class="bi bi-send-check-fill text-primary"></i>
+      <span>Job Applications ({{ paginator.count }})</span>
+    </div>
+  </div>
+
+  <div class="card-body border-bottom bg-light">
+    <form method="get" class="row g-2 align-items-center">
+      <div class="col-md-6 col-lg-5">
+        <div class="input-group input-group-sm">
+          <span class="input-group-text"><i class="bi bi-search"></i></span>
+          <input type="text" name="q" value="{{ search_query }}" class="form-control" placeholder="Search candidate, job title, company...">
+        </div>
+      </div>
+      <div class="col-md-4 col-lg-4">
+        <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+          <option value="">All Statuses</option>
+          {% for choice in status_choices %}
+            <option value="{{ choice.0 }}" {% if selected_status == choice.0 %}selected{% endif %}>{{ choice.1 }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2 d-flex gap-1">
+        <button type="submit" class="btn btn-sm btn-primary w-100">Filter</button>
+        {% if search_query or selected_status %}
+          <a href="{% url 'admin_panel:applications' %}" class="btn btn-sm btn-outline-secondary" title="Clear Filter"><i class="bi bi-x-lg"></i></a>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table cm-table">
+      <thead>
+        <tr>
+          <th>Candidate</th>
+          <th>Applied Job</th>
+          <th>Company</th>
+          <th>Resume Attached</th>
+          <th>Status</th>
+          <th>Applied Date</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for app in applications %}
+          <tr>
+            <td>
+              <a href="{% url 'admin_panel:candidate_detail' app.candidate.pk %}" class="fw-semibold text-dark text-decoration-none">
+                {{ app.candidate.user.get_full_name|default:app.candidate.user.username }}
+              </a>
+              <div class="small text-muted">{{ app.candidate.user.email|default:"—" }}</div>
+            </td>
+            <td>
+              <a href="{% url 'admin_panel:job_detail' app.job.pk %}" class="fw-semibold text-dark text-decoration-none">
+                {{ app.job.title }}
+              </a>
+            </td>
+            <td><span class="fw-semibold">{{ app.job.company.name }}</span></td>
+            <td>
+              {% if app.resume %}
+                <a href="{% url 'admin_panel:resume_detail' app.resume.pk %}" class="badge bg-success-subtle text-success text-decoration-none">
+                  <i class="bi bi-file-earmark-pdf me-1"></i> Attached
+                </a>
+              {% else %}
+                <span class="badge bg-secondary-subtle text-secondary">None</span>
+              {% endif %}
+            </td>
+            <td>
+              <span class="badge-status {{ app.status }}">{{ app.get_status_display }}</span>
+            </td>
+            <td>{{ app.applied_at|date:"M d, Y" }}</td>
+            <td class="text-end">
+              <a href="{% url 'admin_panel:application_detail' app.pk %}" class="btn btn-sm btn-outline-primary py-0 px-2">
+                <i class="bi bi-sliders"></i> Manage
+              </a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="7" class="text-center py-4 text-muted">No applications found matching your search criteria.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if is_paginated %}
+    <div class="card-footer bg-white border-top d-flex justify-content-between align-items-center py-2">
+      <small class="text-muted">Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ paginator.count }} applications</small>
+      <nav>
+        <ul class="pagination pagination-sm m-0">
+          {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ search_query }}&status={{ selected_status }}">Previous</a></li>
+          {% endif %}
+          <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
+          {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ search_query }}&status={{ selected_status }}">Next</a></li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

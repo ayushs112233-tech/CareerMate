@@ -1,0 +1,86 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}{{ recruiter.user.get_full_name|default:recruiter.user.username }} — Recruiter Details{% endblock %}
+{% block page_title %}Recruiter Details{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+  <a href="{% url 'admin_panel:recruiters' %}" class="btn btn-sm btn-outline-secondary">
+    <i class="bi bi-arrow-left me-1"></i> Back to Recruiters List
+  </a>
+</div>
+
+<div class="row g-4">
+  <!-- Recruiter Profile Card -->
+  <div class="col-lg-4">
+    <div class="cm-card">
+      <div class="card-body text-center p-4">
+        <div class="bg-primary-subtle text-primary rounded-circle d-inline-flex align-items-center justify-content-center fw-bold fs-3 mb-3" style="width: 72px; height: 72px;">
+          {{ recruiter.user.username|slice:":1"|upper }}
+        </div>
+        <h5 class="fw-bold mb-1">{{ recruiter.user.get_full_name|default:recruiter.user.username }}</h5>
+        <p class="text-muted small mb-2">{{ recruiter.designation|default:"Recruiter" }}</p>
+        <span class="badge bg-primary-subtle text-primary">{{ recruiter.company.name|default:"Independent Recruiter" }}</span>
+      </div>
+
+      <ul class="list-group list-group-flush small">
+        <li class="list-group-item d-flex justify-content-between">
+          <span class="text-muted"><i class="bi bi-envelope me-2"></i>Email</span>
+          <span class="fw-semibold">{{ recruiter.user.email|default:"—" }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between">
+          <span class="text-muted"><i class="bi bi-telephone me-2"></i>Phone</span>
+          <span class="fw-semibold">{{ recruiter.phone|default:"—" }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between">
+          <span class="text-muted"><i class="bi bi-building me-2"></i>Company</span>
+          <span class="fw-semibold">{{ recruiter.company.name|default:"—" }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between">
+          <span class="text-muted"><i class="bi bi-calendar me-2"></i>Joined</span>
+          <span class="fw-semibold">{{ recruiter.created_at|date:"M d, Y" }}</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Posted Jobs by this Recruiter -->
+  <div class="col-lg-8">
+    <div class="cm-card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-briefcase me-2 text-primary"></i>Jobs Posted by Recruiter ({{ posted_jobs.count }})</span>
+      </div>
+      <div class="table-responsive">
+        <table class="table cm-table">
+          <thead>
+            <tr>
+              <th>Job Title</th>
+              <th>Category</th>
+              <th>Type</th>
+              <th>Status</th>
+              <th>Posted Date</th>
+              <th class="text-end">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for job in posted_jobs %}
+              <tr>
+                <td><a href="{% url 'admin_panel:job_detail' job.pk %}" class="fw-semibold text-dark text-decoration-none">{{ job.title }}</a></td>
+                <td>{{ job.category.name|default:"Uncategorized" }}</td>
+                <td><span class="badge bg-light text-dark border">{{ job.get_employment_type_display }}</span></td>
+                <td><span class="badge-status {{ job.status }}">{{ job.get_status_display }}</span></td>
+                <td>{{ job.created_at|date:"M d, Y" }}</td>
+                <td class="text-end">
+                  <a href="{% url 'admin_panel:job_detail' job.pk %}" class="btn btn-sm btn-outline-primary py-0 px-2">View</a>
+                </td>
+              </tr>
+            {% empty %}
+              <tr><td colspan="6" class="text-center py-4 text-muted">No jobs posted by this recruiter yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

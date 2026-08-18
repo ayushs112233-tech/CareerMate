@@ -1,0 +1,94 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}Skills Catalog{% endblock %}
+{% block page_title %}Skills Catalog Management{% endblock %}
+
+{% block content %}
+<div class="cm-card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center gap-2">
+      <i class="bi bi-stars text-primary"></i>
+      <span>Standardized Skills ({{ paginator.count }})</span>
+    </div>
+    <a href="{% url 'admin_panel:skill_create' %}" class="btn btn-sm btn-primary">
+      <i class="bi bi-plus-lg me-1"></i> Add Skill
+    </a>
+  </div>
+
+  <div class="card-body border-bottom bg-light">
+    <form method="get" class="row g-2 align-items-center">
+      <div class="col-md-8 col-lg-6">
+        <div class="input-group input-group-sm">
+          <span class="input-group-text"><i class="bi bi-search"></i></span>
+          <input type="text" name="q" value="{{ search_query }}" class="form-control" placeholder="Search skill by name or category...">
+        </div>
+      </div>
+      <div class="col-md-2 d-flex gap-1">
+        <button type="submit" class="btn btn-sm btn-primary w-100">Search</button>
+        {% if search_query %}
+          <a href="{% url 'admin_panel:skills' %}" class="btn btn-sm btn-outline-secondary" title="Clear Search"><i class="bi bi-x-lg"></i></a>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table cm-table">
+      <thead>
+        <tr>
+          <th>Skill Name</th>
+          <th>Category</th>
+          <th>Tagged Candidates</th>
+          <th>Required in Jobs</th>
+          <th>Created Date</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for skill in skills %}
+          <tr>
+            <td>
+              <div class="fw-semibold text-dark">{{ skill.name }}</div>
+            </td>
+            <td>
+              <span class="badge bg-light text-dark border">{{ skill.category|default:"General" }}</span>
+            </td>
+            <td><span class="badge bg-primary-subtle text-primary">{{ skill.candidate_count }}</span></td>
+            <td><span class="badge bg-info-subtle text-info">{{ skill.job_count }}</span></td>
+            <td>{{ skill.created_at|date:"M d, Y" }}</td>
+            <td class="text-end">
+              <a href="{% url 'admin_panel:skill_edit' skill.pk %}" class="btn btn-sm btn-outline-secondary py-0 px-2" title="Edit">
+                <i class="bi bi-pencil"></i>
+              </a>
+              <a href="{% url 'admin_panel:skill_delete' skill.pk %}" class="btn btn-sm btn-outline-danger py-0 px-2" title="Delete">
+                <i class="bi bi-trash"></i>
+              </a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="6" class="text-center py-4 text-muted">No skills found. Add some skills to populate the catalog.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if is_paginated %}
+    <div class="card-footer bg-white border-top d-flex justify-content-between align-items-center py-2">
+      <small class="text-muted">Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ paginator.count }} skills</small>
+      <nav>
+        <ul class="pagination pagination-sm m-0">
+          {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ search_query }}">Previous</a></li>
+          {% endif %}
+          <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
+          {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ search_query }}">Next</a></li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

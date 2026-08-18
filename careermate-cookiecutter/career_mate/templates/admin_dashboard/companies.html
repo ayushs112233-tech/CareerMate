@@ -1,0 +1,101 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}Company Management{% endblock %}
+{% block page_title %}Registered Companies{% endblock %}
+
+{% block content %}
+<div class="cm-card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center gap-2">
+      <i class="bi bi-building text-primary"></i>
+      <span>Companies ({{ paginator.count }})</span>
+    </div>
+    <a href="{% url 'admin_panel:company_create' %}" class="btn btn-sm btn-primary">
+      <i class="bi bi-plus-lg me-1"></i> Add Company
+    </a>
+  </div>
+
+  <div class="card-body border-bottom bg-light">
+    <form method="get" class="row g-2 align-items-center">
+      <div class="col-md-8 col-lg-6">
+        <div class="input-group input-group-sm">
+          <span class="input-group-text"><i class="bi bi-search"></i></span>
+          <input type="text" name="q" value="{{ search_query }}" class="form-control" placeholder="Search by company name, industry, location...">
+        </div>
+      </div>
+      <div class="col-md-2 d-flex gap-1">
+        <button type="submit" class="btn btn-sm btn-primary w-100">Search</button>
+        {% if search_query %}
+          <a href="{% url 'admin_panel:companies' %}" class="btn btn-sm btn-outline-secondary" title="Clear Search"><i class="bi bi-x-lg"></i></a>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table cm-table">
+      <thead>
+        <tr>
+          <th>Company</th>
+          <th>Industry</th>
+          <th>Location</th>
+          <th>Website</th>
+          <th>Recruiters</th>
+          <th>Jobs Posted</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for company in companies %}
+          <tr>
+            <td>
+              <div class="fw-semibold text-dark">{{ company.name }}</div>
+              <small class="text-muted">{{ company.description|truncatewords:10|default:"—" }}</small>
+            </td>
+            <td><span class="badge bg-light text-dark border">{{ company.industry|default:"General" }}</span></td>
+            <td>{{ company.location|default:"—" }}</td>
+            <td>
+              {% if company.website %}
+                <a href="{{ company.website }}" target="_blank" class="text-decoration-none small"><i class="bi bi-link-45deg"></i> Link</a>
+              {% else %}
+                <span class="text-muted small">—</span>
+              {% endif %}
+            </td>
+            <td><span class="badge bg-info-subtle text-info">{{ company.recruiters_count }}</span></td>
+            <td><span class="badge bg-primary-subtle text-primary">{{ company.jobs_count }}</span></td>
+            <td class="text-end">
+              <a href="{% url 'admin_panel:company_edit' company.pk %}" class="btn btn-sm btn-outline-secondary py-0 px-2" title="Edit">
+                <i class="bi bi-pencil"></i>
+              </a>
+              <a href="{% url 'admin_panel:company_delete' company.pk %}" class="btn btn-sm btn-outline-danger py-0 px-2" title="Delete">
+                <i class="bi bi-trash"></i>
+              </a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="7" class="text-center py-4 text-muted">No companies registered yet.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if is_paginated %}
+    <div class="card-footer bg-white border-top d-flex justify-content-between align-items-center py-2">
+      <small class="text-muted">Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ paginator.count }} companies</small>
+      <nav>
+        <ul class="pagination pagination-sm m-0">
+          {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ search_query }}">Previous</a></li>
+          {% endif %}
+          <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
+          {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ search_query }}">Next</a></li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
