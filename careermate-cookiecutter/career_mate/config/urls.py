@@ -12,6 +12,7 @@ admin.site.index_title = "Database Administration"
 urlpatterns = [
     path("", RedirectView.as_view(pattern_name="accounts:login", permanent=False), name="home"),
     path("", include("apps.accounts.urls")),
+    path("candidate/", include("apps.candidates.urls")),
     path("admin-dashboard/", include("apps.admin_panel.urls")),
     path("admin/", admin.site.urls),
 ]
