@@ -1,0 +1,107 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}Application #{{ application.pk }} — Details{% endblock %}
+{% block page_title %}Application Workflow Management{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+  <a href="{% url 'admin_panel:applications' %}" class="btn btn-sm btn-outline-secondary">
+    <i class="bi bi-arrow-left me-1"></i> Back to Applications List
+  </a>
+</div>
+
+<div class="row g-4">
+  <!-- Left Column: Details -->
+  <div class="col-lg-8">
+    <div class="cm-card mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-send me-2 text-primary"></i>Application #{{ application.pk }} Overview</span>
+        <span class="badge-status {{ application.status }} fs-6">{{ application.get_status_display }}</span>
+      </div>
+      <div class="card-body">
+        <div class="row g-3 mb-4">
+          <div class="col-md-6">
+            <label class="text-muted small fw-semibold text-uppercase d-block">Candidate</label>
+            <h6 class="fw-bold m-0">
+              <a href="{% url 'admin_panel:candidate_detail' application.candidate.pk %}" class="text-dark text-decoration-none">
+                {{ application.candidate.user.get_full_name|default:application.candidate.user.username }}
+              </a>
+            </h6>
+            <small class="text-muted">{{ application.candidate.user.email }}</small>
+          </div>
+          <div class="col-md-6">
+            <label class="text-muted small fw-semibold text-uppercase d-block">Job Posting</label>
+            <h6 class="fw-bold m-0">
+              <a href="{% url 'admin_panel:job_detail' application.job.pk %}" class="text-dark text-decoration-none">
+                {{ application.job.title }}
+              </a>
+            </h6>
+            <small class="text-muted">{{ application.job.company.name }}</small>
+          </div>
+        </div>
+
+        <div class="row g-3 small border-top pt-3 text-muted">
+          <div class="col-sm-6"><i class="bi bi-calendar me-1"></i><strong>Applied On:</strong> {{ application.applied_at|date:"F d, Y - h:i A" }}</div>
+          <div class="col-sm-6"><i class="bi bi-clock-history me-1"></i><strong>Last Updated:</strong> {{ application.updated_at|date:"F d, Y - h:i A" }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Attached Resume Preview -->
+    <div class="cm-card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-file-earmark-pdf me-2 text-primary"></i>Attached Candidate Resume</span>
+        {% if application.resume and application.resume.file %}
+          <a href="{{ application.resume.file.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-download me-1"></i> Download PDF
+          </a>
+        {% endif %}
+      </div>
+      <div class="card-body">
+        {% if application.resume %}
+          <div class="d-flex align-items-center justify-content-between mb-3 p-2 bg-light rounded border">
+            <div>
+              <div class="fw-semibold">{{ application.resume.file_name }}</div>
+              <small class="text-muted">Uploaded {{ application.resume.uploaded_at|date:"M d, Y" }}</small>
+            </div>
+            <span class="badge-status {{ application.resume.status }}">{{ application.resume.get_status_display }}</span>
+          </div>
+
+          <h6 class="small text-uppercase text-muted fw-bold">Resume Extracted Text Preview:</h6>
+          <div class="p-3 bg-light rounded font-monospace small text-secondary" style="max-height: 250px; overflow-y: auto; white-space: pre-wrap;">
+            {{ application.resume.parsed_text|default:"(No text extracted yet - ready for AI engine parsing phase)" }}
+          </div>
+        {% else %}
+          <p class="text-muted mb-0">No resume attached to this application.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Column: Status Change Form -->
+  <div class="col-lg-4">
+    <div class="cm-card">
+      <div class="card-header">
+        <i class="bi bi-sliders me-2 text-primary"></i>Update Application Status
+      </div>
+      <div class="card-body p-4">
+        <form method="post" action="{% url 'admin_panel:application_status_update' application.pk %}">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="{{ form.status.id_for_label }}" class="form-label fw-semibold small">Workflow Status</label>
+            {{ form.status }}
+          </div>
+
+          <p class="small text-muted mb-3">
+            Changing this status updates the candidate's hiring progression in the system.
+          </p>
+
+          <button type="submit" class="btn btn-primary w-100">
+            <i class="bi bi-check2 me-1"></i> Update Status
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

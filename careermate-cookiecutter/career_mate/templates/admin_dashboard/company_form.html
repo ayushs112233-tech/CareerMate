@@ -1,0 +1,63 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}{% if object %}Edit Company{% else %}Add Company{% endif %}{% endblock %}
+{% block page_title %}{% if object %}Edit Company: {{ object.name }}{% else %}Register New Company{% endif %}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="cm-card">
+      <div class="card-header">
+        <span><i class="bi bi-building me-2 text-primary"></i>Company Information</span>
+      </div>
+      <div class="card-body p-4">
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          {% if form.errors %}
+            <div class="alert alert-danger small py-2">Please correct the errors below.</div>
+          {% endif %}
+
+          <div class="mb-3">
+            <label for="{{ form.name.id_for_label }}" class="form-label fw-semibold small">Company Name *</label>
+            {{ form.name }}
+            {{ form.name.errors }}
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label for="{{ form.industry.id_for_label }}" class="form-label fw-semibold small">Industry</label>
+              {{ form.industry }}
+              {{ form.industry.errors }}
+            </div>
+            <div class="col-md-6">
+              <label for="{{ form.location.id_for_label }}" class="form-label fw-semibold small">Headquarters Location</label>
+              {{ form.location }}
+              {{ form.location.errors }}
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="{{ form.website.id_for_label }}" class="form-label fw-semibold small">Company Website URL</label>
+            {{ form.website }}
+            {{ form.website.errors }}
+          </div>
+
+          <div class="mb-4">
+            <label for="{{ form.description.id_for_label }}" class="form-label fw-semibold small">About / Description</label>
+            {{ form.description }}
+            {{ form.description.errors }}
+          </div>
+
+          <div class="d-flex justify-content-between">
+            <a href="{% url 'admin_panel:companies' %}" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary px-4">
+              <i class="bi bi-check2-circle me-1"></i> Save Company
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

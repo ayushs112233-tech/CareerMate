@@ -1,0 +1,2 @@
+# Validated against the project's current Python 3.13 / Django 6 environment.
+Django>=6.0,<6.1

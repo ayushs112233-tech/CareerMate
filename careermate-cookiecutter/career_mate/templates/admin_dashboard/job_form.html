@@ -1,0 +1,112 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}{% if object %}Edit Job{% else %}Post Job{% endif %}{% endblock %}
+{% block page_title %}{% if object %}Edit Job: {{ object.title }}{% else %}Post New Job Listing{% endif %}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-9">
+    <div class="cm-card">
+      <div class="card-header">
+        <span><i class="bi bi-briefcase me-2 text-primary"></i>Job Posting Details</span>
+      </div>
+      <div class="card-body p-4">
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          {% if form.errors %}
+            <div class="alert alert-danger small py-2">Please correct the errors indicated below.</div>
+          {% endif %}
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-8">
+              <label for="{{ form.title.id_for_label }}" class="form-label fw-semibold small">Job Title *</label>
+              {{ form.title }}
+              {{ form.title.errors }}
+            </div>
+            <div class="col-md-4">
+              <label for="{{ form.status.id_for_label }}" class="form-label fw-semibold small">Status *</label>
+              {{ form.status }}
+              {{ form.status.errors }}
+            </div>
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-4">
+              <label for="{{ form.company.id_for_label }}" class="form-label fw-semibold small">Company *</label>
+              {{ form.company }}
+              {{ form.company.errors }}
+            </div>
+            <div class="col-md-4">
+              <label for="{{ form.recruiter.id_for_label }}" class="form-label fw-semibold small">Recruiter *</label>
+              {{ form.recruiter }}
+              {{ form.recruiter.errors }}
+            </div>
+            <div class="col-md-4">
+              <label for="{{ form.category.id_for_label }}" class="form-label fw-semibold small">Category</label>
+              {{ form.category }}
+              {{ form.category.errors }}
+            </div>
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-4">
+              <label for="{{ form.employment_type.id_for_label }}" class="form-label fw-semibold small">Employment Type *</label>
+              {{ form.employment_type }}
+              {{ form.employment_type.errors }}
+            </div>
+            <div class="col-md-4">
+              <label for="{{ form.location.id_for_label }}" class="form-label fw-semibold small">Location *</label>
+              {{ form.location }}
+              {{ form.location.errors }}
+            </div>
+            <div class="col-md-4">
+              <label for="{{ form.min_experience.id_for_label }}" class="form-label fw-semibold small">Min Experience (Years)</label>
+              {{ form.min_experience }}
+              {{ form.min_experience.errors }}
+            </div>
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label for="{{ form.salary_min.id_for_label }}" class="form-label fw-semibold small">Salary Minimum (₹/yr)</label>
+              {{ form.salary_min }}
+              {{ form.salary_min.errors }}
+            </div>
+            <div class="col-md-6">
+              <label for="{{ form.salary_max.id_for_label }}" class="form-label fw-semibold small">Salary Maximum (₹/yr)</label>
+              {{ form.salary_max }}
+              {{ form.salary_max.errors }}
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="{{ form.skills_required.id_for_label }}" class="form-label fw-semibold small">Required Skills (Hold Ctrl/Cmd to select multiple)</label>
+            {{ form.skills_required }}
+            {{ form.skills_required.errors }}
+          </div>
+
+          <div class="mb-3">
+            <label for="{{ form.description.id_for_label }}" class="form-label fw-semibold small">Job Description *</label>
+            {{ form.description }}
+            {{ form.description.errors }}
+          </div>
+
+          <div class="mb-4">
+            <label for="{{ form.requirements.id_for_label }}" class="form-label fw-semibold small">Requirements & Qualifications</label>
+            {{ form.requirements }}
+            {{ form.requirements.errors }}
+          </div>
+
+          <div class="d-flex justify-content-between">
+            <a href="{% url 'admin_panel:jobs' %}" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary px-4">
+              <i class="bi bi-check2-circle me-1"></i> Save Job Posting
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

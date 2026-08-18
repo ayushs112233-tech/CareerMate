@@ -1,0 +1,203 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}Dashboard Overview{% endblock %}
+{% block page_title %}Management Dashboard{% endblock %}
+
+{% block content %}
+<!-- KPI Metric Cards Grid -->
+<div class="row g-3 mb-4">
+  <!-- Candidates -->
+  <div class="col-xl-3 col-md-6">
+    <div class="cm-card kpi-card">
+      <div class="kpi-icon blue"><i class="bi bi-people-fill"></i></div>
+      <div class="kpi-info">
+        <div class="kpi-label">Total Candidates</div>
+        <div class="kpi-value">{{ total_candidates }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recruiters -->
+  <div class="col-xl-3 col-md-6">
+    <div class="cm-card kpi-card">
+      <div class="kpi-icon purple"><i class="bi bi-person-badge-fill"></i></div>
+      <div class="kpi-info">
+        <div class="kpi-label">Total Recruiters</div>
+        <div class="kpi-value">{{ total_recruiters }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Companies -->
+  <div class="col-xl-3 col-md-6">
+    <div class="cm-card kpi-card">
+      <div class="kpi-icon green"><i class="bi bi-building"></i></div>
+      <div class="kpi-info">
+        <div class="kpi-label">Total Companies</div>
+        <div class="kpi-value">{{ total_companies }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Jobs -->
+  <div class="col-xl-3 col-md-6">
+    <div class="cm-card kpi-card">
+      <div class="kpi-icon cyan"><i class="bi bi-briefcase-fill"></i></div>
+      <div class="kpi-info">
+        <div class="kpi-label">Total Jobs ({{ active_jobs_count }} Active)</div>
+        <div class="kpi-value">{{ total_jobs }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Applications -->
+  <div class="col-xl-3 col-md-6">
+    <div class="cm-card kpi-card">
+      <div class="kpi-icon amber"><i class="bi bi-send-check-fill"></i></div>
+      <div class="kpi-info">
+        <div class="kpi-label">Applications ({{ pending_applications_count }} Pending)</div>
+        <div class="kpi-value">{{ total_applications }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Resumes -->
+  <div class="col-xl-3 col-md-6">
+    <div class="cm-card kpi-card">
+      <div class="kpi-icon rose"><i class="bi bi-file-earmark-person-fill"></i></div>
+      <div class="kpi-info">
+        <div class="kpi-label">Total Resumes</div>
+        <div class="kpi-value">{{ total_resumes }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Skills Catalog -->
+  <div class="col-xl-3 col-md-6">
+    <div class="cm-card kpi-card">
+      <div class="kpi-icon blue"><i class="bi bi-stars"></i></div>
+      <div class="kpi-info">
+        <div class="kpi-label">Skills Catalog</div>
+        <div class="kpi-value">{{ total_skills }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Job Categories -->
+  <div class="col-xl-3 col-md-6">
+    <div class="cm-card kpi-card">
+      <div class="kpi-icon green"><i class="bi bi-tags-fill"></i></div>
+      <div class="kpi-info">
+        <div class="kpi-label">Job Categories</div>
+        <div class="kpi-value">{{ total_categories }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Actions Toolbar -->
+<div class="cm-card mb-4">
+  <div class="card-body py-2 d-flex flex-wrap gap-2 align-items-center justify-content-between">
+    <span class="fw-semibold text-muted small"><i class="bi bi-lightning-charge me-1"></i>Quick Actions:</span>
+    <div class="d-flex flex-wrap gap-2">
+      <a href="{% url 'admin_panel:job_create' %}" class="btn btn-sm btn-primary"><i class="bi bi-plus-lg me-1"></i>Post New Job</a>
+      <a href="{% url 'admin_panel:company_create' %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-building-add me-1"></i>Add Company</a>
+      <a href="{% url 'admin_panel:skill_create' %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-plus-circle me-1"></i>Add Skill</a>
+      <a href="{% url 'admin_panel:job_category_create' %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-tag me-1"></i>Add Category</a>
+      <a href="{% url 'admin_panel:reports' %}" class="btn btn-sm btn-outline-dark"><i class="bi bi-graph-up me-1"></i>View Reports</a>
+    </div>
+  </div>
+</div>
+
+<!-- Recent Applications & Recent Jobs Grid -->
+<div class="row g-4">
+  <!-- Recent Applications -->
+  <div class="col-lg-6">
+    <div class="cm-card h-100">
+      <div class="card-header">
+        <span><i class="bi bi-clock-history me-2 text-primary"></i>Recent Job Applications</span>
+        <a href="{% url 'admin_panel:applications' %}" class="btn btn-sm btn-link text-decoration-none">View All</a>
+      </div>
+      <div class="table-responsive">
+        <table class="table cm-table">
+          <thead>
+            <tr>
+              <th>Candidate</th>
+              <th>Job & Company</th>
+              <th>Status</th>
+              <th>Applied</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for app in recent_applications %}
+              <tr>
+                <td>
+                  <a href="{% url 'admin_panel:candidate_detail' app.candidate.pk %}" class="fw-semibold text-decoration-none text-dark">
+                    {{ app.candidate.user.get_full_name|default:app.candidate.user.username }}
+                  </a>
+                </td>
+                <td>
+                  <div class="fw-semibold text-truncate" style="max-width: 160px;">{{ app.job.title }}</div>
+                  <small class="text-muted">{{ app.job.company.name }}</small>
+                </td>
+                <td>
+                  <span class="badge-status {{ app.status }}">{{ app.get_status_display }}</span>
+                </td>
+                <td class="small text-muted">{{ app.applied_at|date:"M d, Y" }}</td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="4" class="text-center py-4 text-muted">No applications submitted yet.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Job Postings -->
+  <div class="col-lg-6">
+    <div class="cm-card h-100">
+      <div class="card-header">
+        <span><i class="bi bi-briefcase me-2 text-primary"></i>Recent Job Postings</span>
+        <a href="{% url 'admin_panel:jobs' %}" class="btn btn-sm btn-link text-decoration-none">View All</a>
+      </div>
+      <div class="table-responsive">
+        <table class="table cm-table">
+          <thead>
+            <tr>
+              <th>Job Title</th>
+              <th>Company</th>
+              <th>Type</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for job in recent_jobs %}
+              <tr>
+                <td>
+                  <a href="{% url 'admin_panel:job_detail' job.pk %}" class="fw-semibold text-decoration-none text-dark">
+                    {{ job.title }}
+                  </a>
+                </td>
+                <td>{{ job.company.name }}</td>
+                <td><span class="badge bg-light text-dark border">{{ job.get_employment_type_display }}</span></td>
+                <td><span class="badge-status {{ job.status }}">{{ job.get_status_display }}</span></td>
+                <td>
+                  <a href="{% url 'admin_panel:job_detail' job.pk %}" class="btn btn-sm btn-outline-primary py-0 px-2">Details</a>
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="5" class="text-center py-4 text-muted">No job postings created yet.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
