@@ -1,0 +1,16 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      DJANGO_ALLOWED_HOSTS: "localhost,127.0.0.1"
+      DJANGO_DB_PATH: "/app/data/db.sqlite3"
+    volumes:
+      - .:/app
+      - sqlite_data:/app/data
+      - media_data:/app/media
+
+volumes:
+  sqlite_data:
+  media_data:

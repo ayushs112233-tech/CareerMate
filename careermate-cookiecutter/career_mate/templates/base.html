@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CareerMate AI{% endblock %}</title>
+    <link rel="icon" href="{% static 'favicon.svg' %}" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <a class="brand" href="{% url 'home' %}"><span class="brand-mark">C</span><span>CareerMate <b>AI</b></span></a>
+            <p class="nav-label">Recruiter workspace</p>
+            <nav class="main-nav">
+                <a class="{% if request.resolver_match.url_name == 'dashboard' or request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}"><span>◈</span> Overview</a>
+                <a class="{% if 'job' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'recruiters:job_list' %}"><span>▣</span> Jobs</a>
+                <a class="{% if 'candidate' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'recruiters:candidate_list' %}"><span>◎</span> Candidates</a>
+                <a class="{% if request.resolver_match.url_name == 'company_profile' %}active{% endif %}" href="{% url 'recruiters:company_profile' %}"><span>◇</span> Company profile</a>
+            </nav>
+            <div class="sidebar-bottom">
+                <div class="user-chip"><span class="avatar">{{ user.username|first|upper }}</span><span><strong>{{ user.username }}</strong><small>Recruiter</small></span></div>
+            </div>
+        </aside>
+        <main class="main-content">
+            <header class="mobile-header"><a class="brand" href="{% url 'home' %}"><span class="brand-mark">C</span><span>CareerMate <b>AI</b></span></a></header>
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</body>
+</html>
