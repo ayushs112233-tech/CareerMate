@@ -1,0 +1,321 @@
+/* ==========================================================================
+   CareerMate AI — Custom Admin Dashboard Stylesheet
+   Modern, Professional, Clean Dashboard Design (Bootstrap 5 Enhanced)
+   ========================================================================== */
+
+:root {
+  --cm-sidebar-bg: #0f172a;
+  --cm-sidebar-hover: #1e293b;
+  --cm-sidebar-active: #2563eb;
+  --cm-sidebar-text: #94a3b8;
+  --cm-sidebar-text-active: #ffffff;
+  --cm-body-bg: #f8fafc;
+  --cm-card-bg: #ffffff;
+  --cm-border-color: #e2e8f0;
+  --cm-primary: #2563eb;
+  --cm-primary-dark: #1d4ed8;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: var(--cm-body-bg);
+  color: #1e293b;
+  min-height: 100vh;
+}
+
+/* --------------------------------------------------------------------------
+   Layout Structure
+   -------------------------------------------------------------------------- */
+.dashboard-wrapper {
+  display: flex;
+  min-height: 100vh;
+}
+
+.dashboard-sidebar {
+  width: 260px;
+  background-color: var(--cm-sidebar-bg);
+  color: var(--cm-sidebar-text);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.dashboard-main {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background-color: var(--cm-body-bg);
+}
+
+.dashboard-topbar {
+  background-color: #ffffff;
+  border-bottom: 1px solid var(--cm-border-color);
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 900;
+}
+
+.dashboard-content {
+  padding: 1.5rem;
+  flex-grow: 1;
+}
+
+/* --------------------------------------------------------------------------
+   Sidebar Elements
+   -------------------------------------------------------------------------- */
+.sidebar-brand {
+  padding: 1.25rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: #ffffff;
+}
+
+.sidebar-brand .brand-icon {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 1.2rem;
+}
+
+.sidebar-brand .brand-text {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.sidebar-nav {
+  padding: 1rem 0.75rem;
+  list-style: none;
+  margin: 0;
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.sidebar-nav .nav-header {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+  color: #64748b;
+  padding: 0.75rem 0.75rem 0.25rem;
+}
+
+.sidebar-nav .nav-item {
+  margin-bottom: 0.2rem;
+}
+
+.sidebar-nav .nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.85rem;
+  color: var(--cm-sidebar-text);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.sidebar-nav .nav-link i {
+  font-size: 1.1rem;
+  width: 20px;
+  text-align: center;
+}
+
+.sidebar-nav .nav-link:hover {
+  background-color: var(--cm-sidebar-hover);
+  color: #f1f5f9;
+}
+
+.sidebar-nav .nav-link.active {
+  background-color: var(--cm-sidebar-active);
+  color: var(--cm-sidebar-text-active);
+}
+
+.sidebar-footer {
+  padding: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* --------------------------------------------------------------------------
+   Cards & KPI Counters
+   -------------------------------------------------------------------------- */
+.cm-card {
+  background-color: var(--cm-card-bg);
+  border: 1px solid var(--cm-border-color);
+  border-radius: 10px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+  margin-bottom: 1.25rem;
+}
+
+.cm-card .card-header {
+  background-color: #ffffff;
+  border-bottom: 1px solid var(--cm-border-color);
+  padding: 1rem 1.25rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cm-card .card-body {
+  padding: 1.25rem;
+}
+
+.kpi-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+}
+
+.kpi-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.kpi-icon.blue { background-color: #eff6ff; color: #2563eb; }
+.kpi-icon.green { background-color: #ecfdf5; color: #059669; }
+.kpi-icon.purple { background-color: #faf5ff; color: #7c3aed; }
+.kpi-icon.amber { background-color: #fffbeb; color: #d97706; }
+.kpi-icon.rose { background-color: #fff1f2; color: #e11d48; }
+.kpi-icon.cyan { background-color: #ecfeff; color: #0891b2; }
+
+.kpi-info .kpi-label {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 0.2rem;
+}
+
+.kpi-info .kpi-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.2;
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Tables
+   -------------------------------------------------------------------------- */
+.cm-table {
+  margin-bottom: 0;
+}
+
+.cm-table th {
+  background-color: #f8fafc;
+  color: #475569;
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-top: none;
+  padding: 0.75rem 1rem;
+}
+
+.cm-table td {
+  padding: 0.85rem 1rem;
+  vertical-align: middle;
+  font-size: 0.9rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.cm-table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+/* --------------------------------------------------------------------------
+   Badges
+   -------------------------------------------------------------------------- */
+.badge-status {
+  padding: 0.35em 0.65em;
+  font-weight: 600;
+  font-size: 0.75rem;
+  border-radius: 6px;
+  text-transform: capitalize;
+}
+
+.badge-status.active, .badge-status.hired, .badge-status.complete {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.badge-status.applied, .badge-status.under_review {
+  background-color: #e0e7ff;
+  color: #4338ca;
+}
+
+.badge-status.shortlisted, .badge-status.interview {
+  background-color: #fef3c7;
+  color: #b45309;
+}
+
+.badge-status.rejected, .badge-status.closed, .badge-status.error {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+.badge-status.draft, .badge-status.uploaded, .badge-status.incomplete {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+/* --------------------------------------------------------------------------
+   Auth / Login Screen
+   -------------------------------------------------------------------------- */
+.login-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  padding: 1.5rem;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* --------------------------------------------------------------------------
+   Mobile Responsiveness
+   -------------------------------------------------------------------------- */
+@media (max-width: 991.98px) {
+  .dashboard-sidebar {
+    position: fixed;
+    left: -260px;
+    height: 100vh;
+  }
+  .dashboard-sidebar.show {
+    left: 0;
+  }
+}
