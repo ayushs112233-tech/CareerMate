@@ -12,11 +12,7 @@ admin.site.index_title = "Database Administration"
 urlpatterns = [
     path("recruiter/", include("apps.recruiters.urls")),
     path("jobs/", include("apps.jobs.urls")),
-    # Root URL redirects to Custom Admin Dashboard
-    path("", lambda request: redirect("admin_panel:dashboard"), name="root_redirect"),
-
-    # Custom Admin Management Dashboard (Main Admin Interface)
-    path("admin-dashboard/", include("apps.admin_panel.urls")),
+    path("", lambda request: redirect("recruiters:dashboard"), name="root_redirect"),
 
     # Low-level Django Admin
     path("admin/", admin.site.urls),
