@@ -1,8 +1,9 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.shortcuts import redirect
 from django.urls import include, path
+
+from apps.candidates.views import candidate_dashboard
 
 # Django Low-Level Admin Site Customization
 admin.site.site_header = "CareerMate AI — Low Level DB Administration"
@@ -10,8 +11,9 @@ admin.site.site_title = "CareerMate AI DB Admin"
 admin.site.index_title = "Database Administration"
 
 urlpatterns = [
-    # Root URL redirects to Custom Admin Dashboard
-    path("", lambda request: redirect("admin_panel:dashboard"), name="root_redirect"),
+    path("", candidate_dashboard, name="root_redirect"),
+
+    path("candidate/", include("apps.candidates.urls")),
 
     # Custom Admin Management Dashboard (Main Admin Interface)
     path("admin-dashboard/", include("apps.admin_panel.urls")),

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="candidate-shell">
+  <aside class="candidate-sidebar">
+    <a class="candidate-brand" href="{% url 'candidate_dashboard' %}"><span class="brand-mark">C</span><span>CareerMate</span></a>
+    <nav class="candidate-nav" aria-label="Candidate navigation">
+      <a class="{% if request.resolver_match.url_name == 'candidate_dashboard' %}active{% endif %}" href="{% url 'candidate_dashboard' %}">Overview</a>
+      <a class="{% if request.resolver_match.url_name == 'candidate_profile' %}active{% endif %}" href="{% url 'candidate_profile' %}">My profile</a>
+      <a class="{% if request.resolver_match.url_name == 'candidate_resume' %}active{% endif %}" href="{% url 'candidate_resume' %}">Resume center</a>
+      <a class="{% if 'job' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'candidate_jobs' %}">Find jobs</a>
+      <a class="{% if 'application' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'candidate_applications' %}">Applications</a>
+      <a class="{% if request.resolver_match.url_name == 'candidate_ats_score' %}active{% endif %}" href="{% url 'candidate_ats_score' %}">AI insights</a>
+      <a class="{% if request.resolver_match.url_name == 'candidate_career_path' %}active{% endif %}" href="{% url 'candidate_career_path' %}">Career roadmap</a>
+    </nav>
+    <div class="candidate-account"><span class="avatar">{{ candidate_name|slice:":1"|upper }}</span><div><strong>{{ candidate_name }}</strong><small>Candidate</small></div><a href="{% url 'candidate_logout' %}" title="Sign out">↗</a></div>
+  </aside>
+  <main class="candidate-main">
+    <header class="candidate-topbar"><div><p class="eyebrow">CAREERMATE / CANDIDATE</p><h1>{{ page_title }}</h1></div><div class="topbar-actions"><a class="button button-quiet" href="{% url 'candidate_profile' %}">Profile</a><a class="button button-primary" href="{% url 'candidate_resume' %}">Update resume</a></div></header>
+    {% if messages %}<div class="flash-stack">{% for message in messages %}<div class="flash {{ message.tags }}">{{ message }}</div>{% endfor %}</div>{% endif %}
+    {% block candidate_content %}{% endblock %}
+  </main>
+</div>
+{% endblock %}

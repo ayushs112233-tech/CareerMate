@@ -1,0 +1,3 @@
+{% extends "base.html" %}
+{% block title %}Candidate Sign In | CareerMate{% endblock %}
+{% block content %}<main class="login-page"><div class="login-card"><a class="candidate-brand" href="{% url 'candidate_login' %}"><span class="brand-mark">C</span><span>CareerMate</span></a><p class="eyebrow">CANDIDATE SPACE</p><h1>Pick up where your career left off.</h1><p class="muted">Sign in to manage your profile, discover roles, and track every application.</p><form method="post">{% csrf_token %}{{ form.non_field_errors }}<label>Username {{ form.username }}</label><label>Password {{ form.password }}</label><button class="button button-primary" type="submit">Sign in</button></form></div></main>{% endblock %}

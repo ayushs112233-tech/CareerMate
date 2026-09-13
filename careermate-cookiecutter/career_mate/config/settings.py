@@ -13,7 +13,7 @@ DEBUG = os.getenv("DEBUG", "True").lower() in ("true", "1", "t", "yes")
 
 ALLOWED_HOSTS = [
     host.strip()
-    for host in os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
+    for host in os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost,0.0.0.0,testserver").split(",")
     if host.strip()
 ]
 
@@ -69,17 +69,28 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 
 # Database Configuration
-# Uses PostgreSQL running via Docker Compose (or local environment variables)
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("DB_NAME", "careermate_db"),
-        "USER": os.getenv("DB_USER", "careermate_user"),
-        "PASSWORD": os.getenv("DB_PASSWORD", "careermate_password"),
-        "HOST": os.getenv("DB_HOST", "localhost"),
-        "PORT": os.getenv("DB_PORT", "5432"),
+# Local development can run from the checked-in SQLite path when PostgreSQL/Docker
+# is unavailable. Set DB_ENGINE=postgresql to use the shared PostgreSQL database.
+DB_ENGINE = os.getenv("DB_ENGINE", "sqlite3" if DEBUG else "postgresql")
+
+if DB_ENGINE == "sqlite3":
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.getenv("DB_NAME", "careermate_db"),
+            "USER": os.getenv("DB_USER", "careermate_user"),
+            "PASSWORD": os.getenv("DB_PASSWORD", "careermate_password"),
+            "HOST": os.getenv("DB_HOST", "localhost"),
+            "PORT": os.getenv("DB_PORT", "5432"),
+        }
+    }
 
 
 AUTH_PASSWORD_VALIDATORS = [
