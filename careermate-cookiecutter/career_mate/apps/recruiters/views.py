@@ -1,100 +1,130 @@
-from django.contrib.auth.models import User
+from django.contrib import messages
+from django.contrib.auth import login, logout
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count, Q
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import redirect, render
+from django.urls import reverse_lazy
+from django.views import View
+from django.views.generic import CreateView, DeleteView, DetailView, ListView, TemplateView, UpdateView
 
-from .forms import CandidateStatusForm, CompanyProfileForm, JobPostingForm
-from .models import CandidateApplication, CompanyProfile, JobPosting
-
-
-def _company_for(user):
-	if not user.is_authenticated:
-		user, _ = User.objects.get_or_create(username="recruiter_demo")
-	company, _ = CompanyProfile.objects.get_or_create(owner=user, defaults={"name": f"{user.username}'s company"})
-	return company
+from apps.jobs.models import Application, Job
+from apps.jobs.forms import JobForm
+from .forms import CompanyForm, RecruiterProfileForm
+from .models import Company, Recruiter
 
 
-def dashboard(request):
-	company = _company_for(request.user)
-	jobs = company.jobs.annotate(candidate_count=Count("applications"))
-	applications = CandidateApplication.objects.filter(job__company=company).select_related("job")
-	context = {
-		"company": company,
-		"jobs": jobs[:5],
-		"applications": applications[:5],
-		"active_jobs": jobs.filter(is_active=True).count(),
-		"candidate_count": applications.count(),
-		"shortlisted_count": applications.filter(status=CandidateApplication.Status.SHORTLISTED).count(),
-		"high_match_count": applications.filter(compatibility_score__gte=80).count(),
-	}
-	return render(request, "recruiters/dashboard.html", {**context, "recruiter_name": company.owner.username})
+class RecruiterLoginView(View):
+	def get(self, request):
+		return render(request, "recruiters/login.html", {"form": AuthenticationForm()})
 
-
-def company_profile(request):
-	company = _company_for(request.user)
-	if request.method == "POST":
-		form = CompanyProfileForm(request.POST, instance=company)
+	def post(self, request):
+		form = AuthenticationForm(request, data=request.POST)
 		if form.is_valid():
-			form.save()
-			return redirect("recruiters:company_profile")
-	else:
-		form = CompanyProfileForm(instance=company)
-	return render(request, "recruiters/company_profile.html", {"form": form, "company": company})
+			login(request, form.get_user())
+			return redirect("recruiters:dashboard")
+		return render(request, "recruiters/login.html", {"form": form})
 
 
-def job_list(request):
-	company = _company_for(request.user)
-	jobs = company.jobs.annotate(candidate_count=Count("applications"))
-	return render(request, "recruiters/job_list.html", {"company": company, "jobs": jobs})
+class RecruiterLogoutView(View):
+	def post(self, request):
+		logout(request)
+		return redirect("recruiters:login")
 
 
-def job_create(request):
-	company = _company_for(request.user)
-	form = JobPostingForm(request.POST or None)
-	if form.is_valid():
-		job = form.save(commit=False)
-		job.company = company
-		job.save()
-		return redirect("recruiters:job_detail", pk=job.pk)
-	return render(request, "recruiters/job_form.html", {"form": form, "page_title": "Create a job"})
+class RecruiterRequiredMixin(LoginRequiredMixin):
+	login_url = reverse_lazy("recruiters:login")
+
+	def dispatch(self, request, *args, **kwargs):
+		if not request.user.is_authenticated:
+			return self.handle_no_permission()
+		self.recruiter, _ = Recruiter.objects.get_or_create(user=request.user)
+		return super().dispatch(request, *args, **kwargs)
 
 
-def job_detail(request, pk):
-	company = _company_for(request.user)
-	job = get_object_or_404(JobPosting.objects.annotate(candidate_count=Count("applications")), pk=pk, company=company)
-	applications = job.applications.all()
-	return render(request, "recruiters/job_detail.html", {"job": job, "applications": applications})
+class RecruiterDashboardView(RecruiterRequiredMixin, TemplateView):
+	template_name = "recruiters/dashboard.html"
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		jobs = Job.objects.filter(recruiter=self.recruiter)
+		applications = Application.objects.filter(job__recruiter=self.recruiter)
+		context.update({"total_jobs": jobs.count(), "active_jobs": jobs.filter(status="active").count(), "total_applications": applications.count(), "pending_applications": applications.filter(status__in=("applied", "under_review")).count(), "recent_jobs": jobs.annotate(application_count=Count("applications"))[:6], "recent_applications": applications.select_related("candidate__user", "job")[:6]})
+		return context
 
 
-def job_edit(request, pk):
-	company = _company_for(request.user)
-	job = get_object_or_404(JobPosting, pk=pk, company=company)
-	form = JobPostingForm(request.POST or None, instance=job)
-	if form.is_valid():
-		form.save()
-		return redirect("recruiters:job_detail", pk=job.pk)
-	return render(request, "recruiters/job_form.html", {"form": form, "job": job, "page_title": "Edit job"})
+class ProfileUpdateView(RecruiterRequiredMixin, UpdateView):
+	model = Recruiter
+	form_class = RecruiterProfileForm
+	template_name = "recruiters/profile_form.html"
+	success_url = reverse_lazy("recruiters:profile")
+
+	def get_object(self, queryset=None): return self.recruiter
+	def get_form_kwargs(self):
+		kwargs = super().get_form_kwargs(); kwargs["user"] = self.request.user; return kwargs
 
 
-def candidate_list(request):
-	company = _company_for(request.user)
-	applications = CandidateApplication.objects.filter(job__company=company).select_related("job")
-	query = request.GET.get("q", "").strip()
-	if query:
-		applications = applications.filter(Q(candidate_name__icontains=query) | Q(job__title__icontains=query))
-	status = request.GET.get("status", "")
-	if status:
-		applications = applications.filter(status=status)
-	return render(request, "recruiters/candidate_list.html", {"applications": applications, "query": query, "status": status, "status_choices": CandidateApplication.Status.choices})
+class CompanyUpdateView(RecruiterRequiredMixin, UpdateView):
+	model = Company
+	form_class = CompanyForm
+	template_name = "recruiters/company_form.html"
+	success_url = reverse_lazy("recruiters:company")
+
+	def get_object(self, queryset=None):
+		if not self.recruiter.company_id:
+			self.recruiter.company = Company.objects.create(name=f"{self.request.user.username}'s Company")
+			self.recruiter.save(update_fields=["company"])
+		return self.recruiter.company
 
 
-def candidate_detail(request, pk):
-	company = _company_for(request.user)
-	application = get_object_or_404(CandidateApplication, pk=pk, job__company=company)
-	if request.method == "POST":
-		form = CandidateStatusForm(request.POST, instance=application)
-		if form.is_valid():
-			form.save()
-			return redirect("recruiters:candidate_detail", pk=pk)
-	else:
-		form = CandidateStatusForm(instance=application)
-	return render(request, "recruiters/candidate_detail.html", {"application": application, "form": form})
+class RecruiterJobQueryMixin(RecruiterRequiredMixin):
+	def get_queryset(self): return Job.objects.filter(recruiter=self.recruiter).select_related("company", "category").prefetch_related("skills_required")
+
+
+class JobListView(RecruiterJobQueryMixin, ListView):
+	model = Job; template_name = "recruiters/jobs.html"; context_object_name = "jobs"; paginate_by = 12
+	def get_queryset(self):
+		queryset = super().get_queryset().annotate(application_count=Count("applications")); query = self.request.GET.get("q", "").strip(); status = self.request.GET.get("status", "")
+		if query: queryset = queryset.filter(Q(title__icontains=query) | Q(location__icontains=query) | Q(description__icontains=query))
+		if status in {"draft", "active", "closed"}: queryset = queryset.filter(status=status)
+		return queryset
+
+
+class JobCreateView(RecruiterRequiredMixin, CreateView):
+	model = Job; form_class = JobForm; template_name = "recruiters/job_form.html"; success_url = reverse_lazy("jobs:recruiter_list")
+	def form_valid(self, form):
+		if not self.recruiter.company_id:
+			form.add_error(None, "Complete your company profile before posting a job."); return self.form_invalid(form)
+		form.instance.recruiter = self.recruiter; form.instance.company = self.recruiter.company
+		messages.success(self.request, "Job posting created."); return super().form_valid(form)
+
+
+class JobUpdateView(RecruiterJobQueryMixin, UpdateView):
+	model = Job; form_class = JobForm; template_name = "recruiters/job_form.html"; success_url = reverse_lazy("jobs:recruiter_list")
+
+
+class JobDeleteView(RecruiterJobQueryMixin, DeleteView):
+	model = Job; template_name = "recruiters/job_confirm_delete.html"; success_url = reverse_lazy("jobs:recruiter_list")
+
+
+class JobDetailView(RecruiterJobQueryMixin, DetailView):
+	model = Job; template_name = "recruiters/job_detail.html"; context_object_name = "job"
+
+
+class ApplicationListView(RecruiterRequiredMixin, ListView):
+	model = Application; template_name = "recruiters/applications.html"; context_object_name = "applications"; paginate_by = 15
+	def get_queryset(self):
+		queryset = Application.objects.filter(job__recruiter=self.recruiter).select_related("job", "candidate__user", "resume"); query = self.request.GET.get("q", ""); status = self.request.GET.get("status", "")
+		if query: queryset = queryset.filter(Q(job__title__icontains=query) | Q(candidate__user__username__icontains=query) | Q(candidate__user__first_name__icontains=query) | Q(candidate__user__last_name__icontains=query))
+		return queryset.filter(status=status) if status else queryset
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs); context["status_choices"] = Application.STATUS_CHOICES; return context
+
+
+class ApplicationStatusView(RecruiterRequiredMixin, UpdateView):
+	model = Application; fields = ("status",); http_method_names = ["post"]
+	def get_queryset(self): return Application.objects.filter(job__recruiter=self.recruiter)
+	def post(self, request, *args, **kwargs):
+		application = self.get_object(); status = request.POST.get("status")
+		if status in dict(Application.STATUS_CHOICES): application.status = status; application.save(update_fields=["status", "updated_at"])
+		return redirect("jobs:recruiter_applications")

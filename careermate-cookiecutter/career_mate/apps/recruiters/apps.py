@@ -2,5 +2,6 @@ from django.apps import AppConfig
 
 
 class RecruitersConfig(AppConfig):
-	default_auto_field = "django.db.models.BigAutoField"
-	name = "apps.recruiters"
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "apps.recruiters"
+    verbose_name = "Recruiter & Company Management"
