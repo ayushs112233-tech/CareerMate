@@ -1,3 +1,28 @@
 ﻿{% extends "candidate/base.html" %}
 {% block title %}{{ job.title }} | CareerMate{% endblock %}
-{% block candidate_content %}<div class="detail-layout"><section class="panel"><div class="detail-heading"><div class="job-logo large">{{ job.company.name|slice:":1"|upper }}</div><div><p class="eyebrow">{{ job.company.name }}</p><h2>{{ job.title }}</h2><p class="muted">{{ job.location }} ┬╖ {{ job.get_employment_type_display }} ┬╖ {{ job.min_experience }}+ years experience</p></div></div><div class="detail-section"><p class="eyebrow">THE ROLE</p><div class="prose">{{ job.description|linebreaks }}</div></div><div class="detail-section"><p class="eyebrow">WHAT YOU NEED</p><div class="prose">{{ job.requirements|default:"The employer has not added detailed requirements yet."|linebreaks }}</div></div><div class="tag-row">{% for skill in job.skills_required.all %}<span class="tag">{{ skill.name }}</span>{% endfor %}</div></section><aside class="panel apply-panel"><p class="eyebrow">YOUR MATCH</p><h2>Ready to apply?</h2>{% if application %}<span class="status status-{{ application.status }}">{{ application.get_status_display }}</span><p class="muted">You applied on {{ application.applied_at|date:"M d, Y" }}.</p><a class="button button-quiet" href="{% url 'candidate_application_detail' application.pk %}">Track application</a>{% else %}<p class="muted">Your latest resume will be attached to this application.</p><form method="post">{% csrf_token %}<button class="button button-primary" type="submit">Apply now</button></form>{% endif %}</aside></div>{% endblock %}
+{% block candidate_content %}<div class="detail-layout"><section class="panel"><div class="detail-heading"><div class="job-logo large">{{ job.company.name|slice:":1"|upper }}</div><div><p class="eyebrow">{{ job.company.name }}</p><h2>{{ job.title }}</h2><p class="muted">{{ job.location }} ┬╖ {{ job.get_employment_type_display }} ┬╖ {{ job.min_experience }}+ years experience</p></div></div><div class="detail-section"><p class="eyebrow">THE ROLE</p><div class="prose">{{ job.description|linebreaks }}</div></div><div class="detail-section"><p class="eyebrow">WHAT YOU NEED</p><div class="prose">{{ job.requirements|default:"The employer has not added detailed requirements yet."|linebreaks }}</div></div><div class="detail-section">
+    <p class="eyebrow">YOUR MATCH ANALYSIS</p>
+    <div style="background: #fbfcfa; padding: 15px; border: 1px solid #dce5dc; border-radius: 6px; margin-bottom: 20px;">
+        <h4 style="margin-top:0; color: #33715a;">Match Score: {{ skill_gap.match_percentage }}%</h4>
+        {% if skill_gap.matching %}
+            <p style="margin-bottom: 5px;"><strong>Matching Skills:</strong></p>
+            <div class="tag-row" style="margin-bottom: 15px;">
+                {% for skill in skill_gap.matching %}
+                    <span class="tag" style="background:#eaf0eb;">{{ skill.name }}</span>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        {% if skill_gap.missing %}
+            <p style="margin-bottom: 5px; color: #a44639;"><strong>Missing Skills:</strong></p>
+            <div class="tag-row">
+                {% for skill in skill_gap.missing %}
+                    <span class="tag" style="background:#fbe5e1; color:#a44639;">{{ skill.name }}</span>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p style="color: #33715a;"><strong>You have all the required skills for this job!</strong></p>
+        {% endif %}
+    </div>
+</div></section><aside class="panel apply-panel"><p class="eyebrow">YOUR MATCH</p><h2>Ready to apply?</h2>{% if application %}<span class="status status-{{ application.status }}">{{ application.get_status_display }}</span><p class="muted">You applied on {{ application.applied_at|date:"M d, Y" }}.</p><a class="button button-quiet" href="{% url 'candidate_application_detail' application.pk %}">Track application</a>{% else %}<p class="muted">Your latest resume will be attached to this application.</p><form method="post">{% csrf_token %}<button class="button button-primary" type="submit">Apply now</button></form>{% endif %}</aside></div>{% endblock %}
+

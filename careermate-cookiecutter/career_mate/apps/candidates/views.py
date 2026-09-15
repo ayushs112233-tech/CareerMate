@@ -6,7 +6,15 @@ from django.shortcuts import get_object_or_404, redirect, render
 from apps.accounts.decorators import candidate_required
 from apps.jobs.models import Application, Job
 from apps.resume.models import Resume
+from apps.candidates.models import Skill
 from .forms import CandidateProfileForm, ResumeUploadForm
+
+# AI Engine imports
+from apps.ai_engine.resume_analyzer import extract_text, extract_skills
+from apps.ai_engine.ats_scorer import calculate_ats_score
+from apps.ai_engine.job_matching import calculate_job_matches
+from apps.ai_engine.skill_gap import analyze_skill_gap
+from apps.ai_engine.career_recommendation import generate_career_roadmap
 
 
 def _layout_context(candidate, **extra):
@@ -20,17 +28,24 @@ def candidate_dashboard(request):
     latest_resume = candidate.resumes.first()
     applications = candidate.applications.select_related("job__company")
     jobs = Job.objects.filter(status="active").select_related("company").prefetch_related("skills_required")
-    candidate_skills = set(candidate.skills.values_list("id", flat=True))
-    recommended_jobs = sorted(
-        jobs,
-        key=lambda job: len(candidate_skills.intersection(set(job.skills_required.values_list("id", flat=True)))),
-        reverse=True,
-    )[:4]
+    
+    # Use real job matching instead of ID intersection
+    matched_jobs_data = calculate_job_matches(candidate, jobs)[:4]
+    # We want to pass the Job objects along with their scores to the template
+    recommended_jobs = [match['job'] for match in matched_jobs_data]
+    # We can also attach the match score dynamically to the job object for the template to render
+    for match in matched_jobs_data:
+        match['job'].match_score = match['score']
+    
     completion_fields = [candidate.headline, candidate.phone, candidate.location, candidate.bio, candidate.education]
     completion = round(
         (sum(bool(v) for v in completion_fields) + bool(candidate.skills.exists()) + bool(candidate.user.email))
         / 7 * 100
     )
+    
+    # Get actual ATS score
+    ats_score, _ = calculate_ats_score(latest_resume, candidate) if latest_resume else (None, None)
+    
     context = _layout_context(
         candidate,
         page_title="Candidate Dashboard",
@@ -42,7 +57,7 @@ def candidate_dashboard(request):
         active_application_count=applications.filter(
             status__in=["applied", "under_review", "shortlisted", "interview"]
         ).count(),
-        ats_score=87 if latest_resume and latest_resume.parsed_text else None,
+        ats_score=ats_score,
     )
     return render(request, "candidate/dashboard.html", context)
 
@@ -63,9 +78,33 @@ def candidate_resume(request):
     candidate = request.user.candidate_profile
     form = ResumeUploadForm(request.POST or None, request.FILES or None)
     if request.method == "POST" and form.is_valid():
-        form.save(candidate)
-        messages.success(request, "Resume uploaded. Analysis will be available after processing.")
+        resume = form.save(candidate, commit=False)
+        
+        # Real Resume Parsing
+        try:
+            parsed_text = extract_text(resume.file, resume.file_name)
+            resume.parsed_text = parsed_text
+            resume.status = "parsed"
+            resume.save()
+            
+            # Extract skills and update candidate profile
+            existing_skills = Skill.objects.all()
+            extracted_skills = extract_skills(parsed_text, existing_skills)
+            
+            if extracted_skills:
+                # Add new skills without removing old ones (using add(*items))
+                candidate.skills.add(*extracted_skills)
+                messages.success(request, f"Resume parsed! Added {len(extracted_skills)} new skills to your profile.")
+            else:
+                messages.success(request, "Resume uploaded and parsed successfully.")
+                
+        except Exception as e:
+            resume.status = "error"
+            resume.save()
+            messages.error(request, f"Error parsing resume: {str(e)}. It has been saved, but AI matching may be limited.")
+            
         return redirect("candidate_resume")
+        
     return render(
         request,
         "candidate/resume.html",
@@ -92,6 +131,7 @@ def candidate_jobs(request):
     candidate = request.user.candidate_profile
     query = request.GET.get("q", "").strip()
     jobs = Job.objects.filter(status="active").select_related("company", "category").prefetch_related("skills_required")
+    
     if query:
         jobs = jobs.filter(
             Q(title__icontains=query)
@@ -100,11 +140,19 @@ def candidate_jobs(request):
             | Q(description__icontains=query)
             | Q(requirements__icontains=query)
         ).distinct()
+        
+    # Apply TF-IDF matching to sort ALL jobs, query or not
+    matched_jobs_data = calculate_job_matches(candidate, jobs)
+    for match in matched_jobs_data:
+        match['job'].match_score = match['score']
+    
+    sorted_jobs = [match['job'] for match in matched_jobs_data]
+        
     applied_ids = set(candidate.applications.values_list("job_id", flat=True))
     return render(
         request,
         "candidate/jobs.html",
-        _layout_context(candidate, page_title="Find Your Next Role", jobs=jobs, query=query, applied_ids=applied_ids),
+        _layout_context(candidate, page_title="Find Your Next Role", jobs=sorted_jobs, query=query, applied_ids=applied_ids),
     )
 
 
@@ -117,6 +165,10 @@ def candidate_job_detail(request, pk):
         status="active",
     )
     application = candidate.applications.filter(job=job).first()
+    
+    # Analyze skill gap
+    skill_gap = analyze_skill_gap(candidate, job)
+    
     if request.method == "POST" and not application:
         resume = candidate.resumes.first()
         if not resume:
@@ -125,10 +177,11 @@ def candidate_job_detail(request, pk):
         Application.objects.create(job=job, candidate=candidate, resume=resume)
         messages.success(request, "Your application was submitted successfully.")
         return redirect("candidate_applications")
+        
     return render(
         request,
         "candidate/job_detail.html",
-        _layout_context(candidate, page_title=job.title, job=job, application=application),
+        _layout_context(candidate, page_title=job.title, job=job, application=application, skill_gap=skill_gap),
     )
 
 
@@ -160,30 +213,27 @@ def candidate_application_detail(request, pk):
 def candidate_ats_score(request):
     candidate = request.user.candidate_profile
     resume = candidate.resumes.first()
-    score = 87 if resume and resume.parsed_text else 0
-    metrics = [
-        (
-            "Resume readiness",
-            score,
-            "Upload and process a resume to calculate your score." if not resume
-            else "Your latest resume is ready for review.",
-        ),
-        (
-            "Profile completeness",
-            min(100, len([candidate.headline, candidate.bio, candidate.education, candidate.location]) * 25),
-            "Complete your profile to improve matching.",
-        ),
-        (
-            "Skills coverage",
-            min(100, candidate.skills.count() * 15),
-            "Add the skills you want recruiters to find.",
-        ),
-        (
-            "Application momentum",
-            min(100, candidate.applications.count() * 20),
-            "Apply to relevant roles to build momentum.",
-        ),
-    ]
+    
+    # Real ATS calculation
+    score, breakdown = calculate_ats_score(resume, candidate)
+    if not resume:
+        score = 0
+        
+    # We still keep some metric tracking for the UI display format, though it's now real data
+    metrics = []
+    if breakdown:
+        for item in breakdown:
+            metrics.append((
+                item['category'],
+                item['score'],
+                item['message']
+            ))
+    else:
+        # Fallback if no resume
+        metrics = [
+            ("Resume readiness", 0, "Upload and process a resume to calculate your score."),
+        ]
+        
     return render(
         request,
         "candidate/ats_score.html",
@@ -194,14 +244,16 @@ def candidate_ats_score(request):
 @candidate_required
 def candidate_career_path(request):
     candidate = request.user.candidate_profile
-    roadmap = [
-        ("Build your profile", bool(candidate.profile_complete)),
-        ("Prepare your resume", bool(candidate.resumes.exists())),
-        ("Explore matched roles", Job.objects.filter(status="active").exists()),
-        ("Apply and track progress", candidate.applications.exists()),
-    ]
+    
+    # Generate real career roadmap
+    roadmap_data = generate_career_roadmap(candidate)
+    
+    # Convert dict list to tuple format expected by the template
+    roadmap = [(item['title'], item['completed']) for item in roadmap_data]
+    # To pass advice, we might need to modify the template, but we will pass it anyway
+    
     return render(
         request,
         "candidate/career_path.html",
-        _layout_context(candidate, page_title="Career Roadmap", roadmap=roadmap),
+        _layout_context(candidate, page_title="Career Roadmap", roadmap=roadmap, roadmap_data=roadmap_data),
     )
