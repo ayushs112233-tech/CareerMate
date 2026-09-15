@@ -1,0 +1,22 @@
+﻿{% extends "recruiters/base.html" %}
+{% block title %}Company profile | CareerMate AI{% endblock %}
+{% block heading %}Company profile{% endblock %}
+{% block content %}
+<section class="card form-card">
+  {% if recruiter.company %}
+  <h2>{{ recruiter.company.name }}</h2>
+  {% if recruiter.company.industry %}<p class="meta">{{ recruiter.company.industry }}</p>{% endif %}
+  {% if recruiter.company.location %}<p class="meta">{{ recruiter.company.location }}</p>{% endif %}
+  {% if recruiter.company.description %}<p class="prose">{{ recruiter.company.description }}</p>{% endif %}
+  {% if recruiter.company.website %}<p><a href="{{ recruiter.company.website }}" target="_blank">{{ recruiter.company.website }}</a></p>{% endif %}
+  <div class="actions">
+    <a class="btn primary" href="{% url 'recruiters:company' %}">Edit company profile</a>
+  </div>
+  {% else %}
+  <div class="empty">You have not set up a company profile yet.</div>
+  <div class="actions">
+    <a class="btn primary" href="{% url 'recruiters:company' %}">Set up company profile</a>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,2 +1,7 @@
-# Validated against the project's current Python 3.13 / Django 6 environment.
-Django>=6.0,<6.1
+﻿# CareerMate AI — Core Dependencies
+# Python 3.13 + Django + PostgreSQL Stack
+# Supports SQLite for local development (set DB_ENGINE=sqlite3 or leave default)
+
+Django>=5.1,<6.0
+psycopg[binary]>=3.2.0
+python-dotenv>=1.0.1
