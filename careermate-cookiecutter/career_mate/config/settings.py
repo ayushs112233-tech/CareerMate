@@ -1,4 +1,4 @@
-﻿import os
+import os
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -69,28 +69,19 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 
 # Database Configuration
-# Local development falls back to SQLite when PostgreSQL/Docker is unavailable.
-# Set DB_ENGINE=postgresql to use the shared PostgreSQL database.
-DB_ENGINE = os.getenv("DB_ENGINE", "sqlite3" if DEBUG else "postgresql")
+# Strictly configured to use PostgreSQL without SQLite fallback.
+DB_ENGINE = os.getenv("DB_ENGINE", "postgresql")
 
-if DB_ENGINE == "sqlite3":
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("DB_NAME", "careermate_db"),
+        "USER": os.getenv("DB_USER", "careermate_user"),
+        "PASSWORD": os.getenv("DB_PASSWORD", "careermate_password"),
+        "HOST": os.getenv("DB_HOST", "localhost"),
+        "PORT": os.getenv("DB_PORT", "5432"),
     }
-else:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": os.getenv("DB_NAME", "careermate_db"),
-            "USER": os.getenv("DB_USER", "careermate_user"),
-            "PASSWORD": os.getenv("DB_PASSWORD", "careermate_password"),
-            "HOST": os.getenv("DB_HOST", "localhost"),
-            "PORT": os.getenv("DB_PORT", "5432"),
-        }
-    }
+}
 
 
 AUTH_PASSWORD_VALIDATORS = [

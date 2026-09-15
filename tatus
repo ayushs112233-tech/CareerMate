@@ -1,0 +1,15 @@
+[33m119c1ab[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mtestbranch[m[33m)[m Address Phase 3 feedback: ATS, Precision, DOC handling, Report
+[33mdae7979[m[33m ([m[1;31morigin/testbranch[m[33m)[m Implement local AI Pipeline for CareerMate: Resume Parsing, ATS, Job Matching, Skill Gap
+[33m8770dc6[m Redesign authentication and role-based access control
+[33mc7b4482[m Integrate latest Alphin (Candidate) and Megha (Recruiter/Jobs) work into testbranch
+[33m46f6533[m[33m ([m[1;31morigin/megha[m[33m)[m fix: route megha to recruiter portal
+[33mad0e4d1[m feat: add recruiter portal
+[33m8b90a6e[m[33m ([m[1;31morigin/alphin[m[33m)[m Complete candidate dashboard experience
+[33m9b3c712[m Merge branch 'asni' of https://github.com/ayushs112233-tech/CareerMate into alphin
+[33m1702cf5[m Add Docker development configuration
+[33m39acdb8[m Recruters First Creation
+[33m241f216[m Integrate candidate UI from alphin
+[33m33921b1[m Merge branch 'asni' into testbranch
+[33m61ece08[m Ignore Django local artifacts
+[33mce41564[m Merge branch 'Albin' into testbranch
+[33m50cb0d3[m[33m ([m[1;31morigin/Albin[m[33m)[m Registration and Login page
