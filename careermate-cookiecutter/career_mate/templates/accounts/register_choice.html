@@ -1,0 +1,32 @@
+﻿{% extends "base.html" %}
+{% load static %}
+{% block title %}Get Started | CareerMate AI{% endblock %}
+{% block content %}
+<main class="login-page">
+    <div class="login-card">
+        <a class="candidate-brand" href="{% url 'home' %}">
+            <span class="brand-mark">C</span>
+            <span>CareerMate AI</span>
+        </a>
+        <p class="eyebrow">JOIN CAREERMATE</p>
+        <h1>How do you want to use CareerMate?</h1>
+        <p class="muted">Select your role to get started.</p>
+        
+        <div style="display: grid; gap: 16px; margin-top: 28px;">
+            <a href="{% url 'accounts:register_candidate' %}" class="button button-primary" style="display: block; text-align: center; padding: 15px; font-size: 1.1rem;">
+                I am a Candidate
+                <small style="display: block; font-weight: normal; margin-top: 5px; opacity: 0.9;">Looking for jobs and resume feedback</small>
+            </a>
+            
+            <a href="{% url 'accounts:register_recruiter' %}" class="button button-secondary" style="display: block; text-align: center; padding: 15px; font-size: 1.1rem; border: 1px solid #173329; color: #173329; background: white; border-radius: 6px; text-decoration: none; font-weight: 700;">
+                I am an Employer
+                <small style="display: block; font-weight: normal; margin-top: 5px; opacity: 0.8;">Looking to post jobs and hire talent</small>
+            </a>
+        </div>
+        
+        <p style="text-align: center; margin-top: 25px; font-size: 0.9rem; color: #75847b;">
+            Already have an account? <a href="{% url 'accounts:login' %}" style="color: #33715a; font-weight: bold;">Sign in here</a>.
+        </p>
+    </div>
+</main>
+{% endblock %}

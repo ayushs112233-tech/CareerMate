@@ -1,30 +1,12 @@
-from django.contrib import messages
-from django.contrib.auth import logout
-from django.contrib.auth import get_user_model
+﻿from django.contrib import messages
 from django.db.models import Q
 from django.http import FileResponse, Http404
 from django.shortcuts import get_object_or_404, redirect, render
 
+from apps.accounts.decorators import candidate_required
 from apps.jobs.models import Application, Job
 from apps.resume.models import Resume
 from .forms import CandidateProfileForm, ResumeUploadForm
-from .models import Candidate
-
-
-def _candidate(request):
-    user = request.user
-    if not user.is_authenticated:
-        user_model = get_user_model()
-        user, _ = user_model.objects.get_or_create(
-            username="candidate-demo",
-            defaults={
-                "first_name": "Demo",
-                "last_name": "Candidate",
-                "email": "candidate@example.com",
-            },
-        )
-    candidate, _ = Candidate.objects.get_or_create(user=user)
-    return candidate
 
 
 def _layout_context(candidate, **extra):
@@ -32,17 +14,9 @@ def _layout_context(candidate, **extra):
     return {"candidate": candidate, "candidate_name": name, **extra}
 
 
-def candidate_login(request):
-    return redirect("candidate_dashboard")
-
-
-def candidate_logout(request):
-    logout(request)
-    return redirect("candidate_login")
-
-
+@candidate_required
 def candidate_dashboard(request):
-    candidate = _candidate(request)
+    candidate = request.user.candidate_profile
     latest_resume = candidate.resumes.first()
     applications = candidate.applications.select_related("job__company")
     jobs = Job.objects.filter(status="active").select_related("company").prefetch_related("skills_required")
@@ -73,8 +47,9 @@ def candidate_dashboard(request):
     return render(request, "candidate/dashboard.html", context)
 
 
+@candidate_required
 def candidate_profile(request):
-    candidate = _candidate(request)
+    candidate = request.user.candidate_profile
     form = CandidateProfileForm(request.POST or None, instance=candidate)
     if request.method == "POST" and form.is_valid():
         form.save()
@@ -83,8 +58,9 @@ def candidate_profile(request):
     return render(request, "candidate/profile.html", _layout_context(candidate, page_title="Your Profile", form=form))
 
 
+@candidate_required
 def candidate_resume(request):
-    candidate = _candidate(request)
+    candidate = request.user.candidate_profile
     form = ResumeUploadForm(request.POST or None, request.FILES or None)
     if request.method == "POST" and form.is_valid():
         form.save(candidate)
@@ -103,15 +79,17 @@ def candidate_resume(request):
     )
 
 
+@candidate_required
 def candidate_resume_download(request, pk):
-    resume = get_object_or_404(Resume, pk=pk, candidate=_candidate(request))
+    resume = get_object_or_404(Resume, pk=pk, candidate=request.user.candidate_profile)
     if not resume.file:
         raise Http404("Resume file is unavailable")
     return FileResponse(resume.file.open("rb"), as_attachment=True, filename=resume.file_name)
 
 
+@candidate_required
 def candidate_jobs(request):
-    candidate = _candidate(request)
+    candidate = request.user.candidate_profile
     query = request.GET.get("q", "").strip()
     jobs = Job.objects.filter(status="active").select_related("company", "category").prefetch_related("skills_required")
     if query:
@@ -130,8 +108,9 @@ def candidate_jobs(request):
     )
 
 
+@candidate_required
 def candidate_job_detail(request, pk):
-    candidate = _candidate(request)
+    candidate = request.user.candidate_profile
     job = get_object_or_404(
         Job.objects.select_related("company", "category").prefetch_related("skills_required"),
         pk=pk,
@@ -153,8 +132,9 @@ def candidate_job_detail(request, pk):
     )
 
 
+@candidate_required
 def candidate_applications(request):
-    candidate = _candidate(request)
+    candidate = request.user.candidate_profile
     applications = candidate.applications.select_related("job__company", "resume")
     return render(
         request,
@@ -163,8 +143,9 @@ def candidate_applications(request):
     )
 
 
+@candidate_required
 def candidate_application_detail(request, pk):
-    candidate = _candidate(request)
+    candidate = request.user.candidate_profile
     application = get_object_or_404(
         candidate.applications.select_related("job__company", "resume"), pk=pk
     )
@@ -175,8 +156,9 @@ def candidate_application_detail(request, pk):
     )
 
 
+@candidate_required
 def candidate_ats_score(request):
-    candidate = _candidate(request)
+    candidate = request.user.candidate_profile
     resume = candidate.resumes.first()
     score = 87 if resume and resume.parsed_text else 0
     metrics = [
@@ -209,8 +191,9 @@ def candidate_ats_score(request):
     )
 
 
+@candidate_required
 def candidate_career_path(request):
-    candidate = _candidate(request)
+    candidate = request.user.candidate_profile
     roadmap = [
         ("Build your profile", bool(candidate.profile_complete)),
         ("Prepare your resume", bool(candidate.resumes.exists())),

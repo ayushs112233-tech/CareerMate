@@ -1,12 +1,15 @@
 ﻿from django.urls import path
-from . import views
+
+from .views import (
+    CompanyUpdateView,
+    ProfileUpdateView,
+    RecruiterDashboardView,
+)
 
 app_name = "recruiters"
 
 urlpatterns = [
-	path("login/", views.RecruiterLoginView.as_view(), name="login"),
-	path("logout/", views.RecruiterLogoutView.as_view(), name="logout"),
-	path("", views.RecruiterDashboardView.as_view(), name="dashboard"),
-	path("profile/", views.ProfileUpdateView.as_view(), name="profile"),
-	path("company/", views.CompanyUpdateView.as_view(), name="company"),
+    path("", RecruiterDashboardView.as_view(), name="dashboard"),
+    path("profile/", ProfileUpdateView.as_view(), name="profile"),
+    path("company/", CompanyUpdateView.as_view(), name="company"),
 ]

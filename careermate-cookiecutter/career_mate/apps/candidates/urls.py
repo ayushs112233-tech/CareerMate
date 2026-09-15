@@ -1,4 +1,4 @@
-from django.urls import path
+﻿from django.urls import path
 
 from .views import (
     candidate_application_detail,
@@ -8,8 +8,6 @@ from .views import (
     candidate_dashboard,
     candidate_job_detail,
     candidate_jobs,
-    candidate_login,
-    candidate_logout,
     candidate_profile,
     candidate_resume,
     candidate_resume_download,
@@ -17,8 +15,6 @@ from .views import (
 
 urlpatterns = [
     path("", candidate_dashboard, name="candidate_dashboard"),
-    path("login/", candidate_login, name="candidate_login"),
-    path("logout/", candidate_logout, name="candidate_logout"),
     path("profile/", candidate_profile, name="candidate_profile"),
     path("resume/", candidate_resume, name="candidate_resume"),
     path("resume/<int:pk>/download/", candidate_resume_download, name="candidate_resume_download"),

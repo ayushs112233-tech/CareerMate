@@ -1,16 +1,16 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Sign In | CareerMate AI{% endblock %}
+{% block title %}Employer Sign Up | CareerMate AI{% endblock %}
 {% block content %}
 <main class="login-page">
-    <div class="login-card" style="width: min(430px, 100%);">
+    <div class="login-card" style="width: min(500px, 100%);">
         <a class="candidate-brand" href="{% url 'home' %}">
             <span class="brand-mark">C</span>
             <span>CareerMate AI</span>
         </a>
-        <p class="eyebrow">WELCOME BACK</p>
-        <h1>Sign in to your account.</h1>
-        <p class="muted">Access your dashboard to continue your journey.</p>
+        <p class="eyebrow">EMPLOYER SIGN UP</p>
+        <h1>Hire great talent.</h1>
+        <p class="muted">Join to post jobs and review AI-matched candidates.</p>
         
         <form method="post" style="display: grid; gap: 16px; margin-top: 28px;">
             {% csrf_token %}
@@ -40,13 +40,11 @@
                 </div>
             {% endfor %}
             
-            <!-- Use the redirect logic we've put in the view -->
-            <input type="hidden" name="next" value="{{ next }}">
-            <button class="button button-primary" type="submit" style="margin-top: 8px;">Sign in</button>
+            <button class="button button-primary" type="submit" style="margin-top: 8px;">Create Employer Account</button>
         </form>
         
         <p style="text-align: center; margin-top: 25px; font-size: 0.9rem; color: #75847b;">
-            Don't have an account? <a href="{% url 'accounts:register' %}" style="color: #33715a; font-weight: bold;">Sign up here</a>.
+            Already have an account? <a href="{% url 'accounts:login' %}" style="color: #33715a; font-weight: bold;">Sign in here</a>.
         </p>
     </div>
 </main>
