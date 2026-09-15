@@ -1,4 +1,4 @@
-﻿{% extends "base.html" %}
+{% extends "base.html" %}
 {% load static %}
 {% block content %}
 <div class="candidate-shell">
@@ -13,7 +13,7 @@
       <a class="{% if request.resolver_match.url_name == 'candidate_ats_score' %}active{% endif %}" href="{% url 'candidate_ats_score' %}">AI insights</a>
       <a class="{% if request.resolver_match.url_name == 'candidate_career_path' %}active{% endif %}" href="{% url 'candidate_career_path' %}">Career roadmap</a>
     </nav>
-    <div class="candidate-account"><span class="avatar">{{ candidate_name|slice:":1"|upper }}</span><div><strong>{{ candidate_name }}</strong><small>Candidate</small></div><a href="{% url 'accounts:logout' %}" title="Sign out">Γåù</a></div>
+    <div class="candidate-account"><span class="avatar">{{ candidate_name|slice:":1"|upper }}</span><div><strong>{{ candidate_name }}</strong><small>Candidate</small></div><form method="post" action="{% url 'accounts:logout' %}" style="display:inline; margin:0; padding:0;">{% csrf_token %}<button type="submit" title="Sign out" style="background:none; border:none; padding:0; margin:0; color:inherit; cursor:pointer; font:inherit;">Γåù</button></form></div>
   </aside>
   <main class="candidate-main">
     <header class="candidate-topbar"><div><p class="eyebrow">CAREERMATE / CANDIDATE</p><h1>{{ page_title }}</h1></div><div class="topbar-actions"><a class="button button-quiet" href="{% url 'candidate_profile' %}">Profile</a><a class="button button-primary" href="{% url 'candidate_resume' %}">Update resume</a></div></header>
