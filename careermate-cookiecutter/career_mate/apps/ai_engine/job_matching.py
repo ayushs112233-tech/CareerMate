@@ -1,4 +1,4 @@
-﻿from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 
@@ -73,17 +73,19 @@ def calculate_hybrid_match_score(candidate, job):
         # If no skills required, we default to full coverage based on text similarity
         coverage_score = text_score
         
-    # 3. Candidate Skill Overlap (Bonus) - 20% weight
-    # Rewards candidates who have exactly the right skills and few irrelevant ones,
-    # or just generally matches the job profile.
-    overlap_score = 0
+    # 3. Relevance Precision (20% weight)
+    # Measures what percentage of the candidate's skills are actually relevant to this specific job.
+    # Formula: (Intersecting Skills) / (Total Candidate Skills)
+    # This rewards candidates with highly focused, relevant profiles and penalizes "keyword stuffing"
+    # where a candidate lists dozens of irrelevant skills.
+    precision_score = 0
     if candidate_skills and job_skills:
-        overlap_score = (len(job_skills.intersection(candidate_skills)) / len(candidate_skills)) * 100
+        precision_score = (len(job_skills.intersection(candidate_skills)) / len(candidate_skills)) * 100
     else:
-        overlap_score = text_score
+        precision_score = text_score
         
     # Hybrid Calculation
-    final_score = (0.40 * text_score) + (0.40 * coverage_score) + (0.20 * overlap_score)
+    final_score = (0.40 * text_score) + (0.40 * coverage_score) + (0.20 * precision_score)
     return round(final_score)
 
 def calculate_job_matches(candidate, jobs_queryset):

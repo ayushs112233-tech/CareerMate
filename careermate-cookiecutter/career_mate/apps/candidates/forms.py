@@ -51,7 +51,7 @@ class ResumeUploadForm(forms.ModelForm):
     class Meta:
         model = Resume
         fields = ["file"]
-        widgets = {"file": forms.ClearableFileInput(attrs={"accept": ".pdf,.doc,.docx"})}
+        widgets = {"file": forms.ClearableFileInput(attrs={"accept": ".pdf,.docx"})}
 
     def save(self, candidate, commit=True):
         resume = super().save(commit=False)

@@ -1,4 +1,4 @@
-﻿import re
+import re
 
 def calculate_ats_score(resume, candidate):
     """
@@ -17,13 +17,15 @@ def calculate_ats_score(resume, candidate):
     breakdown = []
     total_score = 0
     
-    # 1. Skills (Max 40 points)
-    # Give points based on the number of skills extracted (up to 8 skills for max points)
+    # 1. Skill Volume & Breadth (Max 40 points)
+    # Give points based on the number of distinct skills extracted (up to 8 skills for max points).
+    # Note: This is an independent ATS evaluation of the resume's standalone richness,
+    # not its relevance to a specific job (which is handled by job matching).
     num_skills = candidate.skills.count()
     skill_score = min(40, num_skills * 5)
     total_score += skill_score
     breakdown.append({
-        'category': 'Skills Identification',
+        'category': 'Skill Volume & Breadth',
         'score': skill_score,
         'max': 40,
         'message': f"Found {num_skills} skills." if num_skills > 0 else "No skills identified. Make sure to use standard skill names."

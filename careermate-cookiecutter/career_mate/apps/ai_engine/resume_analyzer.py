@@ -1,4 +1,4 @@
-﻿import io
+import io
 import re
 import PyPDF2
 import docx
@@ -53,7 +53,7 @@ def extract_text(file_obj, filename):
     
     if filename.endswith(".pdf"):
         text = extract_text_from_pdf(bytes_io)
-    elif filename.endswith((".doc", ".docx")):
+    elif filename.endswith(".docx"):
         text = extract_text_from_docx(bytes_io)
     
     return text.strip()
