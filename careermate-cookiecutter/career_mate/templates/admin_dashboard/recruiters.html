@@ -1,102 +1,109 @@
 {% extends "admin_dashboard/base.html" %}
-
-{% block title %}Recruiter Management{% endblock %}
-{% block page_title %}Recruiter Profiles{% endblock %}
+{% block title %}Recruiters{% endblock %}
+{% block page_title %}Recruiters{% endblock %}
 
 {% block content %}
-<div class="cm-card">
-  <div class="card-header">
-    <div class="d-flex align-items-center gap-2">
-      <i class="bi bi-person-badge-fill text-primary"></i>
-      <span>Registered Recruiters ({{ paginator.count }})</span>
+<div class="adm-panel">
+
+  <div class="adm-panel-header">
+    <span class="adm-panel-header-title">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="2" y="7" width="20" height="14" rx="2"/>
+        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+      </svg>
+      Recruiters
+      <span class="adm-panel-header-count">({{ paginator.count }})</span>
+    </span>
+  </div>
+
+  <form method="get" class="adm-filter-bar">
+    <div class="adm-search-wrap">
+      <svg class="adm-search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="text" name="q" value="{{ search_query }}" class="adm-search-input" placeholder="Name, email, company, designation…" aria-label="Search recruiters">
     </div>
-  </div>
+    <button type="submit" class="adm-btn adm-btn-ghost adm-btn-sm">Search</button>
+    {% if search_query %}
+      <a href="{% url 'admin_panel:recruiters' %}" class="adm-btn adm-btn-ghost adm-btn-sm">Clear</a>
+    {% endif %}
+  </form>
 
-  <div class="card-body border-bottom bg-light">
-    <form method="get" class="row g-2 align-items-center">
-      <div class="col-md-8 col-lg-6">
-        <div class="input-group input-group-sm">
-          <span class="input-group-text"><i class="bi bi-search"></i></span>
-          <input type="text" name="q" value="{{ search_query }}" class="form-control" placeholder="Search by recruiter name, email, company, designation...">
-        </div>
-      </div>
-      <div class="col-md-2 d-flex gap-1">
-        <button type="submit" class="btn btn-sm btn-primary w-100">Search</button>
-        {% if search_query %}
-          <a href="{% url 'admin_panel:recruiters' %}" class="btn btn-sm btn-outline-secondary" title="Clear Search"><i class="bi bi-x-lg"></i></a>
-        {% endif %}
-      </div>
-    </form>
-  </div>
-
-  <div class="table-responsive">
-    <table class="table cm-table">
+  <div class="adm-table-wrap">
+    <table class="adm-table" aria-label="Recruiters list">
       <thead>
         <tr>
           <th>Recruiter</th>
           <th>Company</th>
           <th>Designation</th>
-          <th>Phone</th>
-          <th>Joined</th>
-          <th class="text-end">Actions</th>
+          <th style="text-align:left;">Joined</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
         {% for recruiter in recruiters %}
-          <tr>
-            <td>
-              <div class="d-flex align-items-center gap-2">
-                <div class="avatar-sm bg-purple-subtle text-purple rounded-circle d-flex align-items-center justify-content-center fw-bold bg-light border" style="width: 34px; height: 34px;">
-                  {{ recruiter.user.username|slice:":1"|upper }}
-                </div>
-                <div>
-                  <a href="{% url 'admin_panel:recruiter_detail' recruiter.pk %}" class="fw-semibold text-dark text-decoration-none">
+        <tr>
+          <td>
+            <div class="adm-name-cell">
+              <div class="adm-avatar" aria-hidden="true">{{ recruiter.user.username|slice:":1"|upper }}</div>
+              <div>
+                <div class="adm-name-primary">
+                  <a href="{% url 'admin_panel:recruiter_detail' recruiter.pk %}" class="adm-link" style="border:none; font-weight:600;">
                     {{ recruiter.user.get_full_name|default:recruiter.user.username }}
                   </a>
-                  <div class="small text-muted">{{ recruiter.user.email|default:"No email" }}</div>
                 </div>
+                <div class="adm-name-secondary">{{ recruiter.user.email|default:"—" }}</div>
               </div>
-            </td>
-            <td>
-              {% if recruiter.company %}
-                <span class="fw-semibold"><i class="bi bi-building me-1 text-muted"></i>{{ recruiter.company.name }}</span>
-              {% else %}
-                <span class="text-muted fst-italic">Independent</span>
-              {% endif %}
-            </td>
-            <td>{{ recruiter.designation|default:"—" }}</td>
-            <td>{{ recruiter.phone|default:"—" }}</td>
-            <td>{{ recruiter.created_at|date:"M d, Y" }}</td>
-            <td class="text-end">
-              <a href="{% url 'admin_panel:recruiter_detail' recruiter.pk %}" class="btn btn-sm btn-outline-primary py-0 px-2">
-                <i class="bi bi-eye"></i> Details
-              </a>
-            </td>
-          </tr>
+            </div>
+          </td>
+          <td>
+            {% if recruiter.company %}
+              <span style="font-size:0.85rem; color:var(--cm-text-muted);">{{ recruiter.company.name }}</span>
+            {% else %}
+              <span class="adm-cell-dim">—</span>
+            {% endif %}
+          </td>
+          <td><span class="adm-cell-dim">{{ recruiter.designation|default:"—" }}</span></td>
+          <td style="text-align:left;"><span class="adm-cell-dim">{{ recruiter.created_at|date:"M d, Y" }}</span></td>
+          <td>
+            <div class="adm-row-actions">
+              <a href="{% url 'admin_panel:recruiter_detail' recruiter.pk %}" class="adm-action-link">View</a>
+            </div>
+          </td>
+        </tr>
         {% empty %}
-          <tr>
-            <td colspan="6" class="text-center py-4 text-muted">No recruiters registered yet.</td>
-          </tr>
+        <tr>
+          <td colspan="5">
+            <div class="adm-empty-state">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="2" y="7" width="20" height="14" rx="2"/>
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+              </svg>
+              <p>No recruiters match your search.</p>
+            </div>
+          </td>
+        </tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
 
   {% if is_paginated %}
-    <div class="card-footer bg-white border-top d-flex justify-content-between align-items-center py-2">
-      <small class="text-muted">Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ paginator.count }} recruiters</small>
-      <nav>
-        <ul class="pagination pagination-sm m-0">
-          {% if page_obj.has_previous %}
-            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ search_query }}">Previous</a></li>
-          {% endif %}
-          <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
-          {% if page_obj.has_next %}
-            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ search_query }}">Next</a></li>
-          {% endif %}
-        </ul>
-      </nav>
-    </div>
+  <div class="adm-panel-footer">
+    <span style="font-size:0.78rem; color:var(--cm-text-dim);">
+      Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ paginator.count }}
+    </span>
+    <nav class="adm-pagination" aria-label="Pagination">
+      {% if page_obj.has_previous %}
+        <a class="adm-page-btn" href="?page={{ page_obj.previous_page_number }}&q={{ search_query }}">Prev</a>
+      {% endif %}
+      <span class="adm-page-btn active">{{ page_obj.number }}</span>
+      {% if page_obj.has_next %}
+        <a class="adm-page-btn" href="?page={{ page_obj.next_page_number }}&q={{ search_query }}">Next</a>
+      {% endif %}
+    </nav>
+  </div>
   {% endif %}
+
 </div>
 {% endblock %}

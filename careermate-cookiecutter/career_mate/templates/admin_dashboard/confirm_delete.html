@@ -1,35 +1,55 @@
 {% extends "admin_dashboard/base.html" %}
-
 {% block title %}Confirm Deletion{% endblock %}
 {% block page_title %}Delete Confirmation{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-  <div class="col-md-6 col-lg-5">
-    <div class="cm-card border-danger">
-      <div class="card-header bg-danger-subtle text-danger fw-bold">
-        <i class="bi bi-exclamation-triangle-fill me-2"></i>Confirm Deletion
-      </div>
-      <div class="card-body p-4 text-center">
-        <i class="bi bi-trash text-danger fs-1 mb-3 d-block"></i>
-        <h5 class="fw-bold mb-2">Are you sure?</h5>
-        <p class="text-muted mb-4">
-          You are about to permanently delete the {{ item_type|default:"record" }}:<br>
-          <strong class="text-dark">{{ item_name|default:object }}</strong>.
-        </p>
+<div class="adm-delete-panel">
 
-        <form method="post">
-          {% csrf_token %}
-          <div class="d-flex justify-content-center gap-3">
-            <a href="{{ cancel_url|default:'javascript:history.back()' }}" class="btn btn-outline-secondary px-4">
-              Cancel
-            </a>
-            <button type="submit" class="btn btn-danger px-4">
-              <i class="bi bi-trash-fill me-1"></i> Yes, Delete Permanently
-            </button>
-          </div>
-        </form>
+  <div class="adm-panel">
+    <div class="adm-panel-header" style="border-bottom-color: rgba(164,70,57,0.25);">
+      <span class="adm-panel-header-title" style="color:var(--cm-error);">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+        Confirm Deletion
+      </span>
+    </div>
+    <div class="adm-panel-body" style="text-align:center; padding:2rem;">
+
+      <div class="adm-delete-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="3 6 5 6 21 6"/>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+        </svg>
       </div>
+
+      <p style="font-size:0.875rem; color:var(--cm-text-muted); margin-bottom:0.5rem;">
+        You are about to permanently delete the <strong style="color:var(--cm-text-main);">{{ item_type|default:"record" }}</strong>:
+      </p>
+      <p style="font-family:'Fraunces',serif; font-size:1.1rem; color:var(--cm-text-main); margin-bottom:1.5rem; font-weight:500;">
+        {{ item_name|default:object }}
+      </p>
+      <p style="font-size:0.8rem; color:var(--cm-error); margin-bottom:2rem; padding:0.6rem 1rem; background:var(--cm-error-bg); border:1px solid rgba(164,70,57,0.2); border-radius:7px;">
+        This action is permanent and cannot be undone.
+      </p>
+
+      <form method="post">
+        {% csrf_token %}
+        <div style="display:flex; justify-content:center; gap:0.75rem;">
+          <a href="{{ cancel_url|default:'javascript:history.back()' }}" class="adm-btn adm-btn-ghost">
+            Cancel
+          </a>
+          <button type="submit" class="adm-btn adm-btn-danger-solid">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="3 6 5 6 21 6"/>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+            </svg>
+            Delete Permanently
+          </button>
+        </div>
+      </form>
+
     </div>
   </div>
 </div>

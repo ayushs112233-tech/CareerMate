@@ -1,72 +1,85 @@
 {% extends "admin_dashboard/base.html" %}
-
-{% block title %}{{ resume.file_name }} — Resume Details{% endblock %}
-{% block page_title %}Resume Details & Extracted Content{% endblock %}
+{% block title %}{{ resume.file_name }}{% endblock %}
+{% block page_title %}Resume Detail{% endblock %}
 
 {% block content %}
-<div class="mb-3">
-  <a href="{% url 'admin_panel:resumes' %}" class="btn btn-sm btn-outline-secondary">
-    <i class="bi bi-arrow-left me-1"></i> Back to Resumes List
+
+<div class="adm-back-nav">
+  <a href="{% url 'admin_panel:resumes' %}" class="adm-btn adm-btn-ghost adm-btn-sm">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+    Resumes
   </a>
+  {% if resume.file %}
+    <a href="{{ resume.file.url }}" target="_blank" rel="noopener" class="adm-btn adm-btn-primary adm-btn-sm">Download PDF</a>
+  {% endif %}
 </div>
 
 <div class="row g-4">
-  <div class="col-lg-4">
-    <div class="cm-card mb-4">
-      <div class="card-header">
-        <i class="bi bi-info-circle me-2 text-primary"></i>Resume Metadata
-      </div>
-      <div class="card-body">
-        <div class="text-center p-3 bg-light rounded mb-3">
-          <i class="bi bi-file-earmark-pdf-fill text-danger fs-1"></i>
-          <h6 class="fw-bold mt-2 mb-1 text-break">{{ resume.file_name }}</h6>
-          <span class="badge-status {{ resume.status }}">{{ resume.get_status_display }}</span>
-        </div>
 
-        <ul class="list-group list-group-flush small">
-          <li class="list-group-item d-flex justify-content-between">
-            <span class="text-muted">Candidate:</span>
-            <a href="{% url 'admin_panel:candidate_detail' resume.candidate.pk %}" class="fw-semibold text-dark text-decoration-none">
+  {# Metadata column #}
+  <div class="col-lg-4">
+    <div class="adm-panel">
+      <div class="adm-panel-header">
+        <span class="adm-panel-header-title">Resume Metadata</span>
+      </div>
+      <div class="adm-panel-body" style="text-align:center; padding-top:1.5rem; padding-bottom:1.5rem;">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--cm-error)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-bottom:0.75rem; opacity:0.8;">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+        </svg>
+        <div style="font-weight:600; margin-bottom:0.4rem; word-break:break-all;">{{ resume.file_name }}</div>
+        <span class="adm-badge adm-badge-{{ resume.status }}">{{ resume.get_status_display }}</span>
+      </div>
+      <div class="adm-section-divider" style="margin:0;"></div>
+      <div style="padding:1rem 1.25rem;">
+        <div class="adm-info-field" style="margin-bottom:0.875rem;">
+          <span class="adm-info-label">Candidate</span>
+          <span class="adm-info-value">
+            <a href="{% url 'admin_panel:candidate_detail' resume.candidate.pk %}" class="adm-link">
               {{ resume.candidate.user.get_full_name|default:resume.candidate.user.username }}
             </a>
-          </li>
-          <li class="list-group-item d-flex justify-content-between">
-            <span class="text-muted">Uploaded:</span>
-            <span class="fw-semibold">{{ resume.uploaded_at|date:"M d, Y - h:i A" }}</span>
-          </li>
-        </ul>
-
-        {% if resume.file %}
-          <div class="mt-3">
-            <a href="{{ resume.file.url }}" target="_blank" class="btn btn-primary w-100">
-              <i class="bi bi-download me-1"></i> Download File
-            </a>
-          </div>
-        {% endif %}
+          </span>
+        </div>
+        <div class="adm-info-field">
+          <span class="adm-info-label">Uploaded</span>
+          <span class="adm-info-value">{{ resume.uploaded_at|date:"M d, Y" }}</span>
+        </div>
       </div>
     </div>
   </div>
 
+  {# Parsed text #}
   <div class="col-lg-8">
-    <div class="cm-card">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <span><i class="bi bi-card-text me-2 text-primary"></i>Extracted Raw Text</span>
-        <span class="badge bg-light text-dark border">Length: {{ resume.parsed_text|length }} characters</span>
-      </div>
-      <div class="card-body">
+    <div class="adm-panel">
+      <div class="adm-panel-header">
+        <span class="adm-panel-header-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/>
+            <line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/>
+          </svg>
+          Extracted Text
+        </span>
         {% if resume.parsed_text %}
-          <div class="p-3 bg-light rounded font-monospace small text-dark" style="min-height: 350px; max-height: 600px; overflow-y: auto; white-space: pre-wrap; line-height: 1.6;">
-            {{ resume.parsed_text }}
-          </div>
+          <span style="font-size:0.72rem; color:var(--cm-text-dim);">{{ resume.parsed_text|length }} characters</span>
+        {% endif %}
+      </div>
+      <div class="adm-panel-body">
+        {% if resume.parsed_text %}
+          <div class="adm-mono-text" style="min-height:350px; max-height:600px;">{{ resume.parsed_text }}</div>
         {% else %}
-          <div class="text-center py-5 text-muted">
-            <i class="bi bi-cpu fs-1 d-block mb-2 text-secondary"></i>
-            <h6>No Parsed Text Available</h6>
-            <p class="small">Resume text extraction and NLP analysis will be performed by the AI Engine module.</p>
+          <div class="adm-empty-state" style="padding:3rem;">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <p style="margin-top:0.5rem; font-weight:500;">No Parsed Text Available</p>
+            <p style="font-size:0.8rem; margin-top:0.25rem;">Resume text extraction will be performed by the AI engine.</p>
           </div>
         {% endif %}
       </div>
     </div>
   </div>
+
 </div>
 {% endblock %}

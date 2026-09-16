@@ -1,104 +1,154 @@
 {% extends "admin_dashboard/base.html" %}
-
-{% block title %}{{ job.title }} — Job Details{% endblock %}
-{% block page_title %}Job Posting Details{% endblock %}
+{% block title %}{{ job.title }}{% endblock %}
+{% block page_title %}Job Details{% endblock %}
 
 {% block content %}
-<div class="mb-3 d-flex justify-content-between align-items-center">
-  <a href="{% url 'admin_panel:jobs' %}" class="btn btn-sm btn-outline-secondary">
-    <i class="bi bi-arrow-left me-1"></i> Back to Jobs List
+
+<div class="adm-back-nav">
+  <a href="{% url 'admin_panel:jobs' %}" class="adm-btn adm-btn-ghost adm-btn-sm">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+    Jobs
   </a>
-  <div class="d-flex gap-2">
-    <a href="{% url 'admin_panel:job_edit' job.pk %}" class="btn btn-sm btn-outline-primary">
-      <i class="bi bi-pencil me-1"></i> Edit Job
-    </a>
-    <a href="{% url 'admin_panel:job_delete' job.pk %}" class="btn btn-sm btn-outline-danger">
-      <i class="bi bi-trash me-1"></i> Delete
-    </a>
+  <div style="display:flex; gap:0.5rem;">
+    <a href="{% url 'admin_panel:job_edit' job.pk %}" class="adm-btn adm-btn-ghost adm-btn-sm">Edit</a>
+    <a href="{% url 'admin_panel:job_delete' job.pk %}" class="adm-btn adm-btn-danger adm-btn-sm">Delete</a>
   </div>
 </div>
 
 <div class="row g-4">
-  <!-- Left Column: Job Info -->
+
+  {# Left: Job Info #}
   <div class="col-lg-7">
-    <div class="cm-card mb-4">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="m-0 fw-bold">{{ job.title }}</h5>
-        <span class="badge-status {{ job.status }}">{{ job.get_status_display }}</span>
+    <div class="adm-panel mb-4">
+      <div class="adm-panel-header">
+        <span class="adm-panel-header-title" style="font-family:'Fraunces',serif; font-size:1.1rem; font-weight:500;">
+          {{ job.title }}
+        </span>
+        <span class="adm-badge adm-badge-{{ job.status }}">{{ job.get_status_display }}</span>
       </div>
-      <div class="card-body">
-        <div class="row g-2 mb-3 text-muted small">
-          <div class="col-sm-6"><i class="bi bi-building me-1"></i><strong>Company:</strong> {{ job.company.name }}</div>
-          <div class="col-sm-6"><i class="bi bi-geo-alt me-1"></i><strong>Location:</strong> {{ job.location }}</div>
-          <div class="col-sm-6"><i class="bi bi-briefcase me-1"></i><strong>Type:</strong> {{ job.get_employment_type_display }}</div>
-          <div class="col-sm-6"><i class="bi bi-tags me-1"></i><strong>Category:</strong> {{ job.category.name|default:"General" }}</div>
-          <div class="col-sm-6"><i class="bi bi-hourglass-split me-1"></i><strong>Experience:</strong> Min {{ job.min_experience }} yr{{ job.min_experience|pluralize }}</div>
-          <div class="col-sm-6">
-            <i class="bi bi-cash-stack me-1"></i><strong>Salary:</strong>
-            {% if job.salary_min or job.salary_max %}
-              ₹{{ job.salary_min|default:"—" }} - ₹{{ job.salary_max|default:"—" }}
-            {% else %}
-              Not disclosed
-            {% endif %}
+      <div class="adm-panel-body">
+        <div class="adm-info-grid" style="margin-bottom:1.25rem;">
+          <div class="adm-info-field">
+            <span class="adm-info-label">Company</span>
+            <span class="adm-info-value">{{ job.company.name }}</span>
+          </div>
+          <div class="adm-info-field">
+            <span class="adm-info-label">Location</span>
+            <span class="adm-info-value">{{ job.location }}</span>
+          </div>
+          <div class="adm-info-field">
+            <span class="adm-info-label">Employment Type</span>
+            <span class="adm-info-value">{{ job.get_employment_type_display }}</span>
+          </div>
+          <div class="adm-info-field">
+            <span class="adm-info-label">Category</span>
+            <span class="adm-info-value">{{ job.category.name|default:"—" }}</span>
+          </div>
+          <div class="adm-info-field">
+            <span class="adm-info-label">Min Experience</span>
+            <span class="adm-info-value">{{ job.min_experience }} year{{ job.min_experience|pluralize }}</span>
+          </div>
+          <div class="adm-info-field">
+            <span class="adm-info-label">Salary Range</span>
+            <span class="adm-info-value">
+              {% if job.salary_min or job.salary_max %}
+                &#8377;{{ job.salary_min|default:"—" }} – &#8377;{{ job.salary_max|default:"—" }}
+              {% else %}Not disclosed{% endif %}
+            </span>
+          </div>
+          <div class="adm-info-field">
+            <span class="adm-info-label">Recruiter</span>
+            <span class="adm-info-value">
+              <a href="{% url 'admin_panel:recruiter_detail' job.recruiter.pk %}" class="adm-link">
+                {{ job.recruiter.user.get_full_name|default:job.recruiter.user.username }}
+              </a>
+            </span>
+          </div>
+          <div class="adm-info-field">
+            <span class="adm-info-label">Posted</span>
+            <span class="adm-info-value">{{ job.created_at|date:"M d, Y" }}</span>
           </div>
         </div>
 
-        <h6 class="fw-bold small text-uppercase text-muted mt-4">Description</h6>
-        <p class="mb-3">{{ job.description|linebreaks }}</p>
+        <div class="adm-section-divider"></div>
+        <div class="adm-section-label">Description</div>
+        <div class="adm-prose">{{ job.description|linebreaks }}</div>
 
-        <h6 class="fw-bold small text-uppercase text-muted mt-3">Requirements & Prerequisites</h6>
-        <p class="mb-0">{{ job.requirements|default:"None listed."|linebreaks }}</p>
+        {% if job.requirements %}
+        <div class="adm-section-divider"></div>
+        <div class="adm-section-label">Requirements</div>
+        <div class="adm-prose">{{ job.requirements|linebreaks }}</div>
+        {% endif %}
       </div>
     </div>
 
-    <!-- Required Skills -->
-    <div class="cm-card">
-      <div class="card-header"><i class="bi bi-stars me-2 text-primary"></i>Required Skills</div>
-      <div class="card-body">
-        <div class="d-flex flex-wrap gap-2">
+    {# Required Skills #}
+    <div class="adm-panel">
+      <div class="adm-panel-header">
+        <span class="adm-panel-header-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+          Required Skills
+        </span>
+      </div>
+      <div class="adm-panel-body">
+        <div style="display:flex; flex-wrap:wrap; gap:0.4rem;">
           {% for skill in skills %}
-            <span class="badge bg-primary-subtle text-primary border px-3 py-2 fs-6">{{ skill.name }}</span>
+            <span class="adm-skill-pill">{{ skill.name }}</span>
           {% empty %}
-            <span class="text-muted small">No specific skills tagged.</span>
+            <span class="adm-cell-dim">No specific skills required.</span>
           {% endfor %}
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Right Column: Applicants list -->
+  {# Right: Applicants #}
   <div class="col-lg-5">
-    <div class="cm-card">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <span><i class="bi bi-people me-2 text-primary"></i>Applicants ({{ applications.count }})</span>
+    <div class="adm-panel">
+      <div class="adm-panel-header">
+        <span class="adm-panel-header-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+          </svg>
+          Applicants
+          <span class="adm-panel-header-count">({{ applications.count }})</span>
+        </span>
       </div>
-      <div class="table-responsive">
-        <table class="table cm-table">
+      <div class="adm-table-wrap">
+        <table class="adm-table">
           <thead>
             <tr>
               <th>Candidate</th>
               <th>Status</th>
-              <th>Applied</th>
+              <th style="text-align:left;">Date</th>
             </tr>
           </thead>
           <tbody>
             {% for app in applications %}
-              <tr>
-                <td>
-                  <a href="{% url 'admin_panel:candidate_detail' app.candidate.pk %}" class="fw-semibold text-dark text-decoration-none">
-                    {{ app.candidate.user.get_full_name|default:app.candidate.user.username }}
-                  </a>
-                </td>
-                <td><span class="badge-status {{ app.status }}">{{ app.get_status_display }}</span></td>
-                <td><small class="text-muted">{{ app.applied_at|date:"M d" }}</small></td>
-              </tr>
+            <tr>
+              <td>
+                <a href="{% url 'admin_panel:candidate_detail' app.candidate.pk %}" class="adm-link" style="font-weight:500;">
+                  {{ app.candidate.user.get_full_name|default:app.candidate.user.username }}
+                </a>
+              </td>
+              <td><span class="adm-badge adm-badge-{{ app.status }}">{{ app.get_status_display }}</span></td>
+              <td style="text-align:left;"><span class="adm-cell-dim">{{ app.applied_at|date:"M d" }}</span></td>
+            </tr>
             {% empty %}
-              <tr><td colspan="3" class="text-center py-4 text-muted">No applications received yet.</td></tr>
+            <tr>
+              <td colspan="3">
+                <div class="adm-empty-state" style="padding:2rem;">No applicants yet.</div>
+              </td>
+            </tr>
             {% endfor %}
           </tbody>
         </table>
       </div>
     </div>
   </div>
+
 </div>
 {% endblock %}

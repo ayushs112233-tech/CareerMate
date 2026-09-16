@@ -1,86 +1,110 @@
 {% extends "admin_dashboard/base.html" %}
-
-{% block title %}{{ recruiter.user.get_full_name|default:recruiter.user.username }} — Recruiter Details{% endblock %}
-{% block page_title %}Recruiter Details{% endblock %}
+{% block title %}{{ recruiter.user.get_full_name|default:recruiter.user.username }}{% endblock %}
+{% block page_title %}Recruiter Profile{% endblock %}
 
 {% block content %}
-<div class="mb-3">
-  <a href="{% url 'admin_panel:recruiters' %}" class="btn btn-sm btn-outline-secondary">
-    <i class="bi bi-arrow-left me-1"></i> Back to Recruiters List
+
+<div class="adm-back-nav">
+  <a href="{% url 'admin_panel:recruiters' %}" class="adm-btn adm-btn-ghost adm-btn-sm">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+    Recruiters
   </a>
 </div>
 
 <div class="row g-4">
-  <!-- Recruiter Profile Card -->
+
+  {# Identity column #}
   <div class="col-lg-4">
-    <div class="cm-card">
-      <div class="card-body text-center p-4">
-        <div class="bg-primary-subtle text-primary rounded-circle d-inline-flex align-items-center justify-content-center fw-bold fs-3 mb-3" style="width: 72px; height: 72px;">
+    <div class="adm-panel">
+      <div class="adm-panel-body" style="padding:1.75rem; text-align:center;">
+        <div class="adm-avatar" style="width:60px; height:60px; font-size:1.5rem; margin: 0 auto 1rem;" aria-hidden="true">
           {{ recruiter.user.username|slice:":1"|upper }}
         </div>
-        <h5 class="fw-bold mb-1">{{ recruiter.user.get_full_name|default:recruiter.user.username }}</h5>
-        <p class="text-muted small mb-2">{{ recruiter.designation|default:"Recruiter" }}</p>
-        <span class="badge bg-primary-subtle text-primary">{{ recruiter.company.name|default:"Independent Recruiter" }}</span>
+        <div style="font-family:'Fraunces',serif; font-size:1.25rem; font-weight:500; margin-bottom:0.25rem;">
+          {{ recruiter.user.get_full_name|default:recruiter.user.username }}
+        </div>
+        <div class="adm-cell-dim" style="font-size:0.82rem; margin-bottom:0.75rem;">
+          {{ recruiter.designation|default:"Recruiter" }}
+        </div>
+        <span class="adm-badge adm-badge-active">{{ recruiter.company.name|default:"Independent" }}</span>
       </div>
 
-      <ul class="list-group list-group-flush small">
-        <li class="list-group-item d-flex justify-content-between">
-          <span class="text-muted"><i class="bi bi-envelope me-2"></i>Email</span>
-          <span class="fw-semibold">{{ recruiter.user.email|default:"—" }}</span>
-        </li>
-        <li class="list-group-item d-flex justify-content-between">
-          <span class="text-muted"><i class="bi bi-telephone me-2"></i>Phone</span>
-          <span class="fw-semibold">{{ recruiter.phone|default:"—" }}</span>
-        </li>
-        <li class="list-group-item d-flex justify-content-between">
-          <span class="text-muted"><i class="bi bi-building me-2"></i>Company</span>
-          <span class="fw-semibold">{{ recruiter.company.name|default:"—" }}</span>
-        </li>
-        <li class="list-group-item d-flex justify-content-between">
-          <span class="text-muted"><i class="bi bi-calendar me-2"></i>Joined</span>
-          <span class="fw-semibold">{{ recruiter.created_at|date:"M d, Y" }}</span>
-        </li>
-      </ul>
+      <div class="adm-section-divider" style="margin:0;"></div>
+
+      <div style="padding:1rem 1.25rem;">
+        <div class="adm-info-field" style="margin-bottom:0.875rem;">
+          <span class="adm-info-label">Email</span>
+          <span class="adm-info-value">{{ recruiter.user.email|default:"—" }}</span>
+        </div>
+        <div class="adm-info-field" style="margin-bottom:0.875rem;">
+          <span class="adm-info-label">Phone</span>
+          <span class="adm-info-value">{{ recruiter.phone|default:"—" }}</span>
+        </div>
+        <div class="adm-info-field" style="margin-bottom:0.875rem;">
+          <span class="adm-info-label">Company</span>
+          <span class="adm-info-value">{{ recruiter.company.name|default:"—" }}</span>
+        </div>
+        <div class="adm-info-field">
+          <span class="adm-info-label">Registered</span>
+          <span class="adm-info-value">{{ recruiter.created_at|date:"M d, Y" }}</span>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Posted Jobs by this Recruiter -->
+  {# Posted jobs #}
   <div class="col-lg-8">
-    <div class="cm-card">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <span><i class="bi bi-briefcase me-2 text-primary"></i>Jobs Posted by Recruiter ({{ posted_jobs.count }})</span>
+    <div class="adm-panel">
+      <div class="adm-panel-header">
+        <span class="adm-panel-header-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="2" y="3" width="20" height="14" rx="2"/>
+            <line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+          </svg>
+          Posted Jobs
+          <span class="adm-panel-header-count">({{ posted_jobs.count }})</span>
+        </span>
       </div>
-      <div class="table-responsive">
-        <table class="table cm-table">
+      <div class="adm-table-wrap">
+        <table class="adm-table">
           <thead>
             <tr>
               <th>Job Title</th>
               <th>Category</th>
               <th>Type</th>
               <th>Status</th>
-              <th>Posted Date</th>
-              <th class="text-end">Action</th>
+              <th style="text-align:left;">Posted</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {% for job in posted_jobs %}
-              <tr>
-                <td><a href="{% url 'admin_panel:job_detail' job.pk %}" class="fw-semibold text-dark text-decoration-none">{{ job.title }}</a></td>
-                <td>{{ job.category.name|default:"Uncategorized" }}</td>
-                <td><span class="badge bg-light text-dark border">{{ job.get_employment_type_display }}</span></td>
-                <td><span class="badge-status {{ job.status }}">{{ job.get_status_display }}</span></td>
-                <td>{{ job.created_at|date:"M d, Y" }}</td>
-                <td class="text-end">
-                  <a href="{% url 'admin_panel:job_detail' job.pk %}" class="btn btn-sm btn-outline-primary py-0 px-2">View</a>
-                </td>
-              </tr>
+            <tr>
+              <td>
+                <a href="{% url 'admin_panel:job_detail' job.pk %}" class="adm-link" style="font-weight:600;">{{ job.title }}</a>
+              </td>
+              <td><span class="adm-tag">{{ job.category.name|default:"—" }}</span></td>
+              <td><span class="adm-tag">{{ job.get_employment_type_display }}</span></td>
+              <td><span class="adm-badge adm-badge-{{ job.status }}">{{ job.get_status_display }}</span></td>
+              <td style="text-align:left;"><span class="adm-cell-dim">{{ job.created_at|date:"M d, Y" }}</span></td>
+              <td>
+                <div class="adm-row-actions">
+                  <a href="{% url 'admin_panel:job_detail' job.pk %}" class="adm-action-link">View</a>
+                </div>
+              </td>
+            </tr>
             {% empty %}
-              <tr><td colspan="6" class="text-center py-4 text-muted">No jobs posted by this recruiter yet.</td></tr>
+            <tr>
+              <td colspan="6">
+                <div class="adm-empty-state" style="padding:2rem;">No jobs posted by this recruiter.</div>
+              </td>
+            </tr>
             {% endfor %}
           </tbody>
         </table>
       </div>
     </div>
   </div>
+
 </div>
 {% endblock %}

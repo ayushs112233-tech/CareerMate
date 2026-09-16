@@ -1,154 +1,117 @@
 {% extends "admin_dashboard/base.html" %}
-
-{% block title %}Dashboard Overview{% endblock %}
-{% block page_title %}Management Dashboard{% endblock %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
 
 {% block content %}
-<!-- KPI Metric Cards Grid -->
+
+{# ── METRIC GROUPS ────────────────────────────────────────────────────── #}
 <div class="row g-3 mb-4">
-  <!-- Candidates -->
-  <div class="col-xl-3 col-md-6">
-    <div class="cm-card kpi-card">
-      <div class="kpi-icon blue"><i class="bi bi-people-fill"></i></div>
-      <div class="kpi-info">
-        <div class="kpi-label">Total Candidates</div>
-        <div class="kpi-value">{{ total_candidates }}</div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Recruiters -->
-  <div class="col-xl-3 col-md-6">
-    <div class="cm-card kpi-card">
-      <div class="kpi-icon purple"><i class="bi bi-person-badge-fill"></i></div>
-      <div class="kpi-info">
-        <div class="kpi-label">Total Recruiters</div>
-        <div class="kpi-value">{{ total_recruiters }}</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Companies -->
-  <div class="col-xl-3 col-md-6">
-    <div class="cm-card kpi-card">
-      <div class="kpi-icon green"><i class="bi bi-building"></i></div>
-      <div class="kpi-info">
-        <div class="kpi-label">Total Companies</div>
-        <div class="kpi-value">{{ total_companies }}</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Jobs -->
-  <div class="col-xl-3 col-md-6">
-    <div class="cm-card kpi-card">
-      <div class="kpi-icon cyan"><i class="bi bi-briefcase-fill"></i></div>
-      <div class="kpi-info">
-        <div class="kpi-label">Total Jobs ({{ active_jobs_count }} Active)</div>
-        <div class="kpi-value">{{ total_jobs }}</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Applications -->
-  <div class="col-xl-3 col-md-6">
-    <div class="cm-card kpi-card">
-      <div class="kpi-icon amber"><i class="bi bi-send-check-fill"></i></div>
-      <div class="kpi-info">
-        <div class="kpi-label">Applications ({{ pending_applications_count }} Pending)</div>
-        <div class="kpi-value">{{ total_applications }}</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Resumes -->
-  <div class="col-xl-3 col-md-6">
-    <div class="cm-card kpi-card">
-      <div class="kpi-icon rose"><i class="bi bi-file-earmark-person-fill"></i></div>
-      <div class="kpi-info">
-        <div class="kpi-label">Total Resumes</div>
-        <div class="kpi-value">{{ total_resumes }}</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Skills Catalog -->
-  <div class="col-xl-3 col-md-6">
-    <div class="cm-card kpi-card">
-      <div class="kpi-icon blue"><i class="bi bi-stars"></i></div>
-      <div class="kpi-info">
-        <div class="kpi-label">Skills Catalog</div>
-        <div class="kpi-value">{{ total_skills }}</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Job Categories -->
-  <div class="col-xl-3 col-md-6">
-    <div class="cm-card kpi-card">
-      <div class="kpi-icon green"><i class="bi bi-tags-fill"></i></div>
-      <div class="kpi-info">
-        <div class="kpi-label">Job Categories</div>
-        <div class="kpi-value">{{ total_categories }}</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Quick Actions Toolbar -->
-<div class="cm-card mb-4">
-  <div class="card-body py-2 d-flex flex-wrap gap-2 align-items-center justify-content-between">
-    <span class="fw-semibold text-muted small"><i class="bi bi-lightning-charge me-1"></i>Quick Actions:</span>
-    <div class="d-flex flex-wrap gap-2">
-      <a href="{% url 'admin_panel:job_create' %}" class="btn btn-sm btn-primary"><i class="bi bi-plus-lg me-1"></i>Post New Job</a>
-      <a href="{% url 'admin_panel:company_create' %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-building-add me-1"></i>Add Company</a>
-      <a href="{% url 'admin_panel:skill_create' %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-plus-circle me-1"></i>Add Skill</a>
-      <a href="{% url 'admin_panel:job_category_create' %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-tag me-1"></i>Add Category</a>
-      <a href="{% url 'admin_panel:reports' %}" class="btn btn-sm btn-outline-dark"><i class="bi bi-graph-up me-1"></i>View Reports</a>
-    </div>
-  </div>
-</div>
-
-<!-- Recent Applications & Recent Jobs Grid -->
-<div class="row g-4">
-  <!-- Recent Applications -->
+  {# Platform Users group #}
   <div class="col-lg-6">
-    <div class="cm-card h-100">
-      <div class="card-header">
-        <span><i class="bi bi-clock-history me-2 text-primary"></i>Recent Job Applications</span>
-        <a href="{% url 'admin_panel:applications' %}" class="btn btn-sm btn-link text-decoration-none">View All</a>
+    <div class="adm-metric-group h-100">
+      <div class="adm-metric-group-label">Platform Users</div>
+      <div class="adm-metric-row">
+        <a href="{% url 'admin_panel:candidates' %}" class="adm-metric" style="text-decoration:none;">
+          <div class="adm-metric-label">Candidates</div>
+          <div class="adm-metric-value">{{ total_candidates }}</div>
+        </a>
+        <a href="{% url 'admin_panel:recruiters' %}" class="adm-metric" style="text-decoration:none;">
+          <div class="adm-metric-label">Recruiters</div>
+          <div class="adm-metric-value">{{ total_recruiters }}</div>
+        </a>
+        <a href="{% url 'admin_panel:companies' %}" class="adm-metric" style="text-decoration:none;">
+          <div class="adm-metric-label">Companies</div>
+          <div class="adm-metric-value">{{ total_companies }}</div>
+        </a>
       </div>
-      <div class="table-responsive">
-        <table class="table cm-table">
+    </div>
+  </div>
+
+  {# Jobs & Applications group #}
+  <div class="col-lg-6">
+    <div class="adm-metric-group h-100">
+      <div class="adm-metric-group-label">Jobs &amp; Applications</div>
+      <div class="adm-metric-row">
+        <a href="{% url 'admin_panel:jobs' %}" class="adm-metric" style="text-decoration:none;">
+          <div class="adm-metric-label">Total Jobs</div>
+          <div class="adm-metric-value">{{ total_jobs }}</div>
+          <div class="adm-metric-sub">{{ active_jobs_count }} active</div>
+        </a>
+        <a href="{% url 'admin_panel:applications' %}" class="adm-metric" style="text-decoration:none;">
+          <div class="adm-metric-label">Applications</div>
+          <div class="adm-metric-value">{{ total_applications }}</div>
+          <div class="adm-metric-sub">{{ pending_applications_count }} pending</div>
+        </a>
+        <a href="{% url 'admin_panel:resumes' %}" class="adm-metric" style="text-decoration:none;">
+          <div class="adm-metric-label">Resumes</div>
+          <div class="adm-metric-value">{{ total_resumes }}</div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+{# ── QUICK ACTIONS ─────────────────────────────────────────────────────── #}
+<div class="adm-actions-bar mb-4">
+  <span class="adm-actions-label">Quick actions</span>
+  <a href="{% url 'admin_panel:job_create' %}" class="adm-btn adm-btn-primary adm-btn-sm">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Post Job
+  </a>
+  <a href="{% url 'admin_panel:company_create' %}" class="adm-btn adm-btn-ghost adm-btn-sm">Add Company</a>
+  <a href="{% url 'admin_panel:skill_create' %}" class="adm-btn adm-btn-ghost adm-btn-sm">Add Skill</a>
+  <a href="{% url 'admin_panel:job_category_create' %}" class="adm-btn adm-btn-ghost adm-btn-sm">Add Category</a>
+  <a href="{% url 'admin_panel:reports' %}" class="adm-btn adm-btn-ghost adm-btn-sm" style="margin-left:auto;">View Reports</a>
+</div>
+
+{# ── RECENT ACTIVITY ────────────────────────────────────────────────────── #}
+<div class="row g-4">
+
+  {# Recent Applications #}
+  <div class="col-lg-6">
+    <div class="adm-panel h-100">
+      <div class="adm-panel-header">
+        <span class="adm-panel-header-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+          </svg>
+          Recent Applications
+        </span>
+        <a href="{% url 'admin_panel:applications' %}" class="adm-link">View all</a>
+      </div>
+      <div class="adm-table-wrap">
+        <table class="adm-table">
           <thead>
             <tr>
               <th>Candidate</th>
-              <th>Job & Company</th>
+              <th>Job</th>
               <th>Status</th>
-              <th>Applied</th>
+              <th style="text-align:left;">Date</th>
             </tr>
           </thead>
           <tbody>
             {% for app in recent_applications %}
-              <tr>
-                <td>
-                  <a href="{% url 'admin_panel:candidate_detail' app.candidate.pk %}" class="fw-semibold text-decoration-none text-dark">
-                    {{ app.candidate.user.get_full_name|default:app.candidate.user.username }}
-                  </a>
-                </td>
-                <td>
-                  <div class="fw-semibold text-truncate" style="max-width: 160px;">{{ app.job.title }}</div>
-                  <small class="text-muted">{{ app.job.company.name }}</small>
-                </td>
-                <td>
-                  <span class="badge-status {{ app.status }}">{{ app.get_status_display }}</span>
-                </td>
-                <td class="small text-muted">{{ app.applied_at|date:"M d, Y" }}</td>
-              </tr>
+            <tr>
+              <td>
+                <a href="{% url 'admin_panel:candidate_detail' app.candidate.pk %}" class="adm-link">
+                  {{ app.candidate.user.get_full_name|default:app.candidate.user.username }}
+                </a>
+              </td>
+              <td>
+                <div style="font-weight:500; font-size:0.82rem; max-width:140px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ app.job.title }}</div>
+                <div class="adm-cell-dim">{{ app.job.company.name }}</div>
+              </td>
+              <td><span class="adm-badge adm-badge-{{ app.status }}">{{ app.get_status_display }}</span></td>
+              <td style="text-align:left;"><span class="adm-cell-dim">{{ app.applied_at|date:"M d" }}</span></td>
+            </tr>
             {% empty %}
-              <tr>
-                <td colspan="4" class="text-center py-4 text-muted">No applications submitted yet.</td>
-              </tr>
+            <tr>
+              <td colspan="4">
+                <div class="adm-empty-state" style="padding:2rem;">No applications yet</div>
+              </td>
+            </tr>
             {% endfor %}
           </tbody>
         </table>
@@ -156,48 +119,53 @@
     </div>
   </div>
 
-  <!-- Recent Job Postings -->
+  {# Recent Job Postings #}
   <div class="col-lg-6">
-    <div class="cm-card h-100">
-      <div class="card-header">
-        <span><i class="bi bi-briefcase me-2 text-primary"></i>Recent Job Postings</span>
-        <a href="{% url 'admin_panel:jobs' %}" class="btn btn-sm btn-link text-decoration-none">View All</a>
+    <div class="adm-panel h-100">
+      <div class="adm-panel-header">
+        <span class="adm-panel-header-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="2" y="3" width="20" height="14" rx="2"/>
+            <line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+          </svg>
+          Recent Job Postings
+        </span>
+        <a href="{% url 'admin_panel:jobs' %}" class="adm-link">View all</a>
       </div>
-      <div class="table-responsive">
-        <table class="table cm-table">
+      <div class="adm-table-wrap">
+        <table class="adm-table">
           <thead>
             <tr>
-              <th>Job Title</th>
+              <th>Job</th>
               <th>Company</th>
               <th>Type</th>
-              <th>Status</th>
-              <th>Action</th>
+              <th style="text-align:left;">Status</th>
             </tr>
           </thead>
           <tbody>
             {% for job in recent_jobs %}
-              <tr>
-                <td>
-                  <a href="{% url 'admin_panel:job_detail' job.pk %}" class="fw-semibold text-decoration-none text-dark">
-                    {{ job.title }}
-                  </a>
-                </td>
-                <td>{{ job.company.name }}</td>
-                <td><span class="badge bg-light text-dark border">{{ job.get_employment_type_display }}</span></td>
-                <td><span class="badge-status {{ job.status }}">{{ job.get_status_display }}</span></td>
-                <td>
-                  <a href="{% url 'admin_panel:job_detail' job.pk %}" class="btn btn-sm btn-outline-primary py-0 px-2">Details</a>
-                </td>
-              </tr>
+            <tr>
+              <td>
+                <a href="{% url 'admin_panel:job_detail' job.pk %}" class="adm-link" style="font-weight:500;">
+                  {{ job.title }}
+                </a>
+              </td>
+              <td><span style="font-size:0.82rem; color:var(--cm-text-muted);">{{ job.company.name }}</span></td>
+              <td><span class="adm-tag">{{ job.get_employment_type_display }}</span></td>
+              <td style="text-align:left;"><span class="adm-badge adm-badge-{{ job.status }}">{{ job.get_status_display }}</span></td>
+            </tr>
             {% empty %}
-              <tr>
-                <td colspan="5" class="text-center py-4 text-muted">No job postings created yet.</td>
-              </tr>
+            <tr>
+              <td colspan="4">
+                <div class="adm-empty-state" style="padding:2rem;">No job postings yet</div>
+              </td>
+            </tr>
             {% endfor %}
           </tbody>
         </table>
       </div>
     </div>
   </div>
+
 </div>
 {% endblock %}

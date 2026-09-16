@@ -1,92 +1,100 @@
 {% extends "admin_dashboard/base.html" %}
-
 {% block title %}Job Categories{% endblock %}
-{% block page_title %}Job Categories Management{% endblock %}
+{% block page_title %}Job Categories{% endblock %}
 
 {% block content %}
-<div class="cm-card">
-  <div class="card-header d-flex justify-content-between align-items-center">
-    <div class="d-flex align-items-center gap-2">
-      <i class="bi bi-tags-fill text-primary"></i>
-      <span>Categories ({{ paginator.count }})</span>
-    </div>
-    <a href="{% url 'admin_panel:job_category_create' %}" class="btn btn-sm btn-primary">
-      <i class="bi bi-plus-lg me-1"></i> Add Category
+<div class="adm-panel">
+
+  <div class="adm-panel-header">
+    <span class="adm-panel-header-title">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+        <line x1="7" y1="7" x2="7.01" y2="7"/>
+      </svg>
+      Job Categories
+      <span class="adm-panel-header-count">({{ paginator.count }})</span>
+    </span>
+    <a href="{% url 'admin_panel:job_category_create' %}" class="adm-btn adm-btn-primary adm-btn-sm">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Category
     </a>
   </div>
 
-  <div class="card-body border-bottom bg-light">
-    <form method="get" class="row g-2 align-items-center">
-      <div class="col-md-8 col-lg-6">
-        <div class="input-group input-group-sm">
-          <span class="input-group-text"><i class="bi bi-search"></i></span>
-          <input type="text" name="q" value="{{ search_query }}" class="form-control" placeholder="Search category name or description...">
-        </div>
-      </div>
-      <div class="col-md-2 d-flex gap-1">
-        <button type="submit" class="btn btn-sm btn-primary w-100">Search</button>
-        {% if search_query %}
-          <a href="{% url 'admin_panel:job_categories' %}" class="btn btn-sm btn-outline-secondary" title="Clear Search"><i class="bi bi-x-lg"></i></a>
-        {% endif %}
-      </div>
-    </form>
-  </div>
+  <form method="get" class="adm-filter-bar">
+    <div class="adm-search-wrap">
+      <svg class="adm-search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="text" name="q" value="{{ search_query }}" class="adm-search-input" placeholder="Category name or description…" aria-label="Search categories">
+    </div>
+    <button type="submit" class="adm-btn adm-btn-ghost adm-btn-sm">Search</button>
+    {% if search_query %}
+      <a href="{% url 'admin_panel:job_categories' %}" class="adm-btn adm-btn-ghost adm-btn-sm">Clear</a>
+    {% endif %}
+  </form>
 
-  <div class="table-responsive">
-    <table class="table cm-table">
+  <div class="adm-table-wrap">
+    <table class="adm-table" aria-label="Job categories">
       <thead>
         <tr>
           <th>Category Name</th>
           <th>Description</th>
-          <th>Jobs Posted</th>
-          <th>Created Date</th>
-          <th class="text-end">Actions</th>
+          <th>Jobs</th>
+          <th style="text-align:left;">Added</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
         {% for category in categories %}
-          <tr>
-            <td>
-              <div class="fw-semibold text-dark">{{ category.name }}</div>
-            </td>
-            <td>
-              <small class="text-muted">{{ category.description|default:"—" }}</small>
-            </td>
-            <td><span class="badge bg-primary-subtle text-primary">{{ category.job_count }}</span></td>
-            <td>{{ category.created_at|date:"M d, Y" }}</td>
-            <td class="text-end">
-              <a href="{% url 'admin_panel:job_category_edit' category.pk %}" class="btn btn-sm btn-outline-secondary py-0 px-2" title="Edit">
-                <i class="bi bi-pencil"></i>
-              </a>
-              <a href="{% url 'admin_panel:job_category_delete' category.pk %}" class="btn btn-sm btn-outline-danger py-0 px-2" title="Delete">
-                <i class="bi bi-trash"></i>
-              </a>
-            </td>
-          </tr>
+        <tr>
+          <td style="font-weight:600; font-size:0.875rem;">{{ category.name }}</td>
+          <td>
+            <span class="adm-cell-dim" style="display:block; max-width:280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+              {{ category.description|default:"—" }}
+            </span>
+          </td>
+          <td><span style="font-size:0.82rem; color:var(--cm-text-muted);">{{ category.job_count }}</span></td>
+          <td style="text-align:left;"><span class="adm-cell-dim">{{ category.created_at|date:"M d, Y" }}</span></td>
+          <td>
+            <div class="adm-row-actions">
+              <a href="{% url 'admin_panel:job_category_edit' category.pk %}" class="adm-action-link">Edit</a>
+              <a href="{% url 'admin_panel:job_category_delete' category.pk %}" class="adm-action-link adm-action-link-danger">Delete</a>
+            </div>
+          </td>
+        </tr>
         {% empty %}
-          <tr>
-            <td colspan="5" class="text-center py-4 text-muted">No job categories defined yet.</td>
-          </tr>
+        <tr>
+          <td colspan="5">
+            <div class="adm-empty-state">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+                <line x1="7" y1="7" x2="7.01" y2="7"/>
+              </svg>
+              <p>No job categories defined yet.</p>
+            </div>
+          </td>
+        </tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
 
   {% if is_paginated %}
-    <div class="card-footer bg-white border-top d-flex justify-content-between align-items-center py-2">
-      <small class="text-muted">Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ paginator.count }} categories</small>
-      <nav>
-        <ul class="pagination pagination-sm m-0">
-          {% if page_obj.has_previous %}
-            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ search_query }}">Previous</a></li>
-          {% endif %}
-          <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
-          {% if page_obj.has_next %}
-            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ search_query }}">Next</a></li>
-          {% endif %}
-        </ul>
-      </nav>
-    </div>
+  <div class="adm-panel-footer">
+    <span style="font-size:0.78rem; color:var(--cm-text-dim);">
+      Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ paginator.count }}
+    </span>
+    <nav class="adm-pagination" aria-label="Pagination">
+      {% if page_obj.has_previous %}
+        <a class="adm-page-btn" href="?page={{ page_obj.previous_page_number }}&q={{ search_query }}">Prev</a>
+      {% endif %}
+      <span class="adm-page-btn active">{{ page_obj.number }}</span>
+      {% if page_obj.has_next %}
+        <a class="adm-page-btn" href="?page={{ page_obj.next_page_number }}&q={{ search_query }}">Next</a>
+      {% endif %}
+    </nav>
+  </div>
   {% endif %}
+
 </div>
 {% endblock %}

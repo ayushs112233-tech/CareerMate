@@ -1,109 +1,166 @@
 {% extends "admin_dashboard/base.html" %}
-
-{% block title %}{% if object %}Edit Job{% else %}Post Job{% endif %}{% endblock %}
-{% block page_title %}{% if object %}Edit Job: {{ object.title }}{% else %}Post New Job Listing{% endif %}{% endblock %}
+{% block title %}{% if object %}Edit Job{% else %}Post New Job{% endif %}{% endblock %}
+{% block page_title %}{% if object %}Edit Job{% else %}Post New Job{% endif %}{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
-  <div class="col-lg-9">
-    <div class="cm-card">
-      <div class="card-header">
-        <span><i class="bi bi-briefcase me-2 text-primary"></i>Job Posting Details</span>
+  <div class="col-lg-9 col-xl-8">
+    <div class="adm-back-nav" style="margin-bottom:1.25rem;">
+      <a href="{% url 'admin_panel:jobs' %}" class="adm-btn adm-btn-ghost adm-btn-sm">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+        Jobs
+      </a>
+    </div>
+
+    <div class="adm-panel">
+      <div class="adm-panel-header">
+        <span class="adm-panel-header-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="2" y="3" width="20" height="14" rx="2"/>
+            <line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+          </svg>
+          Job Posting Details
+        </span>
       </div>
-      <div class="card-body p-4">
+      <div class="adm-panel-body">
         <form method="post" novalidate>
           {% csrf_token %}
 
           {% if form.errors %}
-            <div class="alert alert-danger small py-2">Please correct the errors indicated below.</div>
+            <div class="adm-form-error-banner">Please correct the errors below before submitting.</div>
           {% endif %}
 
-          <div class="row g-3 mb-3">
-            <div class="col-md-8">
-              <label for="{{ form.title.id_for_label }}" class="form-label fw-semibold small">Job Title *</label>
-              {{ form.title }}
-              {{ form.title.errors }}
-            </div>
-            <div class="col-md-4">
-              <label for="{{ form.status.id_for_label }}" class="form-label fw-semibold small">Status *</label>
-              {{ form.status }}
-              {{ form.status.errors }}
-            </div>
-          </div>
-
-          <div class="row g-3 mb-3">
-            <div class="col-md-4">
-              <label for="{{ form.company.id_for_label }}" class="form-label fw-semibold small">Company *</label>
-              {{ form.company }}
-              {{ form.company.errors }}
-            </div>
-            <div class="col-md-4">
-              <label for="{{ form.recruiter.id_for_label }}" class="form-label fw-semibold small">Recruiter *</label>
-              {{ form.recruiter }}
-              {{ form.recruiter.errors }}
-            </div>
-            <div class="col-md-4">
-              <label for="{{ form.category.id_for_label }}" class="form-label fw-semibold small">Category</label>
-              {{ form.category }}
-              {{ form.category.errors }}
+          {# Row 1: Title + Status #}
+          <div class="adm-form-section">
+            <div class="adm-form-section-title">Posting Information</div>
+            <div class="row g-3">
+              <div class="col-md-8">
+                <div class="adm-field">
+                  <label for="{{ form.title.id_for_label }}" class="adm-label">Job Title <span class="adm-required">*</span></label>
+                  {{ form.title }}
+                  {% if form.title.errors %}<span class="adm-field-error">{{ form.title.errors|join:", " }}</span>{% endif %}
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="adm-field">
+                  <label for="{{ form.status.id_for_label }}" class="adm-label">Status <span class="adm-required">*</span></label>
+                  {{ form.status }}
+                  {% if form.status.errors %}<span class="adm-field-error">{{ form.status.errors|join:", " }}</span>{% endif %}
+                </div>
+              </div>
             </div>
           </div>
 
-          <div class="row g-3 mb-3">
-            <div class="col-md-4">
-              <label for="{{ form.employment_type.id_for_label }}" class="form-label fw-semibold small">Employment Type *</label>
-              {{ form.employment_type }}
-              {{ form.employment_type.errors }}
-            </div>
-            <div class="col-md-4">
-              <label for="{{ form.location.id_for_label }}" class="form-label fw-semibold small">Location *</label>
-              {{ form.location }}
-              {{ form.location.errors }}
-            </div>
-            <div class="col-md-4">
-              <label for="{{ form.min_experience.id_for_label }}" class="form-label fw-semibold small">Min Experience (Years)</label>
-              {{ form.min_experience }}
-              {{ form.min_experience.errors }}
-            </div>
-          </div>
-
-          <div class="row g-3 mb-3">
-            <div class="col-md-6">
-              <label for="{{ form.salary_min.id_for_label }}" class="form-label fw-semibold small">Salary Minimum (₹/yr)</label>
-              {{ form.salary_min }}
-              {{ form.salary_min.errors }}
-            </div>
-            <div class="col-md-6">
-              <label for="{{ form.salary_max.id_for_label }}" class="form-label fw-semibold small">Salary Maximum (₹/yr)</label>
-              {{ form.salary_max }}
-              {{ form.salary_max.errors }}
+          {# Row 2: Company, Recruiter, Category #}
+          <div class="adm-form-section">
+            <div class="adm-form-section-title">Organisation</div>
+            <div class="row g-3">
+              <div class="col-md-4">
+                <div class="adm-field">
+                  <label for="{{ form.company.id_for_label }}" class="adm-label">Company <span class="adm-required">*</span></label>
+                  {{ form.company }}
+                  {% if form.company.errors %}<span class="adm-field-error">{{ form.company.errors|join:", " }}</span>{% endif %}
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="adm-field">
+                  <label for="{{ form.recruiter.id_for_label }}" class="adm-label">Recruiter <span class="adm-required">*</span></label>
+                  {{ form.recruiter }}
+                  {% if form.recruiter.errors %}<span class="adm-field-error">{{ form.recruiter.errors|join:", " }}</span>{% endif %}
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="adm-field">
+                  <label for="{{ form.category.id_for_label }}" class="adm-label">Category</label>
+                  {{ form.category }}
+                  {% if form.category.errors %}<span class="adm-field-error">{{ form.category.errors|join:", " }}</span>{% endif %}
+                </div>
+              </div>
             </div>
           </div>
 
-          <div class="mb-3">
-            <label for="{{ form.skills_required.id_for_label }}" class="form-label fw-semibold small">Required Skills (Hold Ctrl/Cmd to select multiple)</label>
-            {{ form.skills_required }}
-            {{ form.skills_required.errors }}
+          {# Row 3: Type, Location, Experience #}
+          <div class="adm-form-section">
+            <div class="adm-form-section-title">Role Details</div>
+            <div class="row g-3">
+              <div class="col-md-4">
+                <div class="adm-field">
+                  <label for="{{ form.employment_type.id_for_label }}" class="adm-label">Employment Type <span class="adm-required">*</span></label>
+                  {{ form.employment_type }}
+                  {% if form.employment_type.errors %}<span class="adm-field-error">{{ form.employment_type.errors|join:", " }}</span>{% endif %}
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="adm-field">
+                  <label for="{{ form.location.id_for_label }}" class="adm-label">Location <span class="adm-required">*</span></label>
+                  {{ form.location }}
+                  {% if form.location.errors %}<span class="adm-field-error">{{ form.location.errors|join:", " }}</span>{% endif %}
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="adm-field">
+                  <label for="{{ form.min_experience.id_for_label }}" class="adm-label">Min Experience (Years)</label>
+                  {{ form.min_experience }}
+                  {% if form.min_experience.errors %}<span class="adm-field-error">{{ form.min_experience.errors|join:", " }}</span>{% endif %}
+                </div>
+              </div>
+            </div>
+            <div class="row g-3" style="margin-top:0;">
+              <div class="col-md-6">
+                <div class="adm-field">
+                  <label for="{{ form.salary_min.id_for_label }}" class="adm-label">Salary Min (&#8377;/yr)</label>
+                  {{ form.salary_min }}
+                  {% if form.salary_min.errors %}<span class="adm-field-error">{{ form.salary_min.errors|join:", " }}</span>{% endif %}
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="adm-field">
+                  <label for="{{ form.salary_max.id_for_label }}" class="adm-label">Salary Max (&#8377;/yr)</label>
+                  {{ form.salary_max }}
+                  {% if form.salary_max.errors %}<span class="adm-field-error">{{ form.salary_max.errors|join:", " }}</span>{% endif %}
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div class="mb-3">
-            <label for="{{ form.description.id_for_label }}" class="form-label fw-semibold small">Job Description *</label>
-            {{ form.description }}
-            {{ form.description.errors }}
+          {# Skills #}
+          <div class="adm-form-section">
+            <div class="adm-form-section-title">Required Skills</div>
+            <div class="adm-field">
+              <label for="{{ form.skills_required.id_for_label }}" class="adm-label">
+                Skills (hold Ctrl / Cmd to multi-select)
+              </label>
+              {{ form.skills_required }}
+              {% if form.skills_required.errors %}<span class="adm-field-error">{{ form.skills_required.errors|join:", " }}</span>{% endif %}
+            </div>
           </div>
 
-          <div class="mb-4">
-            <label for="{{ form.requirements.id_for_label }}" class="form-label fw-semibold small">Requirements & Qualifications</label>
-            {{ form.requirements }}
-            {{ form.requirements.errors }}
+          {# Description + Requirements #}
+          <div class="adm-form-section">
+            <div class="adm-form-section-title">Content</div>
+            <div class="adm-field" style="margin-bottom:1.25rem;">
+              <label for="{{ form.description.id_for_label }}" class="adm-label">Job Description <span class="adm-required">*</span></label>
+              {{ form.description }}
+              {% if form.description.errors %}<span class="adm-field-error">{{ form.description.errors|join:", " }}</span>{% endif %}
+            </div>
+            <div class="adm-field">
+              <label for="{{ form.requirements.id_for_label }}" class="adm-label">Requirements &amp; Qualifications</label>
+              {{ form.requirements }}
+              {% if form.requirements.errors %}<span class="adm-field-error">{{ form.requirements.errors|join:", " }}</span>{% endif %}
+            </div>
           </div>
 
-          <div class="d-flex justify-content-between">
-            <a href="{% url 'admin_panel:jobs' %}" class="btn btn-outline-secondary">Cancel</a>
-            <button type="submit" class="btn btn-primary px-4">
-              <i class="bi bi-check2-circle me-1"></i> Save Job Posting
+          {# Actions #}
+          <div class="adm-form-actions adm-form-actions-between">
+            <a href="{% url 'admin_panel:jobs' %}" class="adm-btn adm-btn-ghost">Cancel</a>
+            <button type="submit" class="adm-btn adm-btn-primary">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              {% if object %}Save Changes{% else %}Post Job{% endif %}
             </button>
           </div>
+
         </form>
       </div>
     </div>

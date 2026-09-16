@@ -1,105 +1,114 @@
 {% extends "admin_dashboard/base.html" %}
-
-{% block title %}Resume Management{% endblock %}
-{% block page_title %}Uploaded Resumes Repository{% endblock %}
+{% block title %}Resumes{% endblock %}
+{% block page_title %}Resumes{% endblock %}
 
 {% block content %}
-<div class="cm-card">
-  <div class="card-header d-flex justify-content-between align-items-center">
-    <div class="d-flex align-items-center gap-2">
-      <i class="bi bi-file-earmark-person-fill text-primary"></i>
-      <span>Candidate Resumes ({{ paginator.count }})</span>
+<div class="adm-panel">
+
+  <div class="adm-panel-header">
+    <span class="adm-panel-header-title">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+        <polyline points="10 9 9 9 8 9"/>
+      </svg>
+      Uploaded Resumes
+      <span class="adm-panel-header-count">({{ paginator.count }})</span>
+    </span>
+  </div>
+
+  <form method="get" class="adm-filter-bar">
+    <div class="adm-search-wrap">
+      <svg class="adm-search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="text" name="q" value="{{ search_query }}" class="adm-search-input" placeholder="File name, candidate name…" aria-label="Search resumes">
     </div>
-  </div>
+    <select name="status" class="adm-select" onchange="this.form.submit()" aria-label="Filter by parse status">
+      <option value="">All Statuses</option>
+      {% for choice in status_choices %}
+        <option value="{{ choice.0 }}" {% if selected_status == choice.0 %}selected{% endif %}>{{ choice.1 }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="adm-btn adm-btn-ghost adm-btn-sm">Filter</button>
+    {% if search_query or selected_status %}
+      <a href="{% url 'admin_panel:resumes' %}" class="adm-btn adm-btn-ghost adm-btn-sm">Clear</a>
+    {% endif %}
+  </form>
 
-  <div class="card-body border-bottom bg-light">
-    <form method="get" class="row g-2 align-items-center">
-      <div class="col-md-6 col-lg-5">
-        <div class="input-group input-group-sm">
-          <span class="input-group-text"><i class="bi bi-search"></i></span>
-          <input type="text" name="q" value="{{ search_query }}" class="form-control" placeholder="Search file name, candidate name, extracted text...">
-        </div>
-      </div>
-      <div class="col-md-4 col-lg-3">
-        <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
-          <option value="">All Parsing Statuses</option>
-          {% for choice in status_choices %}
-            <option value="{{ choice.0 }}" {% if selected_status == choice.0 %}selected{% endif %}>{{ choice.1 }}</option>
-          {% endfor %}
-        </select>
-      </div>
-      <div class="col-md-2 d-flex gap-1">
-        <button type="submit" class="btn btn-sm btn-primary w-100">Filter</button>
-        {% if search_query or selected_status %}
-          <a href="{% url 'admin_panel:resumes' %}" class="btn btn-sm btn-outline-secondary" title="Clear Filter"><i class="bi bi-x-lg"></i></a>
-        {% endif %}
-      </div>
-    </form>
-  </div>
-
-  <div class="table-responsive">
-    <table class="table cm-table">
+  <div class="adm-table-wrap">
+    <table class="adm-table" aria-label="Resumes list">
       <thead>
         <tr>
           <th>Resume File</th>
           <th>Candidate</th>
-          <th>Upload Date</th>
-          <th>Parsing Status</th>
-          <th class="text-end">Actions</th>
+          <th style="text-align:left;">Uploaded</th>
+          <th>Parse Status</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
         {% for resume in resumes %}
-          <tr>
-            <td>
-              <a href="{% url 'admin_panel:resume_detail' resume.pk %}" class="fw-semibold text-dark text-decoration-none">
-                <i class="bi bi-file-earmark-pdf me-1 text-danger"></i> {{ resume.file_name }}
-              </a>
-            </td>
-            <td>
-              <a href="{% url 'admin_panel:candidate_detail' resume.candidate.pk %}" class="text-decoration-none text-dark">
-                {{ resume.candidate.user.get_full_name|default:resume.candidate.user.username }}
-              </a>
-            </td>
-            <td>{{ resume.uploaded_at|date:"M d, Y - h:i A" }}</td>
-            <td>
-              <span class="badge-status {{ resume.status }}">{{ resume.get_status_display }}</span>
-            </td>
-            <td class="text-end">
-              <a href="{% url 'admin_panel:resume_detail' resume.pk %}" class="btn btn-sm btn-outline-primary py-0 px-2">
-                <i class="bi bi-eye"></i> View Text
-              </a>
+        <tr>
+          <td>
+            <div style="font-weight:600; font-size:0.875rem; display:flex; align-items:center; gap:0.4rem;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--cm-error)" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+              <a href="{% url 'admin_panel:resume_detail' resume.pk %}" class="adm-link" style="border:none; font-weight:600;">{{ resume.file_name }}</a>
+            </div>
+          </td>
+          <td>
+            <a href="{% url 'admin_panel:candidate_detail' resume.candidate.pk %}" class="adm-link" style="font-size:0.85rem;">
+              {{ resume.candidate.user.get_full_name|default:resume.candidate.user.username }}
+            </a>
+          </td>
+          <td style="text-align:left;"><span class="adm-cell-dim">{{ resume.uploaded_at|date:"M d, Y" }}</span></td>
+          <td><span class="adm-badge adm-badge-{{ resume.status }}">{{ resume.get_status_display }}</span></td>
+          <td>
+            <div class="adm-row-actions">
+              <a href="{% url 'admin_panel:resume_detail' resume.pk %}" class="adm-action-link">View</a>
               {% if resume.file %}
-                <a href="{{ resume.file.url }}" target="_blank" class="btn btn-sm btn-outline-secondary py-0 px-2" title="Download File">
-                  <i class="bi bi-download"></i>
-                </a>
+                <a href="{{ resume.file.url }}" target="_blank" rel="noopener" class="adm-action-link">Download</a>
               {% endif %}
-            </td>
-          </tr>
+            </div>
+          </td>
+        </tr>
         {% empty %}
-          <tr>
-            <td colspan="5" class="text-center py-4 text-muted">No resumes uploaded yet.</td>
-          </tr>
+        <tr>
+          <td colspan="5">
+            <div class="adm-empty-state">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+              <p>No resumes uploaded yet.</p>
+            </div>
+          </td>
+        </tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
 
   {% if is_paginated %}
-    <div class="card-footer bg-white border-top d-flex justify-content-between align-items-center py-2">
-      <small class="text-muted">Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ paginator.count }} resumes</small>
-      <nav>
-        <ul class="pagination pagination-sm m-0">
-          {% if page_obj.has_previous %}
-            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ search_query }}&status={{ selected_status }}">Previous</a></li>
-          {% endif %}
-          <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
-          {% if page_obj.has_next %}
-            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ search_query }}&status={{ selected_status }}">Next</a></li>
-          {% endif %}
-        </ul>
-      </nav>
-    </div>
+  <div class="adm-panel-footer">
+    <span style="font-size:0.78rem; color:var(--cm-text-dim);">
+      Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ paginator.count }}
+    </span>
+    <nav class="adm-pagination" aria-label="Pagination">
+      {% if page_obj.has_previous %}
+        <a class="adm-page-btn" href="?page={{ page_obj.previous_page_number }}&q={{ search_query }}&status={{ selected_status }}">Prev</a>
+      {% endif %}
+      <span class="adm-page-btn active">{{ page_obj.number }}</span>
+      {% if page_obj.has_next %}
+        <a class="adm-page-btn" href="?page={{ page_obj.next_page_number }}&q={{ search_query }}&status={{ selected_status }}">Next</a>
+      {% endif %}
+    </nav>
+  </div>
   {% endif %}
+
 </div>
 {% endblock %}

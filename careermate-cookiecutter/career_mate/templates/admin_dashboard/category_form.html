@@ -1,40 +1,42 @@
 {% extends "admin_dashboard/base.html" %}
-
 {% block title %}{% if object %}Edit Category{% else %}Add Category{% endif %}{% endblock %}
-{% block page_title %}{% if object %}Edit Category: {{ object.name }}{% else %}Create Job Category{% endif %}{% endblock %}
+{% block page_title %}{% if object %}Edit Category{% else %}Add Category{% endif %}{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
-  <div class="col-lg-6">
-    <div class="cm-card">
-      <div class="card-header">
-        <span><i class="bi bi-tag me-2 text-primary"></i>Category Details</span>
+  <div class="col-lg-5">
+    <div class="adm-back-nav" style="margin-bottom:1.25rem;">
+      <a href="{% url 'admin_panel:job_categories' %}" class="adm-btn adm-btn-ghost adm-btn-sm">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+        Job Categories
+      </a>
+    </div>
+    <div class="adm-panel">
+      <div class="adm-panel-header">
+        <span class="adm-panel-header-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+            <line x1="7" y1="7" x2="7.01" y2="7"/>
+          </svg>
+          Category Details
+        </span>
       </div>
-      <div class="card-body p-4">
+      <div class="adm-panel-body">
         <form method="post" novalidate>
           {% csrf_token %}
-
-          {% if form.errors %}
-            <div class="alert alert-danger small py-2">Please correct the errors below.</div>
-          {% endif %}
-
-          <div class="mb-3">
-            <label for="{{ form.name.id_for_label }}" class="form-label fw-semibold small">Category Name *</label>
-            {{ form.name }}
-            {{ form.name.errors }}
-            <div class="form-text">e.g. Software Engineering, Data Science & AI, Product Management</div>
-          </div>
-
-          <div class="mb-4">
-            <label for="{{ form.description.id_for_label }}" class="form-label fw-semibold small">Description</label>
-            {{ form.description }}
-            {{ form.description.errors }}
-          </div>
-
-          <div class="d-flex justify-content-between">
-            <a href="{% url 'admin_panel:job_categories' %}" class="btn btn-outline-secondary">Cancel</a>
-            <button type="submit" class="btn btn-primary px-4">
-              <i class="bi bi-check2-circle me-1"></i> Save Category
+          {% if form.errors %}<div class="adm-form-error-banner">Please correct the errors below.</div>{% endif %}
+          {% for field in form %}
+            <div class="adm-field" style="margin-bottom:1.25rem;">
+              <label for="{{ field.id_for_label }}" class="adm-label">{{ field.label }}{% if field.field.required %} <span class="adm-required">*</span>{% endif %}</label>
+              {{ field }}
+              {% if field.errors %}<span class="adm-field-error">{{ field.errors|join:", " }}</span>{% endif %}
+            </div>
+          {% endfor %}
+          <div class="adm-form-actions adm-form-actions-between">
+            <a href="{% url 'admin_panel:job_categories' %}" class="adm-btn adm-btn-ghost">Cancel</a>
+            <button type="submit" class="adm-btn adm-btn-primary">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+              {% if object %}Save Changes{% else %}Add Category{% endif %}
             </button>
           </div>
         </form>

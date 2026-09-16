@@ -1,107 +1,131 @@
 {% extends "admin_dashboard/base.html" %}
-
-{% block title %}Application #{{ application.pk }} — Details{% endblock %}
-{% block page_title %}Application Workflow Management{% endblock %}
+{% block title %}Application #{{ application.pk }}{% endblock %}
+{% block page_title %}Application{% endblock %}
 
 {% block content %}
-<div class="mb-3">
-  <a href="{% url 'admin_panel:applications' %}" class="btn btn-sm btn-outline-secondary">
-    <i class="bi bi-arrow-left me-1"></i> Back to Applications List
+
+<div class="adm-back-nav">
+  <a href="{% url 'admin_panel:applications' %}" class="adm-btn adm-btn-ghost adm-btn-sm">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+    Applications
   </a>
+  <span class="adm-badge adm-badge-{{ application.status }}" style="font-size:0.8rem; padding:0.3em 0.8em;">
+    {{ application.get_status_display }}
+  </span>
 </div>
 
 <div class="row g-4">
-  <!-- Left Column: Details -->
+
+  {# Left: overview + resume #}
   <div class="col-lg-8">
-    <div class="cm-card mb-4">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <span><i class="bi bi-send me-2 text-primary"></i>Application #{{ application.pk }} Overview</span>
-        <span class="badge-status {{ application.status }} fs-6">{{ application.get_status_display }}</span>
+    <div class="adm-panel mb-4">
+      <div class="adm-panel-header">
+        <span class="adm-panel-header-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="9 11 12 14 22 4"/>
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+          </svg>
+          Application #{{ application.pk }}
+        </span>
       </div>
-      <div class="card-body">
-        <div class="row g-3 mb-4">
-          <div class="col-md-6">
-            <label class="text-muted small fw-semibold text-uppercase d-block">Candidate</label>
-            <h6 class="fw-bold m-0">
-              <a href="{% url 'admin_panel:candidate_detail' application.candidate.pk %}" class="text-dark text-decoration-none">
+      <div class="adm-panel-body">
+        <div class="adm-info-grid" style="margin-bottom:1.25rem;">
+          <div class="adm-info-field">
+            <span class="adm-info-label">Candidate</span>
+            <span class="adm-info-value">
+              <a href="{% url 'admin_panel:candidate_detail' application.candidate.pk %}" class="adm-link">
                 {{ application.candidate.user.get_full_name|default:application.candidate.user.username }}
               </a>
-            </h6>
-            <small class="text-muted">{{ application.candidate.user.email }}</small>
+            </span>
           </div>
-          <div class="col-md-6">
-            <label class="text-muted small fw-semibold text-uppercase d-block">Job Posting</label>
-            <h6 class="fw-bold m-0">
-              <a href="{% url 'admin_panel:job_detail' application.job.pk %}" class="text-dark text-decoration-none">
+          <div class="adm-info-field">
+            <span class="adm-info-label">Email</span>
+            <span class="adm-info-value">{{ application.candidate.user.email }}</span>
+          </div>
+          <div class="adm-info-field">
+            <span class="adm-info-label">Applied For</span>
+            <span class="adm-info-value">
+              <a href="{% url 'admin_panel:job_detail' application.job.pk %}" class="adm-link">
                 {{ application.job.title }}
               </a>
-            </h6>
-            <small class="text-muted">{{ application.job.company.name }}</small>
+            </span>
           </div>
-        </div>
-
-        <div class="row g-3 small border-top pt-3 text-muted">
-          <div class="col-sm-6"><i class="bi bi-calendar me-1"></i><strong>Applied On:</strong> {{ application.applied_at|date:"F d, Y - h:i A" }}</div>
-          <div class="col-sm-6"><i class="bi bi-clock-history me-1"></i><strong>Last Updated:</strong> {{ application.updated_at|date:"F d, Y - h:i A" }}</div>
+          <div class="adm-info-field">
+            <span class="adm-info-label">Company</span>
+            <span class="adm-info-value">{{ application.job.company.name }}</span>
+          </div>
+          <div class="adm-info-field">
+            <span class="adm-info-label">Applied On</span>
+            <span class="adm-info-value">{{ application.applied_at|date:"F d, Y" }}</span>
+          </div>
+          <div class="adm-info-field">
+            <span class="adm-info-label">Last Updated</span>
+            <span class="adm-info-value">{{ application.updated_at|date:"F d, Y" }}</span>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Attached Resume Preview -->
-    <div class="cm-card">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <span><i class="bi bi-file-earmark-pdf me-2 text-primary"></i>Attached Candidate Resume</span>
+    {# Resume Preview #}
+    <div class="adm-panel">
+      <div class="adm-panel-header">
+        <span class="adm-panel-header-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+          </svg>
+          Attached Resume
+        </span>
         {% if application.resume and application.resume.file %}
-          <a href="{{ application.resume.file.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
-            <i class="bi bi-download me-1"></i> Download PDF
-          </a>
+          <a href="{{ application.resume.file.url }}" target="_blank" rel="noopener" class="adm-btn adm-btn-ghost adm-btn-sm">Download PDF</a>
         {% endif %}
       </div>
-      <div class="card-body">
+      <div class="adm-panel-body">
         {% if application.resume %}
-          <div class="d-flex align-items-center justify-content-between mb-3 p-2 bg-light rounded border">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; padding:0.75rem 1rem; background:rgba(255,255,255,0.03); border:1px solid var(--adm-border); border-radius:8px;">
             <div>
-              <div class="fw-semibold">{{ application.resume.file_name }}</div>
-              <small class="text-muted">Uploaded {{ application.resume.uploaded_at|date:"M d, Y" }}</small>
+              <div style="font-weight:600; font-size:0.875rem;">{{ application.resume.file_name }}</div>
+              <div class="adm-cell-dim" style="margin-top:2px;">Uploaded {{ application.resume.uploaded_at|date:"M d, Y" }}</div>
             </div>
-            <span class="badge-status {{ application.resume.status }}">{{ application.resume.get_status_display }}</span>
+            <span class="adm-badge adm-badge-{{ application.resume.status }}">{{ application.resume.get_status_display }}</span>
           </div>
-
-          <h6 class="small text-uppercase text-muted fw-bold">Resume Extracted Text Preview:</h6>
-          <div class="p-3 bg-light rounded font-monospace small text-secondary" style="max-height: 250px; overflow-y: auto; white-space: pre-wrap;">
-            {{ application.resume.parsed_text|default:"(No text extracted yet - ready for AI engine parsing phase)" }}
-          </div>
+          <div class="adm-section-label">Extracted Text Preview</div>
+          <div class="adm-mono-text">{{ application.resume.parsed_text|default:"(No text extracted yet)" }}</div>
         {% else %}
-          <p class="text-muted mb-0">No resume attached to this application.</p>
+          <div class="adm-empty-state">No resume attached to this application.</div>
         {% endif %}
       </div>
     </div>
   </div>
 
-  <!-- Right Column: Status Change Form -->
+  {# Right: Status Update #}
   <div class="col-lg-4">
-    <div class="cm-card">
-      <div class="card-header">
-        <i class="bi bi-sliders me-2 text-primary"></i>Update Application Status
+    <div class="adm-panel">
+      <div class="adm-panel-header">
+        <span class="adm-panel-header-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/>
+          </svg>
+          Update Status
+        </span>
       </div>
-      <div class="card-body p-4">
+      <div class="adm-panel-body">
         <form method="post" action="{% url 'admin_panel:application_status_update' application.pk %}">
           {% csrf_token %}
-          <div class="mb-3">
-            <label for="{{ form.status.id_for_label }}" class="form-label fw-semibold small">Workflow Status</label>
+          <div class="adm-field">
+            <label for="{{ form.status.id_for_label }}" class="adm-label">Workflow Status</label>
             {{ form.status }}
           </div>
-
-          <p class="small text-muted mb-3">
-            Changing this status updates the candidate's hiring progression in the system.
+          <p style="font-size:0.78rem; color:var(--cm-text-dim); margin-bottom:1rem; line-height:1.5;">
+            Changing this updates the candidate's hiring progression across the system.
           </p>
-
-          <button type="submit" class="btn btn-primary w-100">
-            <i class="bi bi-check2 me-1"></i> Update Status
+          <button type="submit" class="adm-btn adm-btn-primary" style="width:100%; justify-content:center;">
+            Update Status
           </button>
         </form>
       </div>
     </div>
   </div>
+
 </div>
 {% endblock %}

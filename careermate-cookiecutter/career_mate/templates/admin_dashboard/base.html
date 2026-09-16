@@ -4,168 +4,259 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}Admin Dashboard{% endblock %} — CareerMate AI</title>
-  <!-- Bootstrap 5 CSS -->
+  <title>{% block title %}Admin{% endblock %} — CareerMate AI Control Panel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Bootstrap Icons -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <!-- Custom Admin Dashboard Styles -->
   <link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}">
   {% block extra_css %}{% endblock %}
 </head>
-<body>
+<body class="admin-body">
 
-<div class="dashboard-wrapper">
-  <!-- Sidebar -->
-  <aside class="dashboard-sidebar" id="dashboardSidebar">
-    <a href="{% url 'admin_panel:dashboard' %}" class="sidebar-brand">
-      <div class="brand-icon"><i class="bi bi-briefcase-fill"></i></div>
-      <div class="brand-text">CareerMate <span class="text-primary">AI</span></div>
+{# Grain overlay #}
+<svg class="cm-grain-overlay" viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <filter id="adm-noise"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/></filter>
+  <rect width="100%" height="100%" filter="url(#adm-noise)"/>
+</svg>
+
+{# Ambient blobs #}
+<div class="cm-ambient-blobs" aria-hidden="true">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+{# Mobile sidebar overlay #}
+<div class="adm-sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
+
+<div class="adm-shell">
+
+  {# ── SIDEBAR ─────────────────────────────────────────────────────────── #}
+  <aside class="adm-sidebar" id="admSidebar" role="navigation" aria-label="Admin navigation">
+    <button class="adm-sidebar-close" id="admSidebarClose" type="button" aria-label="Close navigation">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+
+    <a href="{% url 'admin_panel:dashboard' %}" class="adm-sidebar-brand" aria-label="CareerMate AI — Admin Dashboard">
+      <span class="adm-sidebar-brand-mark" aria-hidden="true">C</span>
+      <div>
+        <span class="adm-sidebar-brand-name">CareerMate AI</span>
+        <span class="adm-sidebar-brand-badge">Control Panel</span>
+      </div>
     </a>
 
-    <ul class="sidebar-nav">
-      <li class="nav-header">Overview</li>
-      <li class="nav-item">
-        <a href="{% url 'admin_panel:dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
-          <i class="bi bi-grid-1x2-fill"></i>
-          <span>Dashboard</span>
-        </a>
-      </li>
+    <nav class="adm-nav" aria-label="Admin sections">
 
-      <li class="nav-header">User & Entity Management</li>
-      <li class="nav-item">
-        <a href="{% url 'admin_panel:candidates' %}" class="nav-link {% if 'candidate' in request.resolver_match.url_name %}active{% endif %}">
-          <i class="bi bi-people-fill"></i>
-          <span>Candidates</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a href="{% url 'admin_panel:recruiters' %}" class="nav-link {% if 'recruiter' in request.resolver_match.url_name %}active{% endif %}">
-          <i class="bi bi-person-badge-fill"></i>
-          <span>Recruiters</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a href="{% url 'admin_panel:companies' %}" class="nav-link {% if 'company' in request.resolver_match.url_name %}active{% endif %}">
-          <i class="bi bi-building"></i>
-          <span>Companies</span>
-        </a>
-      </li>
+      <div class="adm-nav-section">Overview</div>
 
-      <li class="nav-header">Jobs & Applications</li>
-      <li class="nav-item">
-        <a href="{% url 'admin_panel:jobs' %}" class="nav-link {% if 'job' in request.resolver_match.url_name and 'job_categor' not in request.resolver_match.url_name %}active{% endif %}">
-          <i class="bi bi-card-checklist"></i>
-          <span>Jobs</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a href="{% url 'admin_panel:applications' %}" class="nav-link {% if 'application' in request.resolver_match.url_name %}active{% endif %}">
-          <i class="bi bi-send-check-fill"></i>
-          <span>Applications</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a href="{% url 'admin_panel:resumes' %}" class="nav-link {% if 'resume' in request.resolver_match.url_name %}active{% endif %}">
-          <i class="bi bi-file-earmark-person-fill"></i>
-          <span>Resumes</span>
-        </a>
-      </li>
+      <a href="{% url 'admin_panel:dashboard' %}"
+         class="adm-nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"
+         aria-current="{% if request.resolver_match.url_name == 'dashboard' %}page{% endif %}">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+          <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+        </svg>
+        Dashboard
+      </a>
 
-      <li class="nav-header">Catalog & Settings</li>
-      <li class="nav-item">
-        <a href="{% url 'admin_panel:skills' %}" class="nav-link {% if 'skill' in request.resolver_match.url_name %}active{% endif %}">
-          <i class="bi bi-stars"></i>
-          <span>Skills</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a href="{% url 'admin_panel:job_categories' %}" class="nav-link {% if 'job_categor' in request.resolver_match.url_name %}active{% endif %}">
-          <i class="bi bi-tags-fill"></i>
-          <span>Job Categories</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a href="{% url 'admin_panel:reports' %}" class="nav-link {% if request.resolver_match.url_name == 'reports' %}active{% endif %}">
-          <i class="bi bi-graph-up-arrow"></i>
-          <span>Reports</span>
-        </a>
-      </li>
-    </ul>
+      <div class="adm-nav-section">Users &amp; Entities</div>
 
-    <div class="sidebar-footer">
-      <div class="d-flex align-items-center justify-content-between">
-        <div class="small">
-          <div class="text-white fw-semibold">{{ request.user.username }}</div>
-          <span class="badge bg-primary-subtle text-primary">Administrator</span>
-        </div>
-        <a href="{% url 'admin_panel:logout' %}" class="btn btn-sm btn-outline-danger" title="Logout">
-          <i class="bi bi-box-arrow-right"></i>
-        </a>
+      <a href="{% url 'admin_panel:candidates' %}"
+         class="adm-nav-link {% if 'candidate' in request.resolver_match.url_name %}active{% endif %}">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+        Candidates
+      </a>
+
+      <a href="{% url 'admin_panel:recruiters' %}"
+         class="adm-nav-link {% if 'recruiter' in request.resolver_match.url_name %}active{% endif %}">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="2" y="7" width="20" height="14" rx="2"/>
+          <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+        </svg>
+        Recruiters
+      </a>
+
+      <a href="{% url 'admin_panel:companies' %}"
+         class="adm-nav-link {% if 'company' in request.resolver_match.url_name %}active{% endif %}">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+        Companies
+      </a>
+
+      <div class="adm-nav-section">Jobs &amp; Applications</div>
+
+      <a href="{% url 'admin_panel:jobs' %}"
+         class="adm-nav-link {% if 'job' in request.resolver_match.url_name and 'job_categor' not in request.resolver_match.url_name %}active{% endif %}">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="2" y="3" width="20" height="14" rx="2"/>
+          <line x1="8" y1="21" x2="16" y2="21"/>
+          <line x1="12" y1="17" x2="12" y2="21"/>
+        </svg>
+        Jobs
+      </a>
+
+      <a href="{% url 'admin_panel:applications' %}"
+         class="adm-nav-link {% if 'application' in request.resolver_match.url_name %}active{% endif %}">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="9 11 12 14 22 4"/>
+          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+        </svg>
+        Applications
+      </a>
+
+      <a href="{% url 'admin_panel:resumes' %}"
+         class="adm-nav-link {% if 'resume' in request.resolver_match.url_name %}active{% endif %}">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+          <polyline points="10 9 9 9 8 9"/>
+        </svg>
+        Resumes
+      </a>
+
+      <div class="adm-nav-section">Catalog</div>
+
+      <a href="{% url 'admin_panel:skills' %}"
+         class="adm-nav-link {% if 'skill' in request.resolver_match.url_name and 'category' not in request.resolver_match.url_name %}active{% endif %}">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
+        Skills
+      </a>
+
+      <a href="{% url 'admin_panel:job_categories' %}"
+         class="adm-nav-link {% if 'job_categor' in request.resolver_match.url_name %}active{% endif %}">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+          <line x1="7" y1="7" x2="7.01" y2="7"/>
+        </svg>
+        Job Categories
+      </a>
+
+      <a href="{% url 'admin_panel:reports' %}"
+         class="adm-nav-link {% if request.resolver_match.url_name == 'reports' %}active{% endif %}">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="18" y1="20" x2="18" y2="10"/>
+          <line x1="12" y1="20" x2="12" y2="4"/>
+          <line x1="6" y1="20" x2="6" y2="14"/>
+        </svg>
+        Reports
+      </a>
+
+    </nav>
+
+    <div class="adm-sidebar-footer">
+      <div class="adm-sidebar-user">
+        <div class="adm-sidebar-username">{{ request.user.username }}</div>
+        <div class="adm-sidebar-role">Administrator</div>
       </div>
+      <a href="{% url 'admin_panel:logout' %}" class="adm-logout-btn" title="Sign out" aria-label="Sign out">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+      </a>
     </div>
+
   </aside>
 
-  <!-- Main Content Area -->
-  <div class="dashboard-main">
-    <!-- Topbar Header -->
-    <header class="dashboard-topbar">
-      <div class="d-flex align-items-center gap-3">
-        <button class="btn btn-outline-secondary btn-sm d-lg-none" id="sidebarToggle" type="button">
-          <i class="bi bi-list fs-5"></i>
-        </button>
-        <h5 class="m-0 fw-bold text-dark">{% block page_title %}Dashboard{% endblock %}</h5>
-      </div>
+  {# ── MAIN AREA ────────────────────────────────────────────────────────── #}
+  <div class="adm-main">
 
-      <div class="d-flex align-items-center gap-3">
-        <!-- Low Level Django Admin Link -->
-        <a href="{% url 'admin:index' %}" target="_blank" class="btn btn-sm btn-outline-secondary" title="Open Django DB Admin in new tab">
-          <i class="bi bi-database-fill-gear me-1"></i> Low-Level DB Admin
+    {# Topbar #}
+    <header class="adm-topbar" role="banner">
+      <div class="adm-topbar-left">
+        <button class="adm-hamburger" id="admHamburger" aria-label="Open navigation" aria-expanded="false" aria-controls="admSidebar">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+        <h1 class="adm-topbar-title">{% block page_title %}Dashboard{% endblock %}</h1>
+      </div>
+      <div class="adm-topbar-right">
+        <a href="{% url 'admin:index' %}" target="_blank" rel="noopener" class="adm-topbar-btn" title="Low-level Django DB Admin">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
+            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+          </svg>
+          DB Admin
         </a>
-        <div class="dropdown">
-          <button class="btn btn-sm btn-light border dropdown-toggle d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown">
-            <i class="bi bi-person-circle fs-6"></i>
-            <span>{{ request.user.username }}</span>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-            <li><a class="dropdown-item" href="{% url 'admin_panel:reports' %}"><i class="bi bi-graph-up me-2"></i>Reports</a></li>
-            <li><a class="dropdown-item" href="{% url 'admin:index' %}" target="_blank"><i class="bi bi-database me-2"></i>Django Admin</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item text-danger" href="{% url 'admin_panel:logout' %}"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
-          </ul>
-        </div>
       </div>
     </header>
 
-    <!-- Main Content Container -->
-    <main class="dashboard-content">
-      <!-- Flash Messages -->
+    {# Flash Messages #}
+    <div class="adm-content" style="padding-bottom:0;">
       {% if messages %}
         {% for message in messages %}
-          <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show shadow-sm" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          <div class="adm-alert adm-alert-{{ message.tags|default:'info' }}" role="alert">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              {% if message.tags == 'error' or message.tags == 'danger' %}
+                <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+              {% elif message.tags == 'success' %}
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+              {% else %}
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+              {% endif %}
+            </svg>
+            <span>{{ message }}</span>
+            <button class="adm-alert-dismiss" onclick="this.parentElement.remove()" aria-label="Dismiss">&#x2715;</button>
           </div>
         {% endfor %}
       {% endif %}
+    </div>
 
+    {# Page Content #}
+    <main class="adm-content" id="main-content">
       {% block content %}{% endblock %}
     </main>
-  </div>
-</div>
 
-<!-- Bootstrap 5 JS Bundle -->
+  </div>{# /adm-main #}
+
+</div>{# /adm-shell #}
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-  // Mobile Sidebar Toggle
-  const toggleBtn = document.getElementById('sidebarToggle');
-  const sidebar = document.getElementById('dashboardSidebar');
-  if (toggleBtn && sidebar) {
-    toggleBtn.addEventListener('click', () => {
-      sidebar.classList.toggle('show');
-    });
+(function () {
+  'use strict';
+  var sidebar = document.getElementById('admSidebar');
+  var overlay = document.getElementById('sidebarOverlay');
+  var hamburger = document.getElementById('admHamburger');
+  var closeButton = document.getElementById('admSidebarClose');
+
+  function openSidebar() {
+    sidebar.classList.add('open');
+    overlay.classList.add('active');
+    hamburger.setAttribute('aria-expanded', 'true');
+    overlay.setAttribute('aria-hidden', 'false');
   }
+  function closeSidebar() {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('active');
+    hamburger.setAttribute('aria-expanded', 'false');
+    overlay.setAttribute('aria-hidden', 'true');
+  }
+
+  if (hamburger) hamburger.addEventListener('click', openSidebar);
+  if (closeButton) closeButton.addEventListener('click', closeSidebar);
+  if (overlay) overlay.addEventListener('click', closeSidebar);
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && sidebar.classList.contains('open')) closeSidebar();
+  });
+})();
 </script>
 {% block extra_js %}{% endblock %}
+
 </body>
 </html>
