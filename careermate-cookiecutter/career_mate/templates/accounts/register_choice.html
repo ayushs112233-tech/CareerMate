@@ -2,31 +2,41 @@
 {% load static %}
 {% block title %}Get Started | CareerMate AI{% endblock %}
 {% block content %}
-<main class="login-page">
-    <div class="login-card">
-        <a class="candidate-brand" href="{% url 'home' %}">
-            <span class="brand-mark">C</span>
+<main class="auth-page">
+    <div class="auth-card" style="width: min(540px, 100%);">
+        <a class="auth-brand" href="{% url 'home' %}">
+            <span class="auth-brand-mark">C</span>
             <span>CareerMate AI</span>
         </a>
-        <p class="eyebrow">JOIN CAREERMATE</p>
-        <h1>How do you want to use CareerMate?</h1>
-        <p class="muted">Select your role to get started.</p>
+        <p class="auth-eyebrow">JOIN CAREERMATE</p>
+        <h1 class="auth-title">How do you want to use CareerMate?</h1>
+        <p class="auth-subtitle">Select your role to get started.</p>
         
-        <div style="display: grid; gap: 16px; margin-top: 28px;">
-            <a href="{% url 'accounts:register_candidate' %}" class="button button-primary" style="display: block; text-align: center; padding: 15px; font-size: 1.1rem;">
-                I am a Candidate
-                <small style="display: block; font-weight: normal; margin-top: 5px; opacity: 0.9;">Looking for jobs and resume feedback</small>
-            </a>
+        <div class="row g-3">
+            <div class="col-12 col-sm-6">
+                <a href="{% url 'accounts:register_candidate' %}" class="choice-card h-100">
+                    <div class="choice-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    </div>
+                    <strong class="d-block mb-1">I am a Candidate</strong>
+                    <span style="font-size: 0.8rem; color: var(--cm-text-muted); text-align: center;">Looking for jobs and resume feedback</span>
+                </a>
+            </div>
             
-            <a href="{% url 'accounts:register_recruiter' %}" class="button button-secondary" style="display: block; text-align: center; padding: 15px; font-size: 1.1rem; border: 1px solid #173329; color: #173329; background: white; border-radius: 6px; text-decoration: none; font-weight: 700;">
-                I am an Employer
-                <small style="display: block; font-weight: normal; margin-top: 5px; opacity: 0.8;">Looking to post jobs and hire talent</small>
-            </a>
+            <div class="col-12 col-sm-6">
+                <a href="{% url 'accounts:register_recruiter' %}" class="choice-card employer h-100">
+                    <div class="choice-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                    </div>
+                    <strong class="d-block mb-1">I am an Employer</strong>
+                    <span style="font-size: 0.8rem; color: var(--cm-text-muted); text-align: center;">Looking to post jobs and hire talent</span>
+                </a>
+            </div>
         </div>
         
-        <p style="text-align: center; margin-top: 25px; font-size: 0.9rem; color: #75847b;">
-            Already have an account? <a href="{% url 'accounts:login' %}" style="color: #33715a; font-weight: bold;">Sign in here</a>.
-        </p>
+        <div class="auth-footer">
+            Already have an account? <a href="{% url 'accounts:login' %}">Sign in here</a>.
+        </div>
     </div>
 </main>
 {% endblock %}

@@ -1,51 +1,51 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 {% load static %}
 {% block title %}Employer Sign Up | CareerMate AI{% endblock %}
 {% block content %}
-<main class="login-page">
-    <div class="login-card" style="width: min(500px, 100%);">
-        <a class="candidate-brand" href="{% url 'home' %}">
-            <span class="brand-mark">C</span>
+<main class="auth-page">
+    <div class="auth-card" style="width: min(540px, 100%);">
+        <a class="auth-brand" href="{% url 'home' %}">
+            <span class="auth-brand-mark">C</span>
             <span>CareerMate AI</span>
         </a>
-        <p class="eyebrow">EMPLOYER SIGN UP</p>
-        <h1>Hire great talent.</h1>
-        <p class="muted">Join to post jobs and review AI-matched candidates.</p>
+        <p class="auth-eyebrow">EMPLOYER SIGN UP</p>
+        <h1 class="auth-title">Hire great talent.</h1>
+        <p class="auth-subtitle">Join to post jobs and review AI-matched candidates.</p>
         
-        <form method="post" style="display: grid; gap: 16px; margin-top: 28px;">
+        <form method="post">
             {% csrf_token %}
             {% if form.non_field_errors %}
-                <div style="color: #a44639; padding: 10px; background: #fbe5e1; border-radius: 6px; font-size: 0.85rem;">
+                <div class="auth-global-error">
                     {{ form.non_field_errors }}
                 </div>
             {% endif %}
             
             {% for field in form %}
-                <div style="display: grid; gap: 7px; color: #52675b; font-size: 0.76rem; font-weight: 800;">
-                    <label for="{{ field.id_for_label }}">
-                        {{ field.label }} {% if field.field.required %}<span style="color: #a44639;">*</span>{% endif %}
+                <div class="auth-form-group">
+                    <label class="auth-label" for="{{ field.id_for_label }}">
+                        {{ field.label }} {% if field.field.required %}<span class="required">*</span>{% endif %}
                     </label>
-                    <input style="width: 100%; padding: 11px 12px; border: 1px solid #dce5dc; border-radius: 6px; background: #fbfcfa; color: #17221d; font: inherit; font-size: 0.88rem;" 
-                           type="{{ field.field.widget.input_type }}" 
+                    <input class="auth-input"
+                           type="{{ field.field.widget.input_type|default:'text' }}" 
                            name="{{ field.html_name }}" 
                            id="{{ field.id_for_label }}"
                            {% if field.value %}value="{{ field.value }}"{% endif %}
                            {% if field.field.required %}required{% endif %}>
                     {% if field.help_text %}
-                        <small style="color: #86958b; font-weight: 400;">{{ field.help_text }}</small>
+                        <small class="auth-help-text">{{ field.help_text }}</small>
                     {% endif %}
                     {% for error in field.errors %}
-                        <small style="color: #a44639;">{{ error }}</small>
+                        <small class="auth-error-text">{{ error }}</small>
                     {% endfor %}
                 </div>
             {% endfor %}
             
-            <button class="button button-primary" type="submit" style="margin-top: 8px;">Create Employer Account</button>
+            <button class="auth-btn auth-btn-primary mt-3" type="submit">Create account</button>
         </form>
         
-        <p style="text-align: center; margin-top: 25px; font-size: 0.9rem; color: #75847b;">
-            Already have an account? <a href="{% url 'accounts:login' %}" style="color: #33715a; font-weight: bold;">Sign in here</a>.
-        </p>
+        <div class="auth-footer">
+            Already have an account? <a href="{% url 'accounts:login' %}">Sign in here</a>.
+        </div>
     </div>
 </main>
 {% endblock %}

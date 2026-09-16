@@ -747,3 +747,190 @@ a {
 }
 
 
+
+/* Authentication UI Scoped Classes */
+.auth-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    background: linear-gradient(135deg, var(--cm-bg-light) 0%, var(--cm-bg-muted) 100%);
+}
+.auth-card {
+    background: white;
+    width: min(480px, 100%);
+    border-radius: 12px;
+    padding: 2.5rem 2rem;
+    box-shadow: 0 15px 35px rgba(23,34,29,0.05);
+    border: 1px solid var(--cm-border);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+@media (prefers-reduced-motion: no-preference) {
+    .auth-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 20px 45px rgba(23,34,29,0.08);
+    }
+}
+.auth-brand {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    color: var(--cm-text-main);
+    font-weight: 800;
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+}
+.auth-brand-mark {
+    background: var(--cm-primary);
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+}
+.auth-eyebrow {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--cm-text-muted);
+    margin-bottom: 0.5rem;
+}
+.auth-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--cm-text-main);
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+}
+.auth-subtitle {
+    font-size: 1rem;
+    color: var(--cm-text-muted);
+    margin-bottom: 2rem;
+}
+.auth-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-bottom: 1.25rem;
+}
+.auth-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--cm-text-main);
+}
+.auth-label .required {
+    color: var(--cm-error);
+}
+.auth-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--cm-border);
+    border-radius: 6px;
+    background: var(--cm-bg-light);
+    color: var(--cm-text-main);
+    font-family: inherit;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+.auth-input:focus {
+    outline: none;
+    border-color: var(--cm-primary);
+    box-shadow: 0 0 0 3px rgba(51, 113, 90, 0.15);
+    background: white;
+}
+.auth-btn {
+    width: 100%;
+    padding: 0.85rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 700;
+    text-align: center;
+    border: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+.auth-btn-primary {
+    background: var(--cm-primary);
+    color: white;
+}
+.auth-btn-primary:hover {
+    background: var(--cm-primary-dark);
+    transform: scale(0.99);
+}
+.auth-help-text {
+    font-size: 0.75rem;
+    color: var(--cm-text-light);
+    margin-top: 0.2rem;
+}
+.auth-error-text {
+    font-size: 0.8rem;
+    color: var(--cm-error);
+    margin-top: 0.2rem;
+    font-weight: 600;
+}
+.auth-global-error {
+    background: var(--cm-error-bg);
+    color: var(--cm-error);
+    padding: 1rem;
+    border-radius: 6px;
+    border-left: 4px solid var(--cm-error);
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+.auth-footer {
+    text-align: center;
+    margin-top: 2rem;
+    font-size: 0.9rem;
+    color: var(--cm-text-muted);
+}
+.auth-footer a {
+    color: var(--cm-primary);
+    font-weight: 700;
+    text-decoration: none;
+}
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+
+/* Choice Cards */
+.choice-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem;
+    border: 2px solid var(--cm-border);
+    border-radius: 12px;
+    text-decoration: none;
+    color: var(--cm-text-main);
+    background: white;
+    transition: all 0.2s ease;
+    margin-bottom: 1rem;
+}
+.choice-card:hover {
+    border-color: var(--cm-primary);
+    background: var(--cm-bg-muted);
+    transform: translateY(-2px);
+}
+.choice-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--cm-bg-muted);
+    color: var(--cm-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+.choice-card.employer:hover {
+    border-color: var(--cm-secondary);
+}
+.choice-card.employer .choice-icon {
+    color: var(--cm-secondary);
+}
