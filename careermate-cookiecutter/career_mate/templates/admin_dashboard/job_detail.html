@@ -1,104 +1,205 @@
-{% extends "admin_dashboard/base.html" %}
+﻿{% extends "admin_dashboard/base.html" %}
 
-{% block title %}{{ job.title }} — Job Details{% endblock %}
+{% block title %}{{ job.title }} - Job Details{% endblock %}
 {% block page_title %}Job Posting Details{% endblock %}
 
+{% block extra_css %}
+<style>
+    .detail-card {
+        padding: 32px;
+        border-radius: 16px;
+    }
+    .meta-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 24px;
+        margin-bottom: 32px;
+    }
+    .meta-item {
+        display: flex;
+        flex-direction: column;
+    }
+    .meta-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--cm-text-dim);
+        font-weight: 600;
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .meta-label svg {
+        stroke: var(--cm-accent);
+    }
+    .meta-value {
+        font-size: 0.95rem;
+        color: var(--cm-text-main);
+    }
+    .detail-section-title {
+        font-family: 'Fraunces', serif;
+        font-size: 1.1rem;
+        color: var(--cm-text-main);
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .detail-text {
+        font-size: 0.95rem;
+        color: var(--cm-text-muted);
+        line-height: 1.6;
+    }
+    .skill-tag {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 14px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 6px;
+        font-size: 0.85rem;
+        color: var(--cm-text-main);
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="mb-3 d-flex justify-content-between align-items-center">
-  <a href="{% url 'admin_panel:jobs' %}" class="btn btn-sm btn-outline-secondary">
-    <i class="bi bi-arrow-left me-1"></i> Back to Jobs List
-  </a>
-  <div class="d-flex gap-2">
-    <a href="{% url 'admin_panel:job_edit' job.pk %}" class="btn btn-sm btn-outline-primary">
-      <i class="bi bi-pencil me-1"></i> Edit Job
+<div class="mb-4 d-flex justify-content-between align-items-center">
+    <a href="{% url 'admin_panel:jobs' %}" class="cm-underline-tag text-decoration-none px-3 py-2 d-flex align-items-center" style="font-size: 0.85rem;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        Back to Jobs List
     </a>
-    <a href="{% url 'admin_panel:job_delete' job.pk %}" class="btn btn-sm btn-outline-danger">
-      <i class="bi bi-trash me-1"></i> Delete
-    </a>
-  </div>
+    <div class="d-flex gap-3">
+        <a href="{% url 'admin_panel:job_edit' job.pk %}" class="cm-btn-accent text-decoration-none px-4 py-2" style="font-size: 0.85rem;">Edit Job</a>
+        <a href="{% url 'admin_panel:job_delete' job.pk %}" class="cm-underline-tag text-decoration-none px-3 py-2 d-flex align-items-center" style="font-size: 0.85rem; color: var(--cm-error);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            Delete
+        </a>
+    </div>
 </div>
 
 <div class="row g-4">
-  <!-- Left Column: Job Info -->
-  <div class="col-lg-7">
-    <div class="cm-card mb-4">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="m-0 fw-bold">{{ job.title }}</h5>
-        <span class="badge-status {{ job.status }}">{{ job.get_status_display }}</span>
-      </div>
-      <div class="card-body">
-        <div class="row g-2 mb-3 text-muted small">
-          <div class="col-sm-6"><i class="bi bi-building me-1"></i><strong>Company:</strong> {{ job.company.name }}</div>
-          <div class="col-sm-6"><i class="bi bi-geo-alt me-1"></i><strong>Location:</strong> {{ job.location }}</div>
-          <div class="col-sm-6"><i class="bi bi-briefcase me-1"></i><strong>Type:</strong> {{ job.get_employment_type_display }}</div>
-          <div class="col-sm-6"><i class="bi bi-tags me-1"></i><strong>Category:</strong> {{ job.category.name|default:"General" }}</div>
-          <div class="col-sm-6"><i class="bi bi-hourglass-split me-1"></i><strong>Experience:</strong> Min {{ job.min_experience }} yr{{ job.min_experience|pluralize }}</div>
-          <div class="col-sm-6">
-            <i class="bi bi-cash-stack me-1"></i><strong>Salary:</strong>
-            {% if job.salary_min or job.salary_max %}
-              ₹{{ job.salary_min|default:"—" }} - ₹{{ job.salary_max|default:"—" }}
-            {% else %}
-              Not disclosed
-            {% endif %}
-          </div>
+    <!-- Left Column: Job Info -->
+    <div class="col-lg-8">
+        <div class="glass-panel detail-card mb-4">
+            <div class="d-flex justify-content-between align-items-start mb-4">
+                <h2 class="cm-fraunces m-0" style="font-size: 1.75rem;">{{ job.title }}</h2>
+                {% if job.status == 'active' %}<span class="status-tag active">Active</span>
+                {% elif job.status == 'draft' %}<span class="status-tag neutral">Draft</span>
+                {% elif job.status == 'closed' %}<span class="status-tag error">Closed</span>
+                {% else %}<span class="status-tag neutral">{{ job.get_status_display }}</span>{% endif %}
+            </div>
+
+            <div class="meta-grid">
+                <div class="meta-item">
+                    <div class="meta-label">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="15" y2="22"></line><line x1="8" y1="6" x2="16" y2="6"></line></svg>
+                        Company
+                    </div>
+                    <div class="meta-value">{{ job.company.name }}</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                        Location
+                    </div>
+                    <div class="meta-value">{{ job.location }}</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                        Employment Type
+                    </div>
+                    <div class="meta-value">{{ job.get_employment_type_display }}</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                        Category
+                    </div>
+                    <div class="meta-value">{{ job.category.name|default:"General" }}</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        Experience
+                    </div>
+                    <div class="meta-value">Min {{ job.min_experience }} yr{{ job.min_experience|pluralize }}</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                        Salary Range
+                    </div>
+                    <div class="meta-value">
+                        {% if job.salary_min or job.salary_max %}
+                            ,1{{ job.salary_min|default:"—" }} - ,1{{ job.salary_max|default:"—" }}
+                        {% else %}
+                            Not disclosed
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="detail-section-title">Job Description</h3>
+            <div class="detail-text mb-4">{{ job.description|linebreaks }}</div>
+
+            <h3 class="detail-section-title">Requirements</h3>
+            <div class="detail-text">{{ job.requirements|default:"No specific requirements listed."|linebreaks }}</div>
         </div>
 
-        <h6 class="fw-bold small text-uppercase text-muted mt-4">Description</h6>
-        <p class="mb-3">{{ job.description|linebreaks }}</p>
-
-        <h6 class="fw-bold small text-uppercase text-muted mt-3">Requirements & Prerequisites</h6>
-        <p class="mb-0">{{ job.requirements|default:"None listed."|linebreaks }}</p>
-      </div>
-    </div>
-
-    <!-- Required Skills -->
-    <div class="cm-card">
-      <div class="card-header"><i class="bi bi-stars me-2 text-primary"></i>Required Skills</div>
-      <div class="card-body">
-        <div class="d-flex flex-wrap gap-2">
-          {% for skill in skills %}
-            <span class="badge bg-primary-subtle text-primary border px-3 py-2 fs-6">{{ skill.name }}</span>
-          {% empty %}
-            <span class="text-muted small">No specific skills tagged.</span>
-          {% endfor %}
+        <!-- Required Skills -->
+        <div class="glass-panel detail-card">
+            <h3 class="detail-section-title border-0 mb-3">Required Skills</h3>
+            <div class="d-flex flex-wrap gap-2">
+                {% for skill in skills %}
+                    <span class="skill-tag">{{ skill.name }}</span>
+                {% empty %}
+                    <span class="detail-text">No specific skills tagged.</span>
+                {% endfor %}
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 
-  <!-- Right Column: Applicants list -->
-  <div class="col-lg-5">
-    <div class="cm-card">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <span><i class="bi bi-people me-2 text-primary"></i>Applicants ({{ applications.count }})</span>
-      </div>
-      <div class="table-responsive">
-        <table class="table cm-table">
-          <thead>
-            <tr>
-              <th>Candidate</th>
-              <th>Status</th>
-              <th>Applied</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for app in applications %}
-              <tr>
-                <td>
-                  <a href="{% url 'admin_panel:candidate_detail' app.candidate.pk %}" class="fw-semibold text-dark text-decoration-none">
-                    {{ app.candidate.user.get_full_name|default:app.candidate.user.username }}
-                  </a>
-                </td>
-                <td><span class="badge-status {{ app.status }}">{{ app.get_status_display }}</span></td>
-                <td><small class="text-muted">{{ app.applied_at|date:"M d" }}</small></td>
-              </tr>
-            {% empty %}
-              <tr><td colspan="3" class="text-center py-4 text-muted">No applications received yet.</td></tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
+    <!-- Right Column: Applicants list -->
+    <div class="col-lg-4">
+        <div class="glass-panel p-0 h-100 d-flex flex-column" style="overflow: hidden;">
+            <div class="d-flex align-items-center justify-content-between p-4 border-bottom" style="border-color: rgba(255,255,255,0.05) !important;">
+                <h3 class="cm-fraunces m-0" style="font-size: 1.25rem;">Applicants ({{ applications.count }})</h3>
+            </div>
+            <div style="overflow-x: auto; flex-grow: 1;">
+                <table class="cm-admin-table h-100">
+                    <thead>
+                        <tr>
+                            <th>Candidate</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for app in applications %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'admin_panel:candidate_detail' app.candidate.pk %}" class="table-main-text d-block">
+                                    {{ app.candidate.user.get_full_name|default:app.candidate.user.username }}
+                                </a>
+                                <span class="table-sub-text">{{ app.applied_at|date:"M d" }}</span>
+                            </td>
+                            <td>
+                                {% if app.status == 'pending' %}<span class="status-tag neutral">Pending</span>
+                                {% elif app.status == 'reviewed' %}<span class="status-tag success">Reviewed</span>
+                                {% elif app.status == 'interviewing' %}<span class="status-tag active">Interviewing</span>
+                                {% elif app.status == 'rejected' %}<span class="status-tag error">Rejected</span>
+                                {% elif app.status == 'hired' %}<span class="status-tag success">Hired</span>
+                                {% else %}<span class="status-tag neutral">{{ app.get_status_display }}</span>{% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="2" class="text-center py-5 text-muted">No applications received yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 {% endblock %}

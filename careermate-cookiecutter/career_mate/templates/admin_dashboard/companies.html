@@ -1,101 +1,123 @@
-{% extends "admin_dashboard/base.html" %}
+﻿{% extends "admin_dashboard/base.html" %}
 
 {% block title %}Company Management{% endblock %}
 {% block page_title %}Registered Companies{% endblock %}
 
+{% block extra_css %}
+<style>
+    .filter-bar {
+        padding: 20px 24px;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+    .badge-pill {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.08);
+        color: var(--cm-text-muted);
+        padding: 2px 10px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        white-space: nowrap;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="cm-card">
-  <div class="card-header d-flex justify-content-between align-items-center">
-    <div class="d-flex align-items-center gap-2">
-      <i class="bi bi-building text-primary"></i>
-      <span>Companies ({{ paginator.count }})</span>
-    </div>
-    <a href="{% url 'admin_panel:company_create' %}" class="btn btn-sm btn-primary">
-      <i class="bi bi-plus-lg me-1"></i> Add Company
-    </a>
-  </div>
-
-  <div class="card-body border-bottom bg-light">
-    <form method="get" class="row g-2 align-items-center">
-      <div class="col-md-8 col-lg-6">
-        <div class="input-group input-group-sm">
-          <span class="input-group-text"><i class="bi bi-search"></i></span>
-          <input type="text" name="q" value="{{ search_query }}" class="form-control" placeholder="Search by company name, industry, location...">
+<div class="glass-panel p-0 mb-4" style="overflow: hidden;">
+    
+    <!-- Filter Bar -->
+    <form method="get" class="filter-bar">
+        <div style="flex-grow: 1; max-width: 500px; position: relative;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--cm-text-muted)" stroke-width="2" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%);"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" name="q" value="{{ search_query }}" class="cm-underline-input w-100 m-0" style="padding-left: 36px; height: 40px;" placeholder="Search by company name, industry, location...">
         </div>
-      </div>
-      <div class="col-md-2 d-flex gap-1">
-        <button type="submit" class="btn btn-sm btn-primary w-100">Search</button>
+        
+        <button type="submit" class="cm-btn-accent px-4 py-2" style="height: 40px; font-size: 0.85rem;">Search</button>
+        
         {% if search_query %}
-          <a href="{% url 'admin_panel:companies' %}" class="btn btn-sm btn-outline-secondary" title="Clear Search"><i class="bi bi-x-lg"></i></a>
+            <a href="{% url 'admin_panel:companies' %}" class="cm-underline-tag text-decoration-none px-3 py-2 d-flex align-items-center" style="height: 40px; font-size: 0.85rem;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                Clear
+            </a>
         {% endif %}
-      </div>
+
+        <div class="ms-auto">
+            <a href="{% url 'admin_panel:company_create' %}" class="cm-btn-accent text-decoration-none px-3 py-2 d-flex align-items-center gap-2" style="height: 40px; font-size: 0.85rem;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                Add Company
+            </a>
+        </div>
     </form>
-  </div>
 
-  <div class="table-responsive">
-    <table class="table cm-table">
-      <thead>
-        <tr>
-          <th>Company</th>
-          <th>Industry</th>
-          <th>Location</th>
-          <th>Website</th>
-          <th>Recruiters</th>
-          <th>Jobs Posted</th>
-          <th class="text-end">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for company in companies %}
-          <tr>
-            <td>
-              <div class="fw-semibold text-dark">{{ company.name }}</div>
-              <small class="text-muted">{{ company.description|truncatewords:10|default:"—" }}</small>
-            </td>
-            <td><span class="badge bg-light text-dark border">{{ company.industry|default:"General" }}</span></td>
-            <td>{{ company.location|default:"—" }}</td>
-            <td>
-              {% if company.website %}
-                <a href="{{ company.website }}" target="_blank" class="text-decoration-none small"><i class="bi bi-link-45deg"></i> Link</a>
-              {% else %}
-                <span class="text-muted small">—</span>
-              {% endif %}
-            </td>
-            <td><span class="badge bg-info-subtle text-info">{{ company.recruiters_count }}</span></td>
-            <td><span class="badge bg-primary-subtle text-primary">{{ company.jobs_count }}</span></td>
-            <td class="text-end">
-              <a href="{% url 'admin_panel:company_edit' company.pk %}" class="btn btn-sm btn-outline-secondary py-0 px-2" title="Edit">
-                <i class="bi bi-pencil"></i>
-              </a>
-              <a href="{% url 'admin_panel:company_delete' company.pk %}" class="btn btn-sm btn-outline-danger py-0 px-2" title="Delete">
-                <i class="bi bi-trash"></i>
-              </a>
-            </td>
-          </tr>
-        {% empty %}
-          <tr>
-            <td colspan="7" class="text-center py-4 text-muted">No companies registered yet.</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-
-  {% if is_paginated %}
-    <div class="card-footer bg-white border-top d-flex justify-content-between align-items-center py-2">
-      <small class="text-muted">Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ paginator.count }} companies</small>
-      <nav>
-        <ul class="pagination pagination-sm m-0">
-          {% if page_obj.has_previous %}
-            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ search_query }}">Previous</a></li>
-          {% endif %}
-          <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
-          {% if page_obj.has_next %}
-            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ search_query }}">Next</a></li>
-          {% endif %}
-        </ul>
-      </nav>
+    <!-- Table -->
+    <div style="overflow-x: auto;">
+        <table class="cm-admin-table">
+            <thead>
+                <tr>
+                    <th>Company</th>
+                    <th>Industry & Location</th>
+                    <th>Recruiters</th>
+                    <th>Jobs</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for company in companies %}
+                <tr>
+                    <td>
+                        <div class="table-main-text">{{ company.name }}</div>
+                        <span class="table-sub-text text-truncate d-block" style="max-width: 250px;">{{ company.description|truncatewords:8|default:"No description provided." }}</span>
+                    </td>
+                    <td>
+                        <span class="badge-pill mb-1 d-inline-block">{{ company.industry|default:"General" }}</span>
+                        <span class="table-sub-text">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1" style="transform: translateY(-1px);"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                            {{ company.location|default:"Unspecified" }}
+                        </span>
+                    </td>
+                    <td><span class="table-main-text">{{ company.recruiters_count }}</span></td>
+                    <td><span class="table-main-text" style="color: var(--cm-accent);">{{ company.jobs_count }}</span></td>
+                    <td class="text-end">
+                        <div class="d-flex align-items-center justify-content-end gap-3">
+                            {% if company.website %}
+                                <a href="{{ company.website }}" target="_blank" class="cm-underline-tag text-decoration-none px-2 py-1" style="font-size: 0.8rem;">Link <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="ms-1"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></a>
+                            {% endif %}
+                            <a href="{% url 'admin_panel:company_edit' company.pk %}" class="cm-underline-tag text-decoration-none px-2 py-1" style="font-size: 0.8rem;">Edit</a>
+                            <a href="{% url 'admin_panel:company_delete' company.pk %}" class="text-decoration-none" style="color: var(--cm-error);" title="Delete">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-5" style="color: var(--cm-text-dim);">No companies registered yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
-  {% endif %}
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <div class="d-flex align-items-center justify-content-between p-3 border-top" style="border-color: rgba(255,255,255,0.05) !important;">
+        <span style="font-size: 0.85rem; color: var(--cm-text-dim);">Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ paginator.count }}</span>
+        
+        <div class="d-flex align-items-center gap-2">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}&q={{ search_query }}" class="cm-underline-tag text-decoration-none px-3 py-1" style="font-size: 0.85rem;">Previous</a>
+            {% endif %}
+            
+            <span class="px-3 py-1" style="font-size: 0.85rem; color: var(--cm-accent); font-weight: 500;">Page {{ page_obj.number }}</span>
+            
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}&q={{ search_query }}" class="cm-underline-tag text-decoration-none px-3 py-1" style="font-size: 0.85rem;">Next</a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}

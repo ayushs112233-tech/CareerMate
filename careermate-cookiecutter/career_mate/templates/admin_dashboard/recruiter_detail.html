@@ -1,86 +1,145 @@
-{% extends "admin_dashboard/base.html" %}
+﻿{% extends "admin_dashboard/base.html" %}
 
-{% block title %}{{ recruiter.user.get_full_name|default:recruiter.user.username }} — Recruiter Details{% endblock %}
+{% block title %}{{ recruiter.user.get_full_name|default:recruiter.user.username }} - Recruiter Details{% endblock %}
 {% block page_title %}Recruiter Details{% endblock %}
 
+{% block extra_css %}
+<style>
+    .detail-card {
+        padding: 32px;
+        border-radius: 16px;
+    }
+    .avatar-circle-lg {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: rgba(212,168,74,0.1);
+        color: var(--cm-accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 2rem;
+        margin: 0 auto 16px auto;
+        font-family: 'Fraunces', serif;
+    }
+    .info-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .info-list-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .info-list-item:last-child {
+        border-bottom: none;
+    }
+    .info-label {
+        color: var(--cm-text-dim);
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .info-label svg {
+        stroke: var(--cm-text-muted);
+    }
+    .info-value {
+        color: var(--cm-text-main);
+        font-size: 0.9rem;
+        font-weight: 500;
+        text-align: right;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="mb-3">
-  <a href="{% url 'admin_panel:recruiters' %}" class="btn btn-sm btn-outline-secondary">
-    <i class="bi bi-arrow-left me-1"></i> Back to Recruiters List
-  </a>
+<div class="mb-4">
+    <a href="{% url 'admin_panel:recruiters' %}" class="cm-underline-tag text-decoration-none px-3 py-2 d-inline-flex align-items-center" style="font-size: 0.85rem;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        Back to Recruiters List
+    </a>
 </div>
 
 <div class="row g-4">
-  <!-- Recruiter Profile Card -->
-  <div class="col-lg-4">
-    <div class="cm-card">
-      <div class="card-body text-center p-4">
-        <div class="bg-primary-subtle text-primary rounded-circle d-inline-flex align-items-center justify-content-center fw-bold fs-3 mb-3" style="width: 72px; height: 72px;">
-          {{ recruiter.user.username|slice:":1"|upper }}
+    <!-- Recruiter Profile Card -->
+    <div class="col-lg-4">
+        <div class="glass-panel detail-card text-center mb-4">
+            <div class="avatar-circle-lg">{{ recruiter.user.username|slice:":1"|upper }}</div>
+            <h2 class="cm-fraunces mb-1" style="font-size: 1.5rem;">{{ recruiter.user.get_full_name|default:recruiter.user.username }}</h2>
+            <p class="text-muted small mb-2">{{ recruiter.designation|default:"Recruiter" }}</p>
+            <div class="mb-4">
+                <span class="status-tag neutral">{{ recruiter.company.name|default:"Independent Recruiter" }}</span>
+            </div>
+
+            <ul class="info-list text-start">
+                <li class="info-list-item">
+                    <span class="info-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg> Email</span>
+                    <span class="info-value">{{ recruiter.user.email|default:"Unspecified" }}</span>
+                </li>
+                <li class="info-list-item">
+                    <span class="info-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg> Phone</span>
+                    <span class="info-value">{{ recruiter.phone|default:"Unspecified" }}</span>
+                </li>
+                <li class="info-list-item">
+                    <span class="info-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="15" y2="22"></line><line x1="8" y1="6" x2="16" y2="6"></line></svg> Company</span>
+                    <span class="info-value">{{ recruiter.company.name|default:"Unspecified" }}</span>
+                </li>
+                <li class="info-list-item">
+                    <span class="info-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> Joined</span>
+                    <span class="info-value">{{ recruiter.created_at|date:"M d, Y" }}</span>
+                </li>
+            </ul>
         </div>
-        <h5 class="fw-bold mb-1">{{ recruiter.user.get_full_name|default:recruiter.user.username }}</h5>
-        <p class="text-muted small mb-2">{{ recruiter.designation|default:"Recruiter" }}</p>
-        <span class="badge bg-primary-subtle text-primary">{{ recruiter.company.name|default:"Independent Recruiter" }}</span>
-      </div>
-
-      <ul class="list-group list-group-flush small">
-        <li class="list-group-item d-flex justify-content-between">
-          <span class="text-muted"><i class="bi bi-envelope me-2"></i>Email</span>
-          <span class="fw-semibold">{{ recruiter.user.email|default:"—" }}</span>
-        </li>
-        <li class="list-group-item d-flex justify-content-between">
-          <span class="text-muted"><i class="bi bi-telephone me-2"></i>Phone</span>
-          <span class="fw-semibold">{{ recruiter.phone|default:"—" }}</span>
-        </li>
-        <li class="list-group-item d-flex justify-content-between">
-          <span class="text-muted"><i class="bi bi-building me-2"></i>Company</span>
-          <span class="fw-semibold">{{ recruiter.company.name|default:"—" }}</span>
-        </li>
-        <li class="list-group-item d-flex justify-content-between">
-          <span class="text-muted"><i class="bi bi-calendar me-2"></i>Joined</span>
-          <span class="fw-semibold">{{ recruiter.created_at|date:"M d, Y" }}</span>
-        </li>
-      </ul>
     </div>
-  </div>
 
-  <!-- Posted Jobs by this Recruiter -->
-  <div class="col-lg-8">
-    <div class="cm-card">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <span><i class="bi bi-briefcase me-2 text-primary"></i>Jobs Posted by Recruiter ({{ posted_jobs.count }})</span>
-      </div>
-      <div class="table-responsive">
-        <table class="table cm-table">
-          <thead>
-            <tr>
-              <th>Job Title</th>
-              <th>Category</th>
-              <th>Type</th>
-              <th>Status</th>
-              <th>Posted Date</th>
-              <th class="text-end">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for job in posted_jobs %}
-              <tr>
-                <td><a href="{% url 'admin_panel:job_detail' job.pk %}" class="fw-semibold text-dark text-decoration-none">{{ job.title }}</a></td>
-                <td>{{ job.category.name|default:"Uncategorized" }}</td>
-                <td><span class="badge bg-light text-dark border">{{ job.get_employment_type_display }}</span></td>
-                <td><span class="badge-status {{ job.status }}">{{ job.get_status_display }}</span></td>
-                <td>{{ job.created_at|date:"M d, Y" }}</td>
-                <td class="text-end">
-                  <a href="{% url 'admin_panel:job_detail' job.pk %}" class="btn btn-sm btn-outline-primary py-0 px-2">View</a>
-                </td>
-              </tr>
-            {% empty %}
-              <tr><td colspan="6" class="text-center py-4 text-muted">No jobs posted by this recruiter yet.</td></tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
+    <!-- Posted Jobs by this Recruiter -->
+    <div class="col-lg-8">
+        <div class="glass-panel p-0 h-100 d-flex flex-column" style="overflow: hidden;">
+            <div class="d-flex align-items-center justify-content-between p-4 border-bottom" style="border-color: rgba(255,255,255,0.05) !important;">
+                <h3 class="cm-fraunces m-0 d-flex align-items-center gap-2" style="font-size: 1.1rem; color: var(--cm-text-main);">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--cm-accent)" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                    Jobs Posted ({{ posted_jobs.count }})
+                </h3>
+            </div>
+            <div style="overflow-x: auto; flex-grow: 1;">
+                <table class="cm-admin-table h-100">
+                    <thead>
+                        <tr>
+                            <th>Job Title</th>
+                            <th>Category & Type</th>
+                            <th>Status</th>
+                            <th>Posted Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for job in posted_jobs %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'admin_panel:job_detail' job.pk %}" class="table-main-text d-block">{{ job.title }}</a>
+                            </td>
+                            <td>
+                                <span class="table-main-text d-block">{{ job.category.name|default:"Uncategorized" }}</span>
+                                <span class="table-sub-text">{{ job.get_employment_type_display }}</span>
+                            </td>
+                            <td>
+                                {% if job.status == 'active' %}<span class="status-tag active">Active</span>
+                                {% elif job.status == 'draft' %}<span class="status-tag neutral">Draft</span>
+                                {% elif job.status == 'closed' %}<span class="status-tag error">Closed</span>
+                                {% else %}<span class="status-tag neutral">{{ job.get_status_display }}</span>{% endif %}
+                            </td>
+                            <td><span class="table-sub-text">{{ job.created_at|date:"M d, Y" }}</span></td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4" class="text-center py-5 text-muted">No jobs posted by this recruiter yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 {% endblock %}

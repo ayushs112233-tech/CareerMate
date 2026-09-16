@@ -1,130 +1,170 @@
-{% extends "admin_dashboard/base.html" %}
+﻿{% extends "admin_dashboard/base.html" %}
 
 {% block title %}Candidate Management{% endblock %}
 {% block page_title %}Candidate Profiles{% endblock %}
 
+{% block extra_css %}
+<style>
+    .filter-bar {
+        padding: 20px 24px;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+    .admin-select {
+        background: rgba(255,255,255,0.02);
+        border: 1px solid rgba(255,255,255,0.1);
+        color: var(--cm-text-main);
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+    .admin-select:focus {
+        border-color: var(--cm-accent);
+        outline: none;
+    }
+    .avatar-circle {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: rgba(212,168,74,0.1);
+        color: var(--cm-accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.9rem;
+        flex-shrink: 0;
+    }
+    .skill-chip {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.08);
+        color: var(--cm-text-muted);
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        white-space: nowrap;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="cm-card">
-  <div class="card-header">
-    <div class="d-flex align-items-center gap-2">
-      <i class="bi bi-people-fill text-primary"></i>
-      <span>Registered Candidates ({{ paginator.count }})</span>
-    </div>
-  </div>
-
-  <div class="card-body border-bottom bg-light">
-    <form method="get" class="row g-2 align-items-center">
-      <div class="col-md-6 col-lg-5">
-        <div class="input-group input-group-sm">
-          <span class="input-group-text"><i class="bi bi-search"></i></span>
-          <input type="text" name="q" value="{{ search_query }}" class="form-control" placeholder="Search by name, email, headline, skills, location...">
+<div class="glass-panel p-0 mb-4" style="overflow: hidden;">
+    
+    <!-- Filter Bar -->
+    <form method="get" class="filter-bar">
+        <div style="flex-grow: 1; max-width: 400px; position: relative;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--cm-text-muted)" stroke-width="2" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%);"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" name="q" value="{{ search_query }}" class="cm-underline-input w-100 m-0" style="padding-left: 36px; height: 40px;" placeholder="Search candidates...">
         </div>
-      </div>
-      <div class="col-md-4 col-lg-3">
-        <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
-          <option value="">All Profiles</option>
-          <option value="complete" {% if status_filter == 'complete' %}selected{% endif %}>Completed Profiles</option>
-          <option value="incomplete" {% if status_filter == 'incomplete' %}selected{% endif %}>Incomplete Profiles</option>
+        
+        <select name="status" class="admin-select" onchange="this.form.submit()">
+            <option value="">All Profiles</option>
+            <option value="complete" {% if status_filter == 'complete' %}selected{% endif %}>Completed Profiles</option>
+            <option value="incomplete" {% if status_filter == 'incomplete' %}selected{% endif %}>Incomplete Profiles</option>
         </select>
-      </div>
-      <div class="col-md-2 d-flex gap-1">
-        <button type="submit" class="btn btn-sm btn-primary w-100">Filter</button>
+        
+        <button type="submit" class="cm-btn-accent px-4 py-2" style="height: 40px; font-size: 0.85rem;">Filter</button>
+        
         {% if search_query or status_filter %}
-          <a href="{% url 'admin_panel:candidates' %}" class="btn btn-sm btn-outline-secondary" title="Clear Filters"><i class="bi bi-x-lg"></i></a>
+            <a href="{% url 'admin_panel:candidates' %}" class="cm-underline-tag text-decoration-none px-3 py-2 d-flex align-items-center" style="height: 40px; font-size: 0.85rem;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                Clear
+            </a>
         {% endif %}
-      </div>
     </form>
-  </div>
 
-  <div class="table-responsive">
-    <table class="table cm-table">
-      <thead>
-        <tr>
-          <th>Candidate</th>
-          <th>Headline / Title</th>
-          <th>Location</th>
-          <th>Experience</th>
-          <th>Top Skills</th>
-          <th>Profile Status</th>
-          <th class="text-end">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for candidate in candidates %}
-          <tr>
-            <td>
-              <div class="d-flex align-items-center gap-2">
-                <div class="avatar-sm bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 34px; height: 34px;">
-                  {{ candidate.user.username|slice:":1"|upper }}
-                </div>
-                <div>
-                  <a href="{% url 'admin_panel:candidate_detail' candidate.pk %}" class="fw-semibold text-dark text-decoration-none">
-                    {{ candidate.user.get_full_name|default:candidate.user.username }}
-                  </a>
-                  <div class="small text-muted">{{ candidate.user.email|default:"No email" }}</div>
-                </div>
-              </div>
-            </td>
-            <td>
-              <div class="text-truncate" style="max-width: 200px;">
-                {{ candidate.headline|default:"—" }}
-              </div>
-            </td>
-            <td>{{ candidate.location|default:"—" }}</td>
-            <td>{{ candidate.experience_years }} yr{{ candidate.experience_years|pluralize }}</td>
-            <td>
-              <div class="d-flex flex-wrap gap-1" style="max-width: 220px;">
-                {% for skill in candidate.skills.all|slice:":3" %}
-                  <span class="badge bg-light text-dark border small">{{ skill.name }}</span>
+    <!-- Table -->
+    <div style="overflow-x: auto;">
+        <table class="cm-admin-table">
+            <thead>
+                <tr>
+                    <th>Candidate</th>
+                    <th>Headline & Location</th>
+                    <th>Experience</th>
+                    <th>Top Skills</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for candidate in candidates %}
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="avatar-circle">{{ candidate.user.username|slice:":1"|upper }}</div>
+                            <div>
+                                <a href="{% url 'admin_panel:candidate_detail' candidate.pk %}" class="table-main-text">
+                                    {{ candidate.user.get_full_name|default:candidate.user.username }}
+                                </a>
+                                <span class="table-sub-text">{{ candidate.user.email|default:"No email" }}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="table-main-text text-truncate" style="max-width: 200px;">{{ candidate.headline|default:"—" }}</div>
+                        <span class="table-sub-text">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1" style="transform: translateY(-1px);"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                            {{ candidate.location|default:"Unspecified" }}
+                        </span>
+                    </td>
+                    <td><span class="table-main-text">{{ candidate.experience_years }} yr{{ candidate.experience_years|pluralize }}</span></td>
+                    <td>
+                        <div class="d-flex flex-wrap gap-1" style="max-width: 220px;">
+                            {% for skill in candidate.skills.all|slice:":3" %}
+                                <span class="skill-chip">{{ skill.name }}</span>
+                            {% empty %}
+                                <span class="table-sub-text mt-0">None listed</span>
+                            {% endfor %}
+                            {% if candidate.skills.count > 3 %}
+                                <span class="skill-chip border-0 bg-transparent" style="color: var(--cm-accent);">+{{ candidate.skills.count|add:"-3" }}</span>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>
+                        {% if candidate.profile_complete %}
+                            <span class="status-tag success">Complete</span>
+                        {% else %}
+                            <span class="status-tag neutral">Incomplete</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        <div class="d-flex align-items-center justify-content-end gap-3">
+                            <a href="{% url 'admin_panel:candidate_detail' candidate.pk %}" class="cm-underline-tag text-decoration-none px-2 py-1" style="font-size: 0.8rem;">View</a>
+                            <a href="{% url 'admin_panel:candidate_delete' candidate.pk %}" class="text-decoration-none" style="color: var(--cm-error);" title="Delete">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
                 {% empty %}
-                  <span class="text-muted small">None</span>
+                <tr>
+                    <td colspan="6" class="text-center py-5" style="color: var(--cm-text-dim);">No candidate profiles match your criteria.</td>
+                </tr>
                 {% endfor %}
-                {% if candidate.skills.count > 3 %}
-                  <span class="badge bg-secondary-subtle text-secondary small">+{{ candidate.skills.count|add:"-3" }}</span>
-                {% endif %}
-              </div>
-            </td>
-            <td>
-              {% if candidate.profile_complete %}
-                <span class="badge-status complete">Complete</span>
-              {% else %}
-                <span class="badge-status incomplete">Incomplete</span>
-              {% endif %}
-            </td>
-            <td class="text-end">
-              <a href="{% url 'admin_panel:candidate_detail' candidate.pk %}" class="btn btn-sm btn-outline-primary py-0 px-2">
-                <i class="bi bi-eye"></i> View
-              </a>
-              <a href="{% url 'admin_panel:candidate_delete' candidate.pk %}" class="btn btn-sm btn-outline-danger py-0 px-2">
-                <i class="bi bi-trash"></i>
-              </a>
-            </td>
-          </tr>
-        {% empty %}
-          <tr>
-            <td colspan="7" class="text-center py-4 text-muted">No candidate profiles match your criteria.</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Pagination -->
-  {% if is_paginated %}
-    <div class="card-footer bg-white border-top d-flex justify-content-between align-items-center py-2">
-      <small class="text-muted">Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ paginator.count }} candidates</small>
-      <nav>
-        <ul class="pagination pagination-sm m-0">
-          {% if page_obj.has_previous %}
-            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ search_query }}&status={{ status_filter }}">Previous</a></li>
-          {% endif %}
-          <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
-          {% if page_obj.has_next %}
-            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ search_query }}&status={{ status_filter }}">Next</a></li>
-          {% endif %}
-        </ul>
-      </nav>
+            </tbody>
+        </table>
     </div>
-  {% endif %}
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <div class="d-flex align-items-center justify-content-between p-3 border-top" style="border-color: rgba(255,255,255,0.05) !important;">
+        <span style="font-size: 0.85rem; color: var(--cm-text-dim);">Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ paginator.count }}</span>
+        
+        <div class="d-flex align-items-center gap-2">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}&q={{ search_query }}&status={{ status_filter }}" class="cm-underline-tag text-decoration-none px-3 py-1" style="font-size: 0.85rem;">Previous</a>
+            {% endif %}
+            
+            <span class="px-3 py-1" style="font-size: 0.85rem; color: var(--cm-accent); font-weight: 500;">Page {{ page_obj.number }}</span>
+            
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}&q={{ search_query }}&status={{ status_filter }}" class="cm-underline-tag text-decoration-none px-3 py-1" style="font-size: 0.85rem;">Next</a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}

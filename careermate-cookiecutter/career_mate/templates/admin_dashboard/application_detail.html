@@ -1,107 +1,204 @@
-{% extends "admin_dashboard/base.html" %}
+﻿{% extends "admin_dashboard/base.html" %}
 
-{% block title %}Application #{{ application.pk }} — Details{% endblock %}
+{% block title %}Application #{{ application.pk }} - Details{% endblock %}
 {% block page_title %}Application Workflow Management{% endblock %}
 
+{% block extra_css %}
+<style>
+    .detail-card {
+        padding: 32px;
+        border-radius: 16px;
+    }
+    .detail-section-title {
+        font-family: 'Fraunces', serif;
+        font-size: 1.1rem;
+        color: var(--cm-text-main);
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .detail-section-title svg {
+        stroke: var(--cm-accent);
+    }
+    .info-block {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 24px;
+    }
+    .info-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--cm-text-dim);
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+    .info-main {
+        font-size: 1.1rem;
+        color: var(--cm-text-main);
+        font-weight: 500;
+        margin-bottom: 4px;
+    }
+    .info-sub {
+        font-size: 0.85rem;
+        color: var(--cm-text-muted);
+    }
+    .resume-preview-box {
+        background: rgba(255,255,255,0.02);
+        border: 1px solid rgba(255,255,255,0.05);
+        border-radius: 8px;
+        padding: 16px;
+        font-family: monospace;
+        font-size: 0.85rem;
+        color: var(--cm-text-muted);
+        max-height: 300px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+    }
+    .status-form-select select {
+        width: 100%;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.1);
+        color: var(--cm-text-main);
+        border-radius: 8px;
+        padding: 12px;
+        font-size: 0.95rem;
+        margin-bottom: 16px;
+    }
+    .status-form-select select:focus {
+        border-color: var(--cm-accent);
+        outline: none;
+    }
+    .status-form-select select option {
+        background: var(--cm-primary);
+        color: var(--cm-text-main);
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="mb-3">
-  <a href="{% url 'admin_panel:applications' %}" class="btn btn-sm btn-outline-secondary">
-    <i class="bi bi-arrow-left me-1"></i> Back to Applications List
-  </a>
+<div class="mb-4">
+    <a href="{% url 'admin_panel:applications' %}" class="cm-underline-tag text-decoration-none px-3 py-2 d-inline-flex align-items-center" style="font-size: 0.85rem;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        Back to Applications List
+    </a>
 </div>
 
 <div class="row g-4">
-  <!-- Left Column: Details -->
-  <div class="col-lg-8">
-    <div class="cm-card mb-4">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <span><i class="bi bi-send me-2 text-primary"></i>Application #{{ application.pk }} Overview</span>
-        <span class="badge-status {{ application.status }} fs-6">{{ application.get_status_display }}</span>
-      </div>
-      <div class="card-body">
-        <div class="row g-3 mb-4">
-          <div class="col-md-6">
-            <label class="text-muted small fw-semibold text-uppercase d-block">Candidate</label>
-            <h6 class="fw-bold m-0">
-              <a href="{% url 'admin_panel:candidate_detail' application.candidate.pk %}" class="text-dark text-decoration-none">
-                {{ application.candidate.user.get_full_name|default:application.candidate.user.username }}
-              </a>
-            </h6>
-            <small class="text-muted">{{ application.candidate.user.email }}</small>
-          </div>
-          <div class="col-md-6">
-            <label class="text-muted small fw-semibold text-uppercase d-block">Job Posting</label>
-            <h6 class="fw-bold m-0">
-              <a href="{% url 'admin_panel:job_detail' application.job.pk %}" class="text-dark text-decoration-none">
-                {{ application.job.title }}
-              </a>
-            </h6>
-            <small class="text-muted">{{ application.job.company.name }}</small>
-          </div>
-        </div>
-
-        <div class="row g-3 small border-top pt-3 text-muted">
-          <div class="col-sm-6"><i class="bi bi-calendar me-1"></i><strong>Applied On:</strong> {{ application.applied_at|date:"F d, Y - h:i A" }}</div>
-          <div class="col-sm-6"><i class="bi bi-clock-history me-1"></i><strong>Last Updated:</strong> {{ application.updated_at|date:"F d, Y - h:i A" }}</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Attached Resume Preview -->
-    <div class="cm-card">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <span><i class="bi bi-file-earmark-pdf me-2 text-primary"></i>Attached Candidate Resume</span>
-        {% if application.resume and application.resume.file %}
-          <a href="{{ application.resume.file.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
-            <i class="bi bi-download me-1"></i> Download PDF
-          </a>
-        {% endif %}
-      </div>
-      <div class="card-body">
-        {% if application.resume %}
-          <div class="d-flex align-items-center justify-content-between mb-3 p-2 bg-light rounded border">
-            <div>
-              <div class="fw-semibold">{{ application.resume.file_name }}</div>
-              <small class="text-muted">Uploaded {{ application.resume.uploaded_at|date:"M d, Y" }}</small>
+    <!-- Left Column: Details -->
+    <div class="col-lg-8">
+        <div class="glass-panel detail-card mb-4">
+            <div class="d-flex justify-content-between align-items-start mb-4">
+                <h2 class="cm-fraunces m-0 d-flex align-items-center gap-2" style="font-size: 1.5rem;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--cm-accent)" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    Application Overview
+                </h2>
+                {% if application.status == 'pending' %}<span class="status-tag neutral">Pending</span>
+                {% elif application.status == 'reviewed' %}<span class="status-tag success">Reviewed</span>
+                {% elif application.status == 'interviewing' %}<span class="status-tag active">Interviewing</span>
+                {% elif application.status == 'rejected' %}<span class="status-tag error">Rejected</span>
+                {% elif application.status == 'hired' %}<span class="status-tag success">Hired</span>
+                {% else %}<span class="status-tag neutral">{{ application.get_status_display }}</span>{% endif %}
             </div>
-            <span class="badge-status {{ application.resume.status }}">{{ application.resume.get_status_display }}</span>
-          </div>
 
-          <h6 class="small text-uppercase text-muted fw-bold">Resume Extracted Text Preview:</h6>
-          <div class="p-3 bg-light rounded font-monospace small text-secondary" style="max-height: 250px; overflow-y: auto; white-space: pre-wrap;">
-            {{ application.resume.parsed_text|default:"(No text extracted yet - ready for AI engine parsing phase)" }}
-          </div>
-        {% else %}
-          <p class="text-muted mb-0">No resume attached to this application.</p>
-        {% endif %}
-      </div>
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <div class="info-block m-0">
+                        <div class="info-label">Candidate</div>
+                        <a href="{% url 'admin_panel:candidate_detail' application.candidate.pk %}" class="info-main text-decoration-none d-flex align-items-center gap-2">
+                            {{ application.candidate.user.get_full_name|default:application.candidate.user.username }}
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                        </a>
+                        <div class="info-sub">{{ application.candidate.user.email }}</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info-block m-0">
+                        <div class="info-label">Job Posting</div>
+                        <a href="{% url 'admin_panel:job_detail' application.job.pk %}" class="info-main text-decoration-none d-flex align-items-center gap-2">
+                            {{ application.job.title }}
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                        </a>
+                        <div class="info-sub">{{ application.job.company.name }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-4 pt-3 border-top" style="border-color: rgba(255,255,255,0.05) !important;">
+                <div class="info-sub d-flex align-items-center gap-2">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    <strong>Applied:</strong> {{ application.applied_at|date:"M d, Y - h:i A" }}
+                </div>
+                <div class="info-sub d-flex align-items-center gap-2">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    <strong>Updated:</strong> {{ application.updated_at|date:"M d, Y - h:i A" }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Attached Resume Preview -->
+        <div class="glass-panel detail-card">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="detail-section-title m-0 border-0 p-0">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    Candidate Resume
+                </h3>
+                {% if application.resume and application.resume.file %}
+                <a href="{{ application.resume.file.url }}" target="_blank" class="cm-underline-tag text-decoration-none px-3 py-2 d-flex align-items-center" style="font-size: 0.85rem;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    Download PDF
+                </a>
+                {% endif %}
+            </div>
+
+            {% if application.resume %}
+                <div class="d-flex align-items-center justify-content-between p-3 mb-4 rounded" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);">
+                    <div>
+                        <div class="info-main m-0" style="font-size: 0.95rem;">{{ application.resume.file_name }}</div>
+                        <div class="info-sub">Uploaded {{ application.resume.uploaded_at|date:"M d, Y" }}</div>
+                    </div>
+                    {% if application.resume.status == 'pending' %}<span class="status-tag neutral">Pending Parse</span>
+                    {% elif application.resume.status == 'parsed' %}<span class="status-tag success">Parsed</span>
+                    {% elif application.resume.status == 'failed' %}<span class="status-tag error">Parse Failed</span>
+                    {% else %}<span class="status-tag neutral">{{ application.resume.get_status_display }}</span>{% endif %}
+                </div>
+
+                <div class="info-label">Resume Extracted Text:</div>
+                <div class="resume-preview-box">
+{{ application.resume.parsed_text|default:"(No text extracted yet - ready for AI engine parsing phase)" }}
+                </div>
+            {% else %}
+                <div class="text-center py-4" style="color: var(--cm-text-dim);">No resume attached to this application.</div>
+            {% endif %}
+        </div>
     </div>
-  </div>
 
-  <!-- Right Column: Status Change Form -->
-  <div class="col-lg-4">
-    <div class="cm-card">
-      <div class="card-header">
-        <i class="bi bi-sliders me-2 text-primary"></i>Update Application Status
-      </div>
-      <div class="card-body p-4">
-        <form method="post" action="{% url 'admin_panel:application_status_update' application.pk %}">
-          {% csrf_token %}
-          <div class="mb-3">
-            <label for="{{ form.status.id_for_label }}" class="form-label fw-semibold small">Workflow Status</label>
-            {{ form.status }}
-          </div>
+    <!-- Right Column: Status Change Form -->
+    <div class="col-lg-4">
+        <div class="glass-panel detail-card">
+            <h3 class="detail-section-title mb-4">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+                Update Status
+            </h3>
+            
+            <form method="post" action="{% url 'admin_panel:application_status_update' application.pk %}" class="status-form-select">
+                {% csrf_token %}
+                <div class="info-label">Workflow Status</div>
+                {{ form.status }}
 
-          <p class="small text-muted mb-3">
-            Changing this status updates the candidate's hiring progression in the system.
-          </p>
+                <p style="font-size: 0.85rem; color: var(--cm-text-dim); margin-bottom: 24px; line-height: 1.5;">
+                    Changing this status updates the candidate's hiring progression in the system.
+                </p>
 
-          <button type="submit" class="btn btn-primary w-100">
-            <i class="bi bi-check2 me-1"></i> Update Status
-          </button>
-        </form>
-      </div>
+                <button type="submit" class="cm-btn-accent w-100 py-3 d-flex align-items-center justify-content-center gap-2">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    Update Status
+                </button>
+            </form>
+        </div>
     </div>
-  </div>
 </div>
 {% endblock %}

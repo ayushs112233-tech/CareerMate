@@ -1,154 +1,273 @@
-{% extends "admin_dashboard/base.html" %}
+﻿{% extends "admin_dashboard/base.html" %}
 
-{% block title %}{{ candidate.user.get_full_name|default:candidate.user.username }} — Candidate Profile{% endblock %}
+{% block title %}{{ candidate.user.get_full_name|default:candidate.user.username }} - Candidate Profile{% endblock %}
 {% block page_title %}Candidate Details{% endblock %}
 
+{% block extra_css %}
+<style>
+    .detail-card {
+        padding: 32px;
+        border-radius: 16px;
+    }
+    .avatar-circle-lg {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: rgba(212,168,74,0.1);
+        color: var(--cm-accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 2rem;
+        margin: 0 auto 16px auto;
+        font-family: 'Fraunces', serif;
+    }
+    .info-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .info-list-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .info-list-item:last-child {
+        border-bottom: none;
+    }
+    .info-label {
+        color: var(--cm-text-dim);
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .info-label svg {
+        stroke: var(--cm-text-muted);
+    }
+    .info-value {
+        color: var(--cm-text-main);
+        font-size: 0.9rem;
+        font-weight: 500;
+        text-align: right;
+    }
+    .detail-section-title {
+        font-family: 'Fraunces', serif;
+        font-size: 1.1rem;
+        color: var(--cm-text-main);
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .detail-section-title svg {
+        stroke: var(--cm-accent);
+    }
+    .detail-text {
+        font-size: 0.95rem;
+        color: var(--cm-text-muted);
+        line-height: 1.6;
+    }
+    .skill-tag {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 14px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 6px;
+        font-size: 0.85rem;
+        color: var(--cm-text-main);
+    }
+    .skill-cat-tag {
+        font-size: 0.7rem;
+        color: var(--cm-accent);
+        margin-left: 6px;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="mb-3">
-  <a href="{% url 'admin_panel:candidates' %}" class="btn btn-sm btn-outline-secondary">
-    <i class="bi bi-arrow-left me-1"></i> Back to Candidates List
-  </a>
+<div class="mb-4">
+    <a href="{% url 'admin_panel:candidates' %}" class="cm-underline-tag text-decoration-none px-3 py-2 d-inline-flex align-items-center" style="font-size: 0.85rem;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        Back to Candidates List
+    </a>
 </div>
 
 <div class="row g-4">
-  <!-- Left Column: Personal & Profile Info -->
-  <div class="col-lg-4">
-    <div class="cm-card">
-      <div class="card-body text-center p-4">
-        <div class="bg-primary-subtle text-primary rounded-circle d-inline-flex align-items-center justify-content-center fw-bold fs-3 mb-3" style="width: 72px; height: 72px;">
-          {{ candidate.user.username|slice:":1"|upper }}
+    <!-- Left Column: Personal & Profile Info -->
+    <div class="col-lg-4">
+        <div class="glass-panel detail-card mb-4 text-center">
+            <div class="avatar-circle-lg">{{ candidate.user.username|slice:":1"|upper }}</div>
+            <h2 class="cm-fraunces mb-1" style="font-size: 1.5rem;">{{ candidate.user.get_full_name|default:candidate.user.username }}</h2>
+            <p class="text-muted small mb-3">{{ candidate.headline|default:"No headline provided" }}</p>
+
+            <div class="mb-4">
+                {% if candidate.profile_complete %}
+                    <span class="status-tag success">Profile Complete</span>
+                {% else %}
+                    <span class="status-tag neutral">Profile Incomplete</span>
+                {% endif %}
+            </div>
+
+            <ul class="info-list text-start">
+                <li class="info-list-item">
+                    <span class="info-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg> Email</span>
+                    <span class="info-value">{{ candidate.user.email|default:"Unspecified" }}</span>
+                </li>
+                <li class="info-list-item">
+                    <span class="info-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg> Phone</span>
+                    <span class="info-value">{{ candidate.phone|default:"Unspecified" }}</span>
+                </li>
+                <li class="info-list-item">
+                    <span class="info-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> Location</span>
+                    <span class="info-value">{{ candidate.location|default:"Unspecified" }}</span>
+                </li>
+                <li class="info-list-item">
+                    <span class="info-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg> Experience</span>
+                    <span class="info-value">{{ candidate.experience_years }} Year{{ candidate.experience_years|pluralize }}</span>
+                </li>
+                <li class="info-list-item">
+                    <span class="info-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> Joined</span>
+                    <span class="info-value">{{ candidate.created_at|date:"M d, Y" }}</span>
+                </li>
+            </ul>
         </div>
-        <h5 class="fw-bold mb-1">{{ candidate.user.get_full_name|default:candidate.user.username }}</h5>
-        <p class="text-muted small mb-2">{{ candidate.headline|default:"No headline provided" }}</p>
-
-        {% if candidate.profile_complete %}
-          <span class="badge-status complete">Profile Complete</span>
-        {% else %}
-          <span class="badge-status incomplete">Profile Incomplete</span>
-        {% endif %}
-      </div>
-
-      <ul class="list-group list-group-flush small">
-        <li class="list-group-item d-flex justify-content-between">
-          <span class="text-muted"><i class="bi bi-envelope me-2"></i>Email</span>
-          <span class="fw-semibold">{{ candidate.user.email|default:"—" }}</span>
-        </li>
-        <li class="list-group-item d-flex justify-content-between">
-          <span class="text-muted"><i class="bi bi-telephone me-2"></i>Phone</span>
-          <span class="fw-semibold">{{ candidate.phone|default:"—" }}</span>
-        </li>
-        <li class="list-group-item d-flex justify-content-between">
-          <span class="text-muted"><i class="bi bi-geo-alt me-2"></i>Location</span>
-          <span class="fw-semibold">{{ candidate.location|default:"—" }}</span>
-        </li>
-        <li class="list-group-item d-flex justify-content-between">
-          <span class="text-muted"><i class="bi bi-briefcase me-2"></i>Experience</span>
-          <span class="fw-semibold">{{ candidate.experience_years }} Year{{ candidate.experience_years|pluralize }}</span>
-        </li>
-        <li class="list-group-item d-flex justify-content-between">
-          <span class="text-muted"><i class="bi bi-calendar me-2"></i>Joined</span>
-          <span class="fw-semibold">{{ candidate.created_at|date:"M d, Y" }}</span>
-        </li>
-      </ul>
-    </div>
-  </div>
-
-  <!-- Right Column: Skills, Bio, Education, Applications, Resumes -->
-  <div class="col-lg-8">
-    <!-- Bio & Education -->
-    <div class="cm-card mb-4">
-      <div class="card-header"><i class="bi bi-file-text me-2 text-primary"></i>Summary & Education</div>
-      <div class="card-body">
-        <h6 class="fw-bold small text-uppercase text-muted">Professional Bio</h6>
-        <p class="mb-3">{{ candidate.bio|default:"No bio added."|linebreaks }}</p>
-
-        <h6 class="fw-bold small text-uppercase text-muted">Education Background</h6>
-        <p class="mb-0">{{ candidate.education|default:"No education details provided."|linebreaks }}</p>
-      </div>
     </div>
 
-    <!-- Skills -->
-    <div class="cm-card mb-4">
-      <div class="card-header"><i class="bi bi-stars me-2 text-primary"></i>Tagged Skills</div>
-      <div class="card-body">
-        <div class="d-flex flex-wrap gap-2">
-          {% for skill in candidate.skills.all %}
-            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 fs-6">
-              {{ skill.name }} <small class="text-muted">({{ skill.category|default:"General" }})</small>
-            </span>
-          {% empty %}
-            <p class="text-muted mb-0 small">No skills associated yet.</p>
-          {% endfor %}
+    <!-- Right Column: Skills, Bio, Education, Applications, Resumes -->
+    <div class="col-lg-8">
+        <!-- Bio & Education -->
+        <div class="glass-panel detail-card mb-4">
+            <h3 class="detail-section-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                Professional Bio
+            </h3>
+            <div class="detail-text mb-4">{{ candidate.bio|default:"No bio added."|linebreaks }}</div>
+
+            <h3 class="detail-section-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
+                Education Background
+            </h3>
+            <div class="detail-text mb-0">{{ candidate.education|default:"No education details provided."|linebreaks }}</div>
         </div>
-      </div>
-    </div>
 
-    <!-- Job Applications -->
-    <div class="cm-card mb-4">
-      <div class="card-header"><i class="bi bi-send me-2 text-primary"></i>Submitted Job Applications ({{ applications.count }})</div>
-      <div class="table-responsive">
-        <table class="table cm-table">
-          <thead>
-            <tr>
-              <th>Job Title</th>
-              <th>Company</th>
-              <th>Status</th>
-              <th>Applied Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for app in applications %}
-              <tr>
-                <td><a href="{% url 'admin_panel:job_detail' app.job.pk %}" class="fw-semibold text-dark text-decoration-none">{{ app.job.title }}</a></td>
-                <td>{{ app.job.company.name }}</td>
-                <td><span class="badge-status {{ app.status }}">{{ app.get_status_display }}</span></td>
-                <td>{{ app.applied_at|date:"M d, Y" }}</td>
-              </tr>
-            {% empty %}
-              <tr><td colspan="4" class="text-center py-3 text-muted">No applications submitted.</td></tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
+        <!-- Skills -->
+        <div class="glass-panel detail-card mb-4">
+            <h3 class="detail-section-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                Tagged Skills
+            </h3>
+            <div class="d-flex flex-wrap gap-2">
+                {% for skill in candidate.skills.all %}
+                    <span class="skill-tag">
+                        {{ skill.name }}
+                        <span class="skill-cat-tag">({{ skill.category|default:"General" }})</span>
+                    </span>
+                {% empty %}
+                    <span class="detail-text">No skills associated yet.</span>
+                {% endfor %}
+            </div>
+        </div>
 
-    <!-- Resumes Uploaded -->
-    <div class="cm-card">
-      <div class="card-header"><i class="bi bi-file-earmark-pdf me-2 text-primary"></i>Uploaded Resumes ({{ resumes.count }})</div>
-      <div class="table-responsive">
-        <table class="table cm-table">
-          <thead>
-            <tr>
-              <th>File Name</th>
-              <th>Status</th>
-              <th>Upload Date</th>
-              <th class="text-end">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for res in resumes %}
-              <tr>
-                <td>
-                  <a href="{% url 'admin_panel:resume_detail' res.pk %}" class="fw-semibold text-dark text-decoration-none">
-                    <i class="bi bi-file-earmark-text me-1 text-danger"></i> {{ res.file_name }}
-                  </a>
-                </td>
-                <td><span class="badge-status {{ res.status }}">{{ res.get_status_display }}</span></td>
-                <td>{{ res.uploaded_at|date:"M d, Y" }}</td>
-                <td class="text-end">
-                  <a href="{% url 'admin_panel:resume_detail' res.pk %}" class="btn btn-sm btn-outline-primary py-0 px-2">View Text</a>
-                  {% if res.file %}
-                    <a href="{{ res.file.url }}" target="_blank" class="btn btn-sm btn-outline-secondary py-0 px-2"><i class="bi bi-download"></i></a>
-                  {% endif %}
-                </td>
-              </tr>
-            {% empty %}
-              <tr><td colspan="4" class="text-center py-3 text-muted">No resumes uploaded yet.</td></tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
+        <!-- Job Applications -->
+        <div class="glass-panel p-0 mb-4 d-flex flex-column" style="overflow: hidden;">
+            <div class="d-flex align-items-center justify-content-between p-4 border-bottom" style="border-color: rgba(255,255,255,0.05) !important;">
+                <h3 class="cm-fraunces m-0 d-flex align-items-center gap-2" style="font-size: 1.1rem; color: var(--cm-text-main);">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--cm-accent)" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    Submitted Applications ({{ applications.count }})
+                </h3>
+            </div>
+            <div style="overflow-x: auto;">
+                <table class="cm-admin-table h-100">
+                    <thead>
+                        <tr>
+                            <th>Job Title & Company</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for app in applications %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'admin_panel:job_detail' app.job.pk %}" class="table-main-text d-block">{{ app.job.title }}</a>
+                                <span class="table-sub-text">{{ app.job.company.name }}</span>
+                            </td>
+                            <td>
+                                {% if app.status == 'pending' %}<span class="status-tag neutral">Pending</span>
+                                {% elif app.status == 'reviewed' %}<span class="status-tag success">Reviewed</span>
+                                {% elif app.status == 'interviewing' %}<span class="status-tag active">Interviewing</span>
+                                {% elif app.status == 'rejected' %}<span class="status-tag error">Rejected</span>
+                                {% elif app.status == 'hired' %}<span class="status-tag success">Hired</span>
+                                {% else %}<span class="status-tag neutral">{{ app.get_status_display }}</span>{% endif %}
+                            </td>
+                            <td><span class="table-sub-text">{{ app.applied_at|date:"M d, Y" }}</span></td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="3" class="text-center py-5 text-muted">No applications submitted.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Resumes Uploaded -->
+        <div class="glass-panel p-0 d-flex flex-column" style="overflow: hidden;">
+            <div class="d-flex align-items-center justify-content-between p-4 border-bottom" style="border-color: rgba(255,255,255,0.05) !important;">
+                <h3 class="cm-fraunces m-0 d-flex align-items-center gap-2" style="font-size: 1.1rem; color: var(--cm-text-main);">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--cm-accent)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    Uploaded Resumes ({{ resumes.count }})
+                </h3>
+            </div>
+            <div style="overflow-x: auto;">
+                <table class="cm-admin-table h-100">
+                    <thead>
+                        <tr>
+                            <th>File Name</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for res in resumes %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'admin_panel:resume_detail' res.pk %}" class="table-main-text d-flex align-items-center">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--cm-accent)" stroke-width="2" class="me-2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                                    {{ res.file_name }}
+                                </a>
+                            </td>
+                            <td>
+                                {% if res.status == 'pending' %}<span class="status-tag neutral">Pending</span>
+                                {% elif res.status == 'parsed' %}<span class="status-tag success">Parsed</span>
+                                {% elif res.status == 'failed' %}<span class="status-tag error">Failed</span>
+                                {% else %}<span class="status-tag neutral">{{ res.get_status_display }}</span>{% endif %}
+                            </td>
+                            <td><span class="table-sub-text">{{ res.uploaded_at|date:"M d, Y" }}</span></td>
+                            <td class="text-end">
+                                <div class="d-flex align-items-center justify-content-end gap-3">
+                                    <a href="{% url 'admin_panel:resume_detail' res.pk %}" class="cm-underline-tag text-decoration-none px-2 py-1" style="font-size: 0.8rem;">View</a>
+                                    {% if res.file %}
+                                        <a href="{{ res.file.url }}" target="_blank" class="text-decoration-none" style="color: var(--cm-text-muted);" title="Download">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4" class="text-center py-5 text-muted">No resumes uploaded yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 {% endblock %}

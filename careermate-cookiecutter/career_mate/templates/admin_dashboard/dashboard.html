@@ -1,203 +1,330 @@
-{% extends "admin_dashboard/base.html" %}
+﻿{% extends "admin_dashboard/base.html" %}
 
 {% block title %}Dashboard Overview{% endblock %}
 {% block page_title %}Management Dashboard{% endblock %}
 
+{% block extra_css %}
+<style>
+    /* Metric Cards */
+    .metric-card {
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+        border-radius: 16px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .metric-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+    .metric-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 16px;
+        color: var(--cm-text-muted);
+        font-size: 0.9rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .metric-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 12px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.08);
+    }
+    .metric-icon svg {
+        width: 16px;
+        height: 16px;
+        stroke: var(--cm-text-muted);
+        stroke-width: 2;
+        fill: none;
+    }
+    .metric-value {
+        font-family: 'Fraunces', serif;
+        font-size: 2.5rem;
+        font-weight: 500;
+        color: var(--cm-text-main);
+        line-height: 1;
+        margin-bottom: 8px;
+    }
+    .metric-subtext {
+        font-size: 0.8rem;
+        color: var(--cm-text-dim);
+    }
+    .metric-subtext span {
+        color: var(--cm-accent);
+        font-weight: 500;
+    }
+
+    /* Primary Metric */
+    .metric-card.primary {
+        background: linear-gradient(135deg, rgba(212, 168, 74, 0.1), rgba(212, 168, 74, 0.02));
+        border: 1px solid rgba(212, 168, 74, 0.2);
+    }
+    .metric-card.primary .metric-icon {
+        background: rgba(212, 168, 74, 0.15);
+        border-color: rgba(212, 168, 74, 0.3);
+    }
+    .metric-card.primary .metric-icon svg {
+        stroke: var(--cm-accent);
+    }
+    .metric-card.primary .metric-value {
+        color: var(--cm-accent);
+    }
+
+    /* Action Bar */
+    .action-bar {
+        padding: 20px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        border-radius: 12px;
+        margin-bottom: 32px;
+    }
+    
+    /* Table Styling */
+    .cm-admin-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .cm-admin-table th {
+        text-align: left;
+        padding: 16px 20px;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--cm-text-dim);
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        font-weight: 600;
+    }
+    .cm-admin-table td {
+        padding: 16px 20px;
+        border-bottom: 1px solid rgba(255,255,255,0.03);
+        color: var(--cm-text-muted);
+        font-size: 0.95rem;
+        vertical-align: middle;
+    }
+    .cm-admin-table tr:hover td {
+        background: rgba(255,255,255,0.02);
+    }
+    .cm-admin-table tr:last-child td {
+        border-bottom: none;
+    }
+    .table-main-text {
+        color: var(--cm-text-main);
+        font-weight: 500;
+        text-decoration: none;
+    }
+    .table-main-text:hover {
+        color: var(--cm-accent);
+    }
+    .table-sub-text {
+        font-size: 0.8rem;
+        color: var(--cm-text-dim);
+        display: block;
+        margin-top: 2px;
+    }
+
+    /* Status Tags */
+    .status-tag {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .status-tag.neutral { background: rgba(255,255,255,0.05); color: var(--cm-text-muted); border: 1px solid rgba(255,255,255,0.1); }
+    .status-tag.active { background: rgba(212,168,74,0.1); color: var(--cm-accent); border: 1px solid rgba(212,168,74,0.2); }
+    .status-tag.error { background: rgba(164,70,57,0.1); color: var(--cm-error); border: 1px solid rgba(164,70,57,0.2); }
+    .status-tag.success { background: rgba(51,113,90,0.2); color: #87d3b5; border: 1px solid rgba(51,113,90,0.4); }
+</style>
+{% endblock %}
+
 {% block content %}
-<!-- KPI Metric Cards Grid -->
-<div class="row g-3 mb-4">
-  <!-- Candidates -->
-  <div class="col-xl-3 col-md-6">
-    <div class="cm-card kpi-card">
-      <div class="kpi-icon blue"><i class="bi bi-people-fill"></i></div>
-      <div class="kpi-info">
-        <div class="kpi-label">Total Candidates</div>
-        <div class="kpi-value">{{ total_candidates }}</div>
-      </div>
+<!-- KPI Metric Grid -->
+<div class="row g-4 mb-4">
+    <!-- Candidates -->
+    <div class="col-xl-3 col-md-6">
+        <div class="glass-panel metric-card">
+            <div class="metric-header">
+                <div class="metric-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg></div>
+                Candidates
+            </div>
+            <div>
+                <div class="metric-value">{{ total_candidates }}</div>
+                <div class="metric-subtext">Registered candidates</div>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <!-- Recruiters -->
-  <div class="col-xl-3 col-md-6">
-    <div class="cm-card kpi-card">
-      <div class="kpi-icon purple"><i class="bi bi-person-badge-fill"></i></div>
-      <div class="kpi-info">
-        <div class="kpi-label">Total Recruiters</div>
-        <div class="kpi-value">{{ total_recruiters }}</div>
-      </div>
+    <!-- Jobs -->
+    <div class="col-xl-3 col-md-6">
+        <div class="glass-panel metric-card primary">
+            <div class="metric-header">
+                <div class="metric-icon"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg></div>
+                Jobs
+            </div>
+            <div>
+                <div class="metric-value">{{ total_jobs }}</div>
+                <div class="metric-subtext"><span>{{ active_jobs_count }}</span> actively recruiting</div>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <!-- Companies -->
-  <div class="col-xl-3 col-md-6">
-    <div class="cm-card kpi-card">
-      <div class="kpi-icon green"><i class="bi bi-building"></i></div>
-      <div class="kpi-info">
-        <div class="kpi-label">Total Companies</div>
-        <div class="kpi-value">{{ total_companies }}</div>
-      </div>
+    <!-- Applications -->
+    <div class="col-xl-3 col-md-6">
+        <div class="glass-panel metric-card">
+            <div class="metric-header">
+                <div class="metric-icon"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>
+                Applications
+            </div>
+            <div>
+                <div class="metric-value">{{ total_applications }}</div>
+                <div class="metric-subtext"><span>{{ pending_applications_count }}</span> pending review</div>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <!-- Jobs -->
-  <div class="col-xl-3 col-md-6">
-    <div class="cm-card kpi-card">
-      <div class="kpi-icon cyan"><i class="bi bi-briefcase-fill"></i></div>
-      <div class="kpi-info">
-        <div class="kpi-label">Total Jobs ({{ active_jobs_count }} Active)</div>
-        <div class="kpi-value">{{ total_jobs }}</div>
-      </div>
+    <!-- Recruiters & Companies -->
+    <div class="col-xl-3 col-md-6">
+        <div class="glass-panel metric-card" style="display: flex; flex-direction: column; justify-content: space-around;">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <div class="d-flex align-items-center">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--cm-text-dim)" stroke-width="2" class="me-2"><circle cx="12" cy="7" r="4"></circle><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path></svg>
+                    <span style="font-size: 0.85rem; color: var(--cm-text-muted);">Recruiters</span>
+                </div>
+                <span class="cm-fraunces" style="font-size: 1.2rem; color: var(--cm-text-main);">{{ total_recruiters }}</span>
+            </div>
+            <div style="height: 1px; background: rgba(255,255,255,0.05); margin: 8px 0;"></div>
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--cm-text-dim)" stroke-width="2" class="me-2"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="15" y2="22"></line><line x1="8" y1="6" x2="16" y2="6"></line></svg>
+                    <span style="font-size: 0.85rem; color: var(--cm-text-muted);">Companies</span>
+                </div>
+                <span class="cm-fraunces" style="font-size: 1.2rem; color: var(--cm-text-main);">{{ total_companies }}</span>
+            </div>
+        </div>
     </div>
-  </div>
-
-  <!-- Applications -->
-  <div class="col-xl-3 col-md-6">
-    <div class="cm-card kpi-card">
-      <div class="kpi-icon amber"><i class="bi bi-send-check-fill"></i></div>
-      <div class="kpi-info">
-        <div class="kpi-label">Applications ({{ pending_applications_count }} Pending)</div>
-        <div class="kpi-value">{{ total_applications }}</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Resumes -->
-  <div class="col-xl-3 col-md-6">
-    <div class="cm-card kpi-card">
-      <div class="kpi-icon rose"><i class="bi bi-file-earmark-person-fill"></i></div>
-      <div class="kpi-info">
-        <div class="kpi-label">Total Resumes</div>
-        <div class="kpi-value">{{ total_resumes }}</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Skills Catalog -->
-  <div class="col-xl-3 col-md-6">
-    <div class="cm-card kpi-card">
-      <div class="kpi-icon blue"><i class="bi bi-stars"></i></div>
-      <div class="kpi-info">
-        <div class="kpi-label">Skills Catalog</div>
-        <div class="kpi-value">{{ total_skills }}</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Job Categories -->
-  <div class="col-xl-3 col-md-6">
-    <div class="cm-card kpi-card">
-      <div class="kpi-icon green"><i class="bi bi-tags-fill"></i></div>
-      <div class="kpi-info">
-        <div class="kpi-label">Job Categories</div>
-        <div class="kpi-value">{{ total_categories }}</div>
-      </div>
-    </div>
-  </div>
 </div>
 
-<!-- Quick Actions Toolbar -->
-<div class="cm-card mb-4">
-  <div class="card-body py-2 d-flex flex-wrap gap-2 align-items-center justify-content-between">
-    <span class="fw-semibold text-muted small"><i class="bi bi-lightning-charge me-1"></i>Quick Actions:</span>
-    <div class="d-flex flex-wrap gap-2">
-      <a href="{% url 'admin_panel:job_create' %}" class="btn btn-sm btn-primary"><i class="bi bi-plus-lg me-1"></i>Post New Job</a>
-      <a href="{% url 'admin_panel:company_create' %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-building-add me-1"></i>Add Company</a>
-      <a href="{% url 'admin_panel:skill_create' %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-plus-circle me-1"></i>Add Skill</a>
-      <a href="{% url 'admin_panel:job_category_create' %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-tag me-1"></i>Add Category</a>
-      <a href="{% url 'admin_panel:reports' %}" class="btn btn-sm btn-outline-dark"><i class="bi bi-graph-up me-1"></i>View Reports</a>
+<!-- Quick Actions -->
+<div class="glass-panel action-bar flex-column flex-md-row">
+    <div style="font-size: 0.85rem; color: var(--cm-text-dim); font-weight: 500; text-transform: uppercase; letter-spacing: 1px;">Quick Actions</div>
+    <div class="d-flex flex-wrap gap-3">
+        <a href="{% url 'admin_panel:job_create' %}" class="cm-btn-accent text-decoration-none px-4 py-2" style="font-size: 0.85rem;">Post New Job</a>
+        <a href="{% url 'admin_panel:company_create' %}" class="cm-underline-tag text-decoration-none px-3 py-2" style="font-size: 0.85rem;">Add Company</a>
+        <a href="{% url 'admin_panel:skill_create' %}" class="cm-underline-tag text-decoration-none px-3 py-2" style="font-size: 0.85rem;">Add Skill</a>
     </div>
-  </div>
 </div>
 
-<!-- Recent Applications & Recent Jobs Grid -->
+<!-- Recent Activity Tables -->
 <div class="row g-4">
-  <!-- Recent Applications -->
-  <div class="col-lg-6">
-    <div class="cm-card h-100">
-      <div class="card-header">
-        <span><i class="bi bi-clock-history me-2 text-primary"></i>Recent Job Applications</span>
-        <a href="{% url 'admin_panel:applications' %}" class="btn btn-sm btn-link text-decoration-none">View All</a>
-      </div>
-      <div class="table-responsive">
-        <table class="table cm-table">
-          <thead>
-            <tr>
-              <th>Candidate</th>
-              <th>Job & Company</th>
-              <th>Status</th>
-              <th>Applied</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for app in recent_applications %}
-              <tr>
-                <td>
-                  <a href="{% url 'admin_panel:candidate_detail' app.candidate.pk %}" class="fw-semibold text-decoration-none text-dark">
-                    {{ app.candidate.user.get_full_name|default:app.candidate.user.username }}
-                  </a>
-                </td>
-                <td>
-                  <div class="fw-semibold text-truncate" style="max-width: 160px;">{{ app.job.title }}</div>
-                  <small class="text-muted">{{ app.job.company.name }}</small>
-                </td>
-                <td>
-                  <span class="badge-status {{ app.status }}">{{ app.get_status_display }}</span>
-                </td>
-                <td class="small text-muted">{{ app.applied_at|date:"M d, Y" }}</td>
-              </tr>
-            {% empty %}
-              <tr>
-                <td colspan="4" class="text-center py-4 text-muted">No applications submitted yet.</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
+    <!-- Applications Table -->
+    <div class="col-lg-6">
+        <div class="glass-panel p-0 h-100 d-flex flex-column" style="overflow: hidden;">
+            <div class="d-flex align-items-center justify-content-between p-4 border-bottom" style="border-color: rgba(255,255,255,0.05) !important;">
+                <h3 class="cm-fraunces m-0" style="font-size: 1.25rem;">Recent Applications</h3>
+                <a href="{% url 'admin_panel:applications' %}" class="cm-underline-tag text-decoration-none" style="font-size: 0.8rem;">View All</a>
+            </div>
+            <div style="overflow-x: auto;">
+                <table class="cm-admin-table">
+                    <thead>
+                        <tr>
+                            <th>Candidate</th>
+                            <th>Job & Company</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for app in recent_applications %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'admin_panel:candidate_detail' app.candidate.pk %}" class="table-main-text">
+                                    {{ app.candidate.user.get_full_name|default:app.candidate.user.username }}
+                                </a>
+                                <span class="table-sub-text">{{ app.applied_at|date:"M d, Y" }}</span>
+                            </td>
+                            <td>
+                                <div class="table-main-text text-truncate" style="max-width: 180px;">{{ app.job.title }}</div>
+                                <span class="table-sub-text">{{ app.job.company.name }}</span>
+                            </td>
+                            <td>
+                                {% if app.status == 'pending' %}<span class="status-tag neutral">Pending</span>
+                                {% elif app.status == 'reviewed' %}<span class="status-tag success">Reviewed</span>
+                                {% elif app.status == 'interviewing' %}<span class="status-tag active">Interviewing</span>
+                                {% elif app.status == 'rejected' %}<span class="status-tag error">Rejected</span>
+                                {% elif app.status == 'hired' %}<span class="status-tag success">Hired</span>
+                                {% else %}<span class="status-tag neutral">{{ app.get_status_display }}</span>{% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" class="text-center py-5" style="color: var(--cm-text-dim);">No applications submitted yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <!-- Recent Job Postings -->
-  <div class="col-lg-6">
-    <div class="cm-card h-100">
-      <div class="card-header">
-        <span><i class="bi bi-briefcase me-2 text-primary"></i>Recent Job Postings</span>
-        <a href="{% url 'admin_panel:jobs' %}" class="btn btn-sm btn-link text-decoration-none">View All</a>
-      </div>
-      <div class="table-responsive">
-        <table class="table cm-table">
-          <thead>
-            <tr>
-              <th>Job Title</th>
-              <th>Company</th>
-              <th>Type</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for job in recent_jobs %}
-              <tr>
-                <td>
-                  <a href="{% url 'admin_panel:job_detail' job.pk %}" class="fw-semibold text-decoration-none text-dark">
-                    {{ job.title }}
-                  </a>
-                </td>
-                <td>{{ job.company.name }}</td>
-                <td><span class="badge bg-light text-dark border">{{ job.get_employment_type_display }}</span></td>
-                <td><span class="badge-status {{ job.status }}">{{ job.get_status_display }}</span></td>
-                <td>
-                  <a href="{% url 'admin_panel:job_detail' job.pk %}" class="btn btn-sm btn-outline-primary py-0 px-2">Details</a>
-                </td>
-              </tr>
-            {% empty %}
-              <tr>
-                <td colspan="5" class="text-center py-4 text-muted">No job postings created yet.</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
+    <!-- Jobs Table -->
+    <div class="col-lg-6">
+        <div class="glass-panel p-0 h-100 d-flex flex-column" style="overflow: hidden;">
+            <div class="d-flex align-items-center justify-content-between p-4 border-bottom" style="border-color: rgba(255,255,255,0.05) !important;">
+                <h3 class="cm-fraunces m-0" style="font-size: 1.25rem;">Recent Job Postings</h3>
+                <a href="{% url 'admin_panel:jobs' %}" class="cm-underline-tag text-decoration-none" style="font-size: 0.8rem;">View All</a>
+            </div>
+            <div style="overflow-x: auto;">
+                <table class="cm-admin-table">
+                    <thead>
+                        <tr>
+                            <th>Job Title</th>
+                            <th>Company</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for job in recent_jobs %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'admin_panel:job_detail' job.pk %}" class="table-main-text">
+                                    {{ job.title }}
+                                </a>
+                                <span class="table-sub-text">{{ job.get_employment_type_display }}</span>
+                            </td>
+                            <td>{{ job.company.name }}</td>
+                            <td>
+                                {% if job.status == 'active' %}<span class="status-tag active">Active</span>
+                                {% elif job.status == 'closed' %}<span class="status-tag error">Closed</span>
+                                {% else %}<span class="status-tag neutral">{{ job.get_status_display }}</span>{% endif %}
+                            </td>
+                            <td class="text-end">
+                                <a href="{% url 'admin_panel:job_detail' job.pk %}" class="cm-underline-tag text-decoration-none px-2 py-1" style="font-size: 0.75rem;">View</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-5" style="color: var(--cm-text-dim);">No job postings created yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 {% endblock %}

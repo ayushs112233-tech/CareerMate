@@ -1,46 +1,68 @@
-{% extends "admin_dashboard/base.html" %}
+﻿{% extends "admin_dashboard/base.html" %}
 
 {% block title %}{% if object %}Edit Skill{% else %}Add Skill{% endif %}{% endblock %}
 {% block page_title %}{% if object %}Edit Skill: {{ object.name }}{% else %}Add Skill to Catalog{% endif %}{% endblock %}
 
+{% block extra_css %}
+<style>
+    .form-card {
+        padding: 40px;
+        border-radius: 16px;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    .form-card-title {
+        font-family: 'Fraunces', serif;
+        font-size: 1.5rem;
+        color: var(--cm-text-main);
+        margin-bottom: 32px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .form-card-title svg {
+        stroke: var(--cm-accent);
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center">
-  <div class="col-lg-6">
-    <div class="cm-card">
-      <div class="card-header">
-        <span><i class="bi bi-stars me-2 text-primary"></i>Skill Information</span>
-      </div>
-      <div class="card-body p-4">
-        <form method="post" novalidate>
-          {% csrf_token %}
+<div class="glass-panel form-card">
+    <h2 class="form-card-title">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+        {% if object %}Edit Skill{% else %}Add Skill to Catalog{% endif %}
+    </h2>
 
-          {% if form.errors %}
-            <div class="alert alert-danger small py-2">Please correct the errors below.</div>
-          {% endif %}
+    <form method="post" novalidate>
+        {% csrf_token %}
 
-          <div class="mb-3">
-            <label for="{{ form.name.id_for_label }}" class="form-label fw-semibold small">Skill Name *</label>
+        {% if form.non_field_errors %}
+            <div class="mb-4 p-3 rounded" style="background: rgba(164,70,57,0.1); border: 1px solid rgba(164,70,57,0.3); color: var(--cm-error);">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <div class="admin-form-group">
+            <label for="{{ form.name.id_for_label }}" class="admin-form-label">Skill Name *</label>
             {{ form.name }}
             {{ form.name.errors }}
-            <div class="form-text">e.g. Python, Machine Learning, PostgreSQL, Communication</div>
-          </div>
+            <div class="form-help-text">e.g. Python, Machine Learning, PostgreSQL, Communication</div>
+        </div>
 
-          <div class="mb-4">
-            <label for="{{ form.category.id_for_label }}" class="form-label fw-semibold small">Category</label>
+        <div class="admin-form-group">
+            <label for="{{ form.category.id_for_label }}" class="admin-form-label">Category</label>
             {{ form.category }}
             {{ form.category.errors }}
-            <div class="form-text">e.g. Programming Language, Framework, Database, Cloud, Soft Skill</div>
-          </div>
+            <div class="form-help-text">e.g. Programming Language, Framework, Database, Cloud, Soft Skill</div>
+        </div>
 
-          <div class="d-flex justify-content-between">
-            <a href="{% url 'admin_panel:skills' %}" class="btn btn-outline-secondary">Cancel</a>
-            <button type="submit" class="btn btn-primary px-4">
-              <i class="bi bi-check2-circle me-1"></i> Save Skill
+        <div class="d-flex justify-content-between align-items-center mt-5 pt-4 border-top" style="border-color: rgba(255,255,255,0.05) !important;">
+            <a href="{% url 'admin_panel:skills' %}" class="cm-underline-tag text-decoration-none px-3 py-2" style="font-size: 0.9rem;">Cancel</a>
+            <button type="submit" class="cm-btn-accent px-5 py-2 d-flex align-items-center gap-2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Save Skill
             </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
+        </div>
+    </form>
 </div>
 {% endblock %}

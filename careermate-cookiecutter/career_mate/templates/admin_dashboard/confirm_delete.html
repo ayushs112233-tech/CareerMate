@@ -1,36 +1,97 @@
-{% extends "admin_dashboard/base.html" %}
+﻿{% extends "admin_dashboard/base.html" %}
 
 {% block title %}Confirm Deletion{% endblock %}
 {% block page_title %}Delete Confirmation{% endblock %}
 
-{% block content %}
-<div class="row justify-content-center">
-  <div class="col-md-6 col-lg-5">
-    <div class="cm-card border-danger">
-      <div class="card-header bg-danger-subtle text-danger fw-bold">
-        <i class="bi bi-exclamation-triangle-fill me-2"></i>Confirm Deletion
-      </div>
-      <div class="card-body p-4 text-center">
-        <i class="bi bi-trash text-danger fs-1 mb-3 d-block"></i>
-        <h5 class="fw-bold mb-2">Are you sure?</h5>
-        <p class="text-muted mb-4">
-          You are about to permanently delete the {{ item_type|default:"record" }}:<br>
-          <strong class="text-dark">{{ item_name|default:object }}</strong>.
-        </p>
+{% block extra_css %}
+<style>
+    .delete-card {
+        padding: 48px 40px;
+        border-radius: 16px;
+        max-width: 500px;
+        margin: 0 auto;
+        text-align: center;
+        border: 1px solid rgba(164,70,57,0.3);
+        background: linear-gradient(180deg, rgba(164,70,57,0.05) 0%, rgba(18,18,20,0.6) 100%);
+    }
+    .delete-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: rgba(164,70,57,0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 24px auto;
+    }
+    .delete-icon svg {
+        width: 40px;
+        height: 40px;
+        stroke: var(--cm-error);
+    }
+    .delete-title {
+        font-family: 'Fraunces', serif;
+        font-size: 1.75rem;
+        color: var(--cm-text-main);
+        margin-bottom: 12px;
+    }
+    .delete-text {
+        font-size: 0.95rem;
+        color: var(--cm-text-muted);
+        line-height: 1.6;
+        margin-bottom: 32px;
+    }
+    .delete-item-name {
+        color: var(--cm-text-main);
+        font-weight: 600;
+        font-size: 1.05rem;
+        display: block;
+        margin-top: 8px;
+    }
+    .btn-delete {
+        background: var(--cm-error);
+        color: #fff;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+    }
+    .btn-delete:hover {
+        background: #b75242;
+        transform: translateY(-1px);
+    }
+</style>
+{% endblock %}
 
-        <form method="post">
-          {% csrf_token %}
-          <div class="d-flex justify-content-center gap-3">
-            <a href="{{ cancel_url|default:'javascript:history.back()' }}" class="btn btn-outline-secondary px-4">
-              Cancel
-            </a>
-            <button type="submit" class="btn btn-danger px-4">
-              <i class="bi bi-trash-fill me-1"></i> Yes, Delete Permanently
-            </button>
-          </div>
-        </form>
-      </div>
+{% block content %}
+<div class="glass-panel delete-card">
+    <div class="delete-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
     </div>
-  </div>
+    
+    <h2 class="delete-title">Are you absolutely sure?</h2>
+    
+    <p class="delete-text">
+        You are about to permanently delete this {{ item_type|default:"record" }}. This action cannot be undone.
+        <span class="delete-item-name">{{ item_name|default:object }}</span>
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{{ cancel_url|default:'javascript:history.back()' }}" class="cm-underline-tag text-decoration-none px-4 py-2 d-flex align-items-center" style="font-size: 0.95rem;">
+                Cancel
+            </a>
+            <button type="submit" class="btn-delete">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                Yes, Delete Permanently
+            </button>
+        </div>
+    </form>
 </div>
 {% endblock %}

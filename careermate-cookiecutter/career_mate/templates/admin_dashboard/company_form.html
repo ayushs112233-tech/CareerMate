@@ -1,63 +1,89 @@
-{% extends "admin_dashboard/base.html" %}
+﻿{% extends "admin_dashboard/base.html" %}
 
 {% block title %}{% if object %}Edit Company{% else %}Add Company{% endif %}{% endblock %}
 {% block page_title %}{% if object %}Edit Company: {{ object.name }}{% else %}Register New Company{% endif %}{% endblock %}
 
+{% block extra_css %}
+<style>
+    .form-card {
+        padding: 40px;
+        border-radius: 16px;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    .form-card-title {
+        font-family: 'Fraunces', serif;
+        font-size: 1.5rem;
+        color: var(--cm-text-main);
+        margin-bottom: 32px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .form-card-title svg {
+        stroke: var(--cm-accent);
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center">
-  <div class="col-lg-8">
-    <div class="cm-card">
-      <div class="card-header">
-        <span><i class="bi bi-building me-2 text-primary"></i>Company Information</span>
-      </div>
-      <div class="card-body p-4">
-        <form method="post" novalidate>
-          {% csrf_token %}
+<div class="glass-panel form-card">
+    <h2 class="form-card-title">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="15" y2="22"></line><line x1="8" y1="6" x2="16" y2="6"></line></svg>
+        {% if object %}Edit Company{% else %}Register New Company{% endif %}
+    </h2>
 
-          {% if form.errors %}
-            <div class="alert alert-danger small py-2">Please correct the errors below.</div>
-          {% endif %}
+    <form method="post" novalidate>
+        {% csrf_token %}
 
-          <div class="mb-3">
-            <label for="{{ form.name.id_for_label }}" class="form-label fw-semibold small">Company Name *</label>
+        {% if form.non_field_errors %}
+            <div class="mb-4 p-3 rounded" style="background: rgba(164,70,57,0.1); border: 1px solid rgba(164,70,57,0.3); color: var(--cm-error);">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <div class="admin-form-group">
+            <label for="{{ form.name.id_for_label }}" class="admin-form-label">Company Name *</label>
             {{ form.name }}
             {{ form.name.errors }}
-          </div>
+        </div>
 
-          <div class="row g-3 mb-3">
+        <div class="row g-4">
             <div class="col-md-6">
-              <label for="{{ form.industry.id_for_label }}" class="form-label fw-semibold small">Industry</label>
-              {{ form.industry }}
-              {{ form.industry.errors }}
+                <div class="admin-form-group m-0">
+                    <label for="{{ form.industry.id_for_label }}" class="admin-form-label">Industry</label>
+                    {{ form.industry }}
+                    {{ form.industry.errors }}
+                </div>
             </div>
             <div class="col-md-6">
-              <label for="{{ form.location.id_for_label }}" class="form-label fw-semibold small">Headquarters Location</label>
-              {{ form.location }}
-              {{ form.location.errors }}
+                <div class="admin-form-group m-0">
+                    <label for="{{ form.location.id_for_label }}" class="admin-form-label">Headquarters Location</label>
+                    {{ form.location }}
+                    {{ form.location.errors }}
+                </div>
             </div>
-          </div>
+        </div>
 
-          <div class="mb-3">
-            <label for="{{ form.website.id_for_label }}" class="form-label fw-semibold small">Company Website URL</label>
+        <div class="admin-form-group mt-4">
+            <label for="{{ form.website.id_for_label }}" class="admin-form-label">Company Website URL</label>
             {{ form.website }}
             {{ form.website.errors }}
-          </div>
+        </div>
 
-          <div class="mb-4">
-            <label for="{{ form.description.id_for_label }}" class="form-label fw-semibold small">About / Description</label>
+        <div class="admin-form-group">
+            <label for="{{ form.description.id_for_label }}" class="admin-form-label">About / Description</label>
             {{ form.description }}
             {{ form.description.errors }}
-          </div>
+        </div>
 
-          <div class="d-flex justify-content-between">
-            <a href="{% url 'admin_panel:companies' %}" class="btn btn-outline-secondary">Cancel</a>
-            <button type="submit" class="btn btn-primary px-4">
-              <i class="bi bi-check2-circle me-1"></i> Save Company
+        <div class="d-flex justify-content-between align-items-center mt-5 pt-4 border-top" style="border-color: rgba(255,255,255,0.05) !important;">
+            <a href="{% url 'admin_panel:companies' %}" class="cm-underline-tag text-decoration-none px-3 py-2" style="font-size: 0.9rem;">Cancel</a>
+            <button type="submit" class="cm-btn-accent px-5 py-2 d-flex align-items-center gap-2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Save Company
             </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
+        </div>
+    </form>
 </div>
 {% endblock %}

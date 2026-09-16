@@ -1,160 +1,222 @@
-{% extends "admin_dashboard/base.html" %}
+﻿{% extends "admin_dashboard/base.html" %}
 
 {% block title %}System Reports & Database Statistics{% endblock %}
 {% block page_title %}Platform Statistics & Reports{% endblock %}
 
+{% block extra_css %}
+<style>
+    .report-stat-card {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        height: 100%;
+    }
+    .report-stat-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--cm-text-dim);
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+    .report-stat-value {
+        font-family: 'Fraunces', serif;
+        font-size: 2rem;
+        color: var(--cm-text-main);
+        line-height: 1;
+    }
+    .report-stat-value.accent {
+        color: var(--cm-accent);
+    }
+    .glass-header {
+        padding: 20px 24px;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        display: flex;
+        align-items: center;
+        font-family: 'Fraunces', serif;
+        font-size: 1.25rem;
+        color: var(--cm-text-main);
+    }
+    .glass-header svg {
+        margin-right: 12px;
+        stroke: var(--cm-accent);
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <!-- Metrics Summary -->
-<div class="row g-3 mb-4">
-  <div class="col-6 col-md-4 col-xl-2">
-    <div class="cm-card p-3 text-center">
-      <div class="text-muted small fw-semibold text-uppercase">Candidates</div>
-      <div class="fs-3 fw-bold text-primary">{{ total_candidates }}</div>
+<div class="row g-4 mb-4">
+    <div class="col-6 col-md-4 col-xl-2">
+        <div class="glass-panel report-stat-card">
+            <div class="report-stat-label">Candidates</div>
+            <div class="report-stat-value">{{ total_candidates }}</div>
+        </div>
     </div>
-  </div>
-  <div class="col-6 col-md-4 col-xl-2">
-    <div class="cm-card p-3 text-center">
-      <div class="text-muted small fw-semibold text-uppercase">Recruiters</div>
-      <div class="fs-3 fw-bold text-purple">{{ total_recruiters }}</div>
+    <div class="col-6 col-md-4 col-xl-2">
+        <div class="glass-panel report-stat-card">
+            <div class="report-stat-label">Recruiters</div>
+            <div class="report-stat-value">{{ total_recruiters }}</div>
+        </div>
     </div>
-  </div>
-  <div class="col-6 col-md-4 col-xl-2">
-    <div class="cm-card p-3 text-center">
-      <div class="text-muted small fw-semibold text-uppercase">Companies</div>
-      <div class="fs-3 fw-bold text-success">{{ total_companies }}</div>
+    <div class="col-6 col-md-4 col-xl-2">
+        <div class="glass-panel report-stat-card">
+            <div class="report-stat-label">Companies</div>
+            <div class="report-stat-value">{{ total_companies }}</div>
+        </div>
     </div>
-  </div>
-  <div class="col-6 col-md-4 col-xl-2">
-    <div class="cm-card p-3 text-center">
-      <div class="text-muted small fw-semibold text-uppercase">Jobs</div>
-      <div class="fs-3 fw-bold text-info">{{ total_jobs }}</div>
+    <div class="col-6 col-md-4 col-xl-2">
+        <div class="glass-panel report-stat-card">
+            <div class="report-stat-label">Jobs</div>
+            <div class="report-stat-value accent">{{ total_jobs }}</div>
+        </div>
     </div>
-  </div>
-  <div class="col-6 col-md-4 col-xl-2">
-    <div class="cm-card p-3 text-center">
-      <div class="text-muted small fw-semibold text-uppercase">Applications</div>
-      <div class="fs-3 fw-bold text-warning">{{ total_applications }}</div>
+    <div class="col-6 col-md-4 col-xl-2">
+        <div class="glass-panel report-stat-card">
+            <div class="report-stat-label">Applications</div>
+            <div class="report-stat-value">{{ total_applications }}</div>
+        </div>
     </div>
-  </div>
-  <div class="col-6 col-md-4 col-xl-2">
-    <div class="cm-card p-3 text-center">
-      <div class="text-muted small fw-semibold text-uppercase">Resumes</div>
-      <div class="fs-3 fw-bold text-danger">{{ total_resumes }}</div>
+    <div class="col-6 col-md-4 col-xl-2">
+        <div class="glass-panel report-stat-card">
+            <div class="report-stat-label">Resumes</div>
+            <div class="report-stat-value">{{ total_resumes }}</div>
+        </div>
     </div>
-  </div>
 </div>
 
+<!-- Detailed Breakdowns -->
 <div class="row g-4">
-  <!-- Applications by Status -->
-  <div class="col-lg-6">
-    <div class="cm-card h-100">
-      <div class="card-header"><i class="bi bi-pie-chart me-2 text-primary"></i>Applications Breakdown by Status</div>
-      <div class="card-body">
-        <table class="table cm-table">
-          <thead>
-            <tr>
-              <th>Status</th>
-              <th class="text-end">Count</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for item in app_status_breakdown %}
-              <tr>
-                <td>
-                  <span class="badge-status {{ item.status }}">{{ item.label }}</span>
-                </td>
-                <td class="text-end fw-bold">{{ item.count }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
+    
+    <!-- Applications by Status -->
+    <div class="col-lg-6">
+        <div class="glass-panel p-0 h-100 d-flex flex-column" style="overflow: hidden;">
+            <div class="glass-header">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+                Applications by Status
+            </div>
+            <div style="overflow-x: auto; flex-grow: 1;">
+                <table class="cm-admin-table h-100">
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th class="text-end">Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in app_status_breakdown %}
+                        <tr>
+                            <td>
+                                {% if item.status == 'pending' %}<span class="status-tag neutral">Pending</span>
+                                {% elif item.status == 'reviewed' %}<span class="status-tag success">Reviewed</span>
+                                {% elif item.status == 'interviewing' %}<span class="status-tag active">Interviewing</span>
+                                {% elif item.status == 'rejected' %}<span class="status-tag error">Rejected</span>
+                                {% elif item.status == 'hired' %}<span class="status-tag success">Hired</span>
+                                {% else %}<span class="status-tag neutral">{{ item.label }}</span>{% endif %}
+                            </td>
+                            <td class="text-end table-main-text">{{ item.count }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="2" class="text-center py-4 text-muted">No applications found.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <!-- Jobs by Category -->
-  <div class="col-lg-6">
-    <div class="cm-card h-100">
-      <div class="card-header"><i class="bi bi-bar-chart-steps me-2 text-primary"></i>Jobs Breakdown by Category</div>
-      <div class="card-body">
-        <table class="table cm-table">
-          <thead>
-            <tr>
-              <th>Category</th>
-              <th class="text-end">Active Jobs</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for cat in jobs_by_category %}
-              <tr>
-                <td class="fw-semibold">{{ cat.name }}</td>
-                <td class="text-end">
-                  <span class="badge bg-primary-subtle text-primary">{{ cat.job_count }}</span>
-                </td>
-              </tr>
-            {% empty %}
-              <tr><td colspan="2" class="text-center text-muted py-3">No categories defined yet.</td></tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
+    <!-- Jobs by Category -->
+    <div class="col-lg-6">
+        <div class="glass-panel p-0 h-100 d-flex flex-column" style="overflow: hidden;">
+            <div class="glass-header">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                Jobs by Category
+            </div>
+            <div style="overflow-x: auto; flex-grow: 1;">
+                <table class="cm-admin-table h-100">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th class="text-end">Active Jobs</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cat in jobs_by_category %}
+                        <tr>
+                            <td class="table-main-text">{{ cat.name }}</td>
+                            <td class="text-end table-main-text" style="color: var(--cm-accent);">{{ cat.job_count }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="2" class="text-center py-4 text-muted">No categories defined yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <!-- Jobs by Employment Type -->
-  <div class="col-lg-6">
-    <div class="cm-card h-100">
-      <div class="card-header"><i class="bi bi-briefcase me-2 text-primary"></i>Jobs Breakdown by Employment Type</div>
-      <div class="card-body">
-        <table class="table cm-table">
-          <thead>
-            <tr>
-              <th>Employment Type</th>
-              <th class="text-end">Total Postings</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for item in jobs_by_emp_type %}
-              <tr>
-                <td>{{ item.label }}</td>
-                <td class="text-end fw-bold">{{ item.count }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
+    <!-- Jobs by Employment Type -->
+    <div class="col-lg-6">
+        <div class="glass-panel p-0 h-100 d-flex flex-column" style="overflow: hidden;">
+            <div class="glass-header">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                Jobs by Employment Type
+            </div>
+            <div style="overflow-x: auto; flex-grow: 1;">
+                <table class="cm-admin-table h-100">
+                    <thead>
+                        <tr>
+                            <th>Employment Type</th>
+                            <th class="text-end">Total Postings</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in jobs_by_emp_type %}
+                        <tr>
+                            <td class="table-main-text">{{ item.label }}</td>
+                            <td class="text-end table-main-text">{{ item.count }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="2" class="text-center py-4 text-muted">No jobs posted yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <!-- Top In-Demand Skills -->
-  <div class="col-lg-6">
-    <div class="cm-card h-100">
-      <div class="card-header"><i class="bi bi-stars me-2 text-primary"></i>Top In-Demand Skills in Jobs</div>
-      <div class="card-body">
-        <table class="table cm-table">
-          <thead>
-            <tr>
-              <th>Skill</th>
-              <th>Category</th>
-              <th class="text-end">Jobs Demanding</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for skill in top_skills %}
-              <tr>
-                <td class="fw-semibold">{{ skill.name }}</td>
-                <td><small class="text-muted">{{ skill.category|default:"General" }}</small></td>
-                <td class="text-end">
-                  <span class="badge bg-info-subtle text-info">{{ skill.job_demand }}</span>
-                </td>
-              </tr>
-            {% empty %}
-              <tr><td colspan="3" class="text-center text-muted py-3">No skill demands recorded yet.</td></tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
+    <!-- Top In-Demand Skills -->
+    <div class="col-lg-6">
+        <div class="glass-panel p-0 h-100 d-flex flex-column" style="overflow: hidden;">
+            <div class="glass-header">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                Top In-Demand Skills
+            </div>
+            <div style="overflow-x: auto; flex-grow: 1;">
+                <table class="cm-admin-table h-100">
+                    <thead>
+                        <tr>
+                            <th>Skill</th>
+                            <th>Category</th>
+                            <th class="text-end">Jobs Demanding</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for skill in top_skills %}
+                        <tr>
+                            <td class="table-main-text">{{ skill.name }}</td>
+                            <td><span class="table-sub-text">{{ skill.category|default:"General" }}</span></td>
+                            <td class="text-end table-main-text" style="color: var(--cm-accent);">{{ skill.job_demand }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="3" class="text-center py-4 text-muted">No skill demands recorded yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 {% endblock %}
