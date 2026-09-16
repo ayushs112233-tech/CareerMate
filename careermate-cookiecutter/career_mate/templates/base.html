@@ -1,10 +1,13 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
     {% load static %}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}CareerMate AI{% endblock %}</title>
+    <!-- Bootstrap CSS (Utility/Grid/Components) loaded before custom CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- CareerMate Design Authority CSS -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
@@ -24,8 +27,38 @@
         {% endif %}
         </nav>
     </header>
-    <main class="page-content">
+    <main class="page-content fade-in">
         {% block content %}{% endblock %}
     </main>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Micro-Interactions Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Form Submit Loading State Interceptor
+            const forms = document.querySelectorAll('.login-page form:not(.no-loader)');
+            forms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    if (submitBtn) {
+                        if (submitBtn.classList.contains('submitting')) {
+                            e.preventDefault();
+                            return;
+                        }
+                        submitBtn.classList.add('submitting');
+                        // Use inline styling to maintain structure
+                        submitBtn.style.opacity = '0.8';
+                        submitBtn.style.pointerEvents = 'none';
+                        const originalText = submitBtn.innerHTML;
+                        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Processing...';
+                    }
+                });
+            });
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
 </body>
 </html>
+

@@ -1,8 +1,155 @@
 ﻿{% extends "candidate/base.html" %}
 {% block title %}Dashboard | CareerMate{% endblock %}
 {% block candidate_content %}
-<section class="welcome-panel"><div><p class="eyebrow">YOUR NEXT MOVE</p><h2>Welcome back, {{ candidate_name }}.</h2><p>Keep your profile sharp, discover roles that fit, and turn insight into momentum.</p><a class="button button-light" href="{% url 'candidate_jobs' %}">Explore matched jobs</a></div><div class="completion-ring"><strong>{{ completion }}%</strong><span>profile ready</span></div></section>
-<section class="metric-grid"><div class="metric-card"><span>Profile completion</span><strong>{{ completion }}%</strong><small>Keep your profile discoverable</small></div><div class="metric-card"><span>Resume status</span><strong>{% if latest_resume %}{{ latest_resume.get_status_display }}{% else %}Not uploaded{% endif %}</strong><small><a href="{% url 'candidate_resume' %}">Open resume center</a></small></div><div class="metric-card"><span>ATS score</span><strong>{% if ats_score %}{{ ats_score }}%{% else %}--{% endif %}</strong><small><a href="{% url 'candidate_ats_score' %}">View AI insights</a></small></div><div class="metric-card"><span>Active applications</span><strong>{{ active_application_count }}</strong><small>{{ application_count }} total applications</small></div></section>
-<div class="content-columns"><section class="panel"><div class="panel-heading"><div><p class="eyebrow">RECOMMENDED FOR YOU</p><h2>Roles worth a closer look</h2></div><a href="{% url 'candidate_jobs' %}">See all</a></div>{% for job in recommended_jobs %}<article class="job-item"><div class="job-logo">{{ job.company.name|slice:":1"|upper }}</div><div class="job-copy"><h3><a href="{% url 'candidate_job_detail' job.pk %}">{{ job.title }}</a></h3><p>{{ job.company.name }} &middot; {{ job.location }} &middot; Match: <span style='color:#33715a; font-weight:bold;'>{{ job.match_score }}%</span></p><div class="tag-row">{% for skill in job.skills_required.all|slice:":3" %}<span class="tag">{{ skill.name }}</span>{% endfor %}</div></div><a class="text-link" href="{% url 'candidate_job_detail' job.pk %}">View role</a></article>{% empty %}<div class="empty-state"><strong>No recommendations yet</strong><p>Complete your profile and check back when recruiters publish active roles.</p><a class="button button-primary" href="{% url 'candidate_profile' %}">Complete profile</a></div>{% endfor %}</section><section class="panel"><div class="panel-heading"><div><p class="eyebrow">RECENT ACTIVITY</p><h2>Application pulse</h2></div><a href="{% url 'candidate_applications' %}">Track all</a></div>{% for application in applications %}<div class="activity-item"><div><strong>{{ application.job.title }}</strong><span>{{ application.job.company.name }}</span></div><span class="status status-{{ application.status }}">{{ application.get_status_display }}</span></div>{% empty %}<div class="empty-state compact"><strong>Your application list is clear.</strong><p>Find a role that matches your direction and apply when you are ready.</p><a class="text-link" href="{% url 'candidate_jobs' %}">Browse jobs ΓåÆ</a></div>{% endfor %}</section></div>
-{% endblock %}
 
+<!-- Welcome Hero -->
+<section class="card border-0 shadow-sm mb-4 dashboard-hero position-relative overflow-hidden" style="background: linear-gradient(135deg, #33715a 0%, #1e4537 100%); color: white;">
+    <!-- Abstract Shape -->
+    <div style="position:absolute; top:-50%; right:-10%; width:400px; height:400px; background:radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%); border-radius:50%;"></div>
+    
+    <div class="card-body p-4 p-md-5 d-flex flex-column flex-md-row justify-content-between align-items-md-center position-relative z-1">
+        <div>
+            <p class="text-uppercase mb-2" style="font-size:0.8rem; letter-spacing:1.5px; opacity:0.8; font-weight:600;">Your Next Move</p>
+            <h2 class="display-6 fw-bold mb-3">Welcome back, {{ candidate_name }}.</h2>
+            <p class="mb-4 mb-md-0" style="opacity:0.9; max-width:500px; font-size:1.1rem;">Keep your profile sharp, discover roles that fit your skills, and turn AI insight into career momentum.</p>
+        </div>
+        <div class="d-flex flex-column align-items-md-end text-md-end">
+            <div class="completion-ring bg-white text-dark rounded-circle d-flex flex-column justify-content-center align-items-center mb-3 shadow" style="width: 100px; height: 100px;">
+                <strong style="color: #33715a; font-size: 1.5rem; line-height: 1;">{{ completion }}%</strong>
+                <span class="text-muted" style="font-size: 0.65rem; text-transform: uppercase; font-weight: 700;">Complete</span>
+            </div>
+            <a class="btn bg-white" href="{% url 'candidate_jobs' %}" style="color: #1e4537; font-weight: 700; border-radius: 6px;">Explore matched jobs</a>
+        </div>
+    </div>
+</section>
+
+<!-- Key Metrics Grid -->
+<section class="row g-3 mb-4 metric-grid">
+    <div class="col-12 col-md-6 col-lg-3">
+        <div class="card border-0 shadow-sm h-100 metric-card">
+            <div class="card-body">
+                <span class="text-muted text-uppercase d-block mb-2" style="font-size:0.75rem; font-weight:700;">Profile Status</span>
+                <strong class="d-block mb-1" style="font-size:1.8rem; font-weight:800; color:#17221d;">{{ completion }}%</strong>
+                <small class="text-muted">Keep your profile discoverable</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-12 col-md-6 col-lg-3">
+        <div class="card border-0 shadow-sm h-100 metric-card">
+            <div class="card-body">
+                <span class="text-muted text-uppercase d-block mb-2" style="font-size:0.75rem; font-weight:700;">Resume Status</span>
+                <strong class="d-block mb-1 text-truncate" style="font-size:1.4rem; font-weight:800; color:#17221d; line-height:1.3; min-height: 2.6rem;">{% if latest_resume %}{{ latest_resume.get_status_display }}{% else %}Not uploaded{% endif %}</strong>
+                <small><a href="{% url 'candidate_resume' %}" style="color:#33715a; font-weight:600; text-decoration:none;">Open resume center &rarr;</a></small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-12 col-md-6 col-lg-3">
+        <div class="card border-0 shadow-sm h-100 metric-card">
+            <div class="card-body">
+                <span class="text-muted text-uppercase d-block mb-2" style="font-size:0.75rem; font-weight:700;">AI ATS Score</span>
+                <strong class="d-block mb-1" style="font-size:1.8rem; font-weight:800; color:#17221d;">{% if ats_score %}{{ ats_score }}%{% else %}--{% endif %}</strong>
+                <small><a href="{% url 'candidate_ats_score' %}" style="color:#33715a; font-weight:600; text-decoration:none;">View AI insights &rarr;</a></small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-12 col-md-6 col-lg-3">
+        <div class="card border-0 shadow-sm h-100 metric-card">
+            <div class="card-body">
+                <span class="text-muted text-uppercase d-block mb-2" style="font-size:0.75rem; font-weight:700;">Active Apps</span>
+                <strong class="d-block mb-1" style="font-size:1.8rem; font-weight:800; color:#17221d;">{{ active_application_count }}</strong>
+                <small class="text-muted">{{ application_count }} total applications</small>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Main Content Columns -->
+<div class="row g-4">
+    <!-- Recommended Jobs -->
+    <div class="col-12 col-lg-8">
+        <section class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-bottom-0 pt-4 pb-0 d-flex justify-content-between align-items-end">
+                <div>
+                    <p class="text-muted text-uppercase mb-1" style="font-size:0.75rem; font-weight:700;">Recommended For You</p>
+                    <h3 class="h5 fw-bold mb-0" style="color:#17221d;">Roles worth a closer look</h3>
+                </div>
+                <a href="{% url 'candidate_jobs' %}" class="btn btn-sm" style="color:#33715a; font-weight:600; background:#f0f5f2;">See all</a>
+            </div>
+            
+            <div class="card-body pt-3">
+                {% for job in recommended_jobs %}
+                <article class="job-item d-flex align-items-start p-3 mb-3 rounded" style="border: 1px solid #e7ebf5; transition: all 0.2s;">
+                    <div class="job-logo rounded d-flex align-items-center justify-content-center me-3 flex-shrink-0" style="width:48px; height:48px; background:#f4f7ff; color:#33715a; font-weight:bold; font-size:1.2rem;">
+                        {{ job.company.name|slice:":1"|upper }}
+                    </div>
+                    <div class="job-copy flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-start mb-1">
+                            <h4 class="h6 fw-bold mb-0"><a href="{% url 'candidate_job_detail' job.pk %}" class="text-decoration-none" style="color:#17221d;">{{ job.title }}</a></h4>
+                            <a class="btn btn-sm" style="color:#33715a; font-size:0.8rem; font-weight:600;" href="{% url 'candidate_job_detail' job.pk %}">View role</a>
+                        </div>
+                        <p class="text-muted mb-2" style="font-size:0.85rem;">{{ job.company.name }} &middot; {{ job.location }} &middot; Match: <span style="color:#33715a; font-weight:800;">{{ job.match_score }}%</span></p>
+                        <div class="tag-row d-flex flex-wrap gap-1">
+                            {% for skill in job.skills_required.all|slice:":3" %}
+                            <span class="badge" style="background:#fbfcfa; border:1px solid #dce5dc; color:#52675b; font-weight:500;">{{ skill.name }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </article>
+                {% empty %}
+                <div class="empty-state text-center p-5 rounded" style="border: 2px dashed #e7ebf5; background:#fbfcfa;">
+                    <strong class="d-block mb-2" style="color:#17221d; font-size:1.1rem;">No recommendations yet</strong>
+                    <p class="text-muted mb-4" style="font-size:0.9rem;">Complete your profile and upload your resume to unlock AI-powered job matching.</p>
+                    <a class="btn" style="background:#33715a; color:white; font-weight:600;" href="{% url 'candidate_profile' %}">Complete profile</a>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+    
+    <!-- Recent Activity -->
+    <div class="col-12 col-lg-4">
+        <section class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-bottom-0 pt-4 pb-0 d-flex justify-content-between align-items-end">
+                <div>
+                    <p class="text-muted text-uppercase mb-1" style="font-size:0.75rem; font-weight:700;">Recent Activity</p>
+                    <h3 class="h5 fw-bold mb-0" style="color:#17221d;">Application pulse</h3>
+                </div>
+            </div>
+            
+            <div class="card-body pt-4">
+                <div class="activity-timeline">
+                    {% for application in applications %}
+                    <div class="activity-item d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                        <div>
+                            <strong class="d-block mb-1" style="color:#17221d; font-size:0.95rem;">{{ application.job.title }}</strong>
+                            <span class="text-muted d-block" style="font-size:0.8rem;">{{ application.job.company.name }}</span>
+                        </div>
+                        <span class="badge" style="
+                            {% if application.status == 'APPLIED' %}background:#eef4ff; color:#2f5cff;
+                            {% elif application.status == 'REVIEWING' %}background:#fff8e6; color:#b77900;
+                            {% elif application.status == 'INTERVIEW' %}background:#e6f8ef; color:#12b76a;
+                            {% elif application.status == 'REJECTED' %}background:#ffeef0; color:#ff5e6c;
+                            {% else %}background:#f4f7ff; color:#5d6887;{% endif %}
+                        ">{{ application.get_status_display }}</span>
+                    </div>
+                    {% empty %}
+                    <div class="empty-state compact text-center py-4">
+                        <strong class="d-block mb-2" style="color:#17221d;">Your application list is clear.</strong>
+                        <p class="text-muted mb-3" style="font-size:0.85rem;">Find a role that matches your direction and apply when you are ready.</p>
+                        <a href="{% url 'candidate_jobs' %}" style="color:#33715a; font-weight:600; text-decoration:none;">Browse jobs &rarr;</a>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% if applications %}
+                <div class="text-center mt-3">
+                    <a href="{% url 'candidate_applications' %}" class="btn btn-sm" style="color:#52675b; font-weight:600; text-decoration:none; background:#fbfcfa; border:1px solid #dce5dc; width:100%;">View all applications</a>
+                </div>
+                {% endif %}
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}

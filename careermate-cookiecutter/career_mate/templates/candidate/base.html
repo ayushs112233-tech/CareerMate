@@ -1,25 +1,89 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 {% load static %}
 {% block content %}
-<div class="candidate-shell">
-  <aside class="candidate-sidebar">
-    <a class="candidate-brand" href="{% url 'candidate_dashboard' %}"><span class="brand-mark">C</span><span>CareerMate</span></a>
-    <nav class="candidate-nav" aria-label="Candidate navigation">
-      <a class="{% if request.resolver_match.url_name == 'candidate_dashboard' %}active{% endif %}" href="{% url 'candidate_dashboard' %}">Overview</a>
-      <a class="{% if request.resolver_match.url_name == 'candidate_profile' %}active{% endif %}" href="{% url 'candidate_profile' %}">My profile</a>
-      <a class="{% if request.resolver_match.url_name == 'candidate_resume' %}active{% endif %}" href="{% url 'candidate_resume' %}">Resume center</a>
-      <a class="{% if 'job' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'candidate_jobs' %}">Find jobs</a>
-      <a class="{% if 'application' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'candidate_applications' %}">Applications</a>
-      <a class="{% if request.resolver_match.url_name == 'candidate_ats_score' %}active{% endif %}" href="{% url 'candidate_ats_score' %}">AI insights</a>
-      <a class="{% if request.resolver_match.url_name == 'candidate_career_path' %}active{% endif %}" href="{% url 'candidate_career_path' %}">Career roadmap</a>
-    </nav>
-    <div class="candidate-account"><span class="avatar">{{ candidate_name|slice:":1"|upper }}</span><div><strong>{{ candidate_name }}</strong><small>Candidate</small></div><form method="post" action="{% url 'accounts:logout' %}" style="display:inline; margin:0; padding:0;">{% csrf_token %}<button type="submit" title="Sign out" style="background:none; border:none; padding:0; margin:0; color:inherit; cursor:pointer; font:inherit;">Γåù</button></form></div>
+<div class="candidate-shell d-flex fade-in">
+  <!-- Mobile Offcanvas Navbar -->
+  <nav class="navbar d-lg-none px-3 py-2 border-bottom" style="background: linear-gradient(180deg, #121b3a 0%, #1a2a53 100%);">
+      <a class="navbar-brand text-white d-flex align-items-center" href="{% url 'candidate_dashboard' %}" style="font-weight:700; font-size:1.2rem;">
+          <span style="background: #33715a; color: white; width: 30px; height: 30px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; margin-right: 10px;">C</span>
+          CareerMate
+      </a>
+      <button class="btn text-white p-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#candidateSidebar">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      </button>
+  </nav>
+
+  <!-- Sidebar (Offcanvas on mobile, fixed on desktop) -->
+  <aside class="candidate-sidebar offcanvas-lg offcanvas-start" tabindex="-1" id="candidateSidebar">
+    <div class="offcanvas-header d-lg-none border-bottom border-light border-opacity-10">
+      <h5 class="offcanvas-title text-white">CareerMate</h5>
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" data-bs-target="#candidateSidebar"></button>
+    </div>
+    
+    <div class="offcanvas-body d-flex flex-column h-100 p-0">
+        <a class="candidate-brand d-none d-lg-flex p-4" href="{% url 'candidate_dashboard' %}">
+            <span class="brand-mark" style="background:#33715a; color:white; width:32px; height:32px; border-radius:6px; display:inline-flex; align-items:center; justify-content:center; font-weight:bold; margin-right:12px;">C</span>
+            <span style="color:#edf3ff; font-weight:700; font-size:1.25rem;">CareerMate</span>
+        </a>
+        
+        <nav class="candidate-nav flex-grow-1 px-3 py-2" aria-label="Candidate navigation">
+          <a class="nav-item {% if request.resolver_match.url_name == 'candidate_dashboard' %}active{% endif %}" href="{% url 'candidate_dashboard' %}">Overview</a>
+          <a class="nav-item {% if request.resolver_match.url_name == 'candidate_profile' %}active{% endif %}" href="{% url 'candidate_profile' %}">My profile</a>
+          <a class="nav-item {% if request.resolver_match.url_name == 'candidate_resume' %}active{% endif %}" href="{% url 'candidate_resume' %}">Resume center</a>
+          <a class="nav-item {% if 'job' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'candidate_jobs' %}">Find jobs</a>
+          <a class="nav-item {% if 'application' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'candidate_applications' %}">Applications</a>
+          <a class="nav-item {% if request.resolver_match.url_name == 'candidate_ats_score' %}active{% endif %}" href="{% url 'candidate_ats_score' %}">AI insights</a>
+          <a class="nav-item {% if request.resolver_match.url_name == 'candidate_career_path' %}active{% endif %}" href="{% url 'candidate_career_path' %}">Career roadmap</a>
+        </nav>
+        
+        <div class="candidate-account p-3 m-3 mt-auto rounded" style="background: rgba(255,255,255,0.05);">
+            <div class="d-flex align-items-center mb-2">
+                <span class="avatar rounded-circle d-flex align-items-center justify-content-center me-2" style="width:36px; height:36px; background:#33715a; color:white; font-weight:bold;">{{ candidate_name|slice:":1"|upper }}</span>
+                <div class="text-white text-truncate">
+                    <strong class="d-block" style="font-size:0.9rem;">{{ candidate_name }}</strong>
+                    <small style="color:#a8b6d4; font-size:0.8rem;">Candidate</small>
+                </div>
+            </div>
+            <form method="post" action="{% url 'accounts:logout' %}" class="no-loader w-100">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm w-100 logout-btn" style="background:rgba(255,255,255,0.1); color:#edf3ff; border:none; transition:background 0.2s;">Sign out</button>
+            </form>
+        </div>
+    </div>
   </aside>
-  <main class="candidate-main">
-    <header class="candidate-topbar"><div><p class="eyebrow">CAREERMATE / CANDIDATE</p><h1>{{ page_title }}</h1></div><div class="topbar-actions"><a class="button button-quiet" href="{% url 'candidate_profile' %}">Profile</a><a class="button button-primary" href="{% url 'candidate_resume' %}">Update resume</a></div></header>
-    {% if messages %}<div class="flash-stack">{% for message in messages %}<div class="flash {{ message.tags }}">{{ message }}</div>{% endfor %}</div>{% endif %}
-    {% block candidate_content %}{% endblock %}
+
+  <!-- Main Content Area -->
+  <main class="candidate-main flex-grow-1 bg-light min-vh-100 d-flex flex-column">
+    <header class="candidate-topbar px-4 py-3 bg-white border-bottom d-flex justify-content-between align-items-center sticky-top z-1">
+        <div>
+            <p class="text-muted text-uppercase mb-1" style="font-size:0.75rem; letter-spacing:1px; font-weight:600;">Candidate Portal</p>
+            <h1 class="h4 mb-0 fw-bold" style="color:#17221d;">{{ page_title }}</h1>
+        </div>
+        <div class="d-none d-sm-flex gap-2">
+            <a class="btn" style="border:1px solid #dce5dc; color:#17221d; font-size:0.9rem; font-weight:600;" href="{% url 'candidate_profile' %}">Edit Profile</a>
+            <a class="btn text-white" style="background:#33715a; font-size:0.9rem; font-weight:600;" href="{% url 'candidate_resume' %}">Upload Resume</a>
+        </div>
+    </header>
+    
+    <div class="candidate-content p-4 flex-grow-1" style="max-width: 1400px;">
+        <!-- Global Toasts for Messages -->
+        <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1090;">
+            {% if messages %}
+                {% for message in messages %}
+                <div class="toast show align-items-center text-white border-0 {% if message.tags == 'error' %}bg-danger{% else %}bg-success{% endif %}" role="alert" aria-live="assertive" aria-atomic="true">
+                  <div class="d-flex">
+                    <div class="toast-body fw-bold">
+                      {{ message }}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                  </div>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        {% block candidate_content %}{% endblock %}
+    </div>
   </main>
 </div>
 {% endblock %}
-

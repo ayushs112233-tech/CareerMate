@@ -651,3 +651,79 @@ a {
 .search-form { gap: 10px; margin-bottom: 10px; }.search-form input { flex: 1; }.job-item-large { padding: 21px 0; }.job-action { min-width: 105px; text-align: right; }.detail-heading { gap: 16px; margin-bottom: 30px; }.detail-heading h2 { margin: 0 0 5px; font-size: 1.7rem; }.detail-section { padding: 22px 0; border-top: 1px solid #edf1ed; }.prose { color: #52675b; font-size: .9rem; line-height: 1.75; }.apply-panel { position: sticky; top: 20px; }.apply-panel h2 { margin: 0 0 9px; }.apply-panel .button { width: 100%; margin-top: 20px; }.application-list { border-top: 1px solid #edf1ed; }.application-item { gap: 16px; padding: 19px 4px; border-bottom: 1px solid #edf1ed; }.application-item div { flex: 1; }.application-item strong, .application-item span { display: block; }.application-item strong { font-size: .9rem; }.application-item div span { margin-top: 5px; color: #75847b; font-size: .77rem; }.arrow { color: #93a196; font-size: 1.2rem; }.application-timeline { margin-top: 30px; border-left: 2px solid #d9ef79; }.timeline-step { padding: 0 0 25px 18px; position: relative; }.timeline-step::before { content: ""; position: absolute; left: -7px; top: 1px; width: 11px; height: 11px; border-radius: 50%; background: #d9ef79; }.timeline-step strong, .timeline-step span { display: block; }.timeline-step span { margin-top: 5px; color: #75847b; font-size: .8rem; }.insight-hero { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 30px 36px; border-radius: 10px; background: #18352d; color: #f5fff3; }.insight-hero .eyebrow { color: #b7d5bb; }.insight-grid { grid-template-columns: repeat(4, 1fr); }.meter { height: 5px; margin-top: 15px; border-radius: 10px; background: #edf1ed; overflow: hidden; }.meter i { display: block; height: 100%; background: #80aa60; }.roadmap { display: grid; gap: 0; }.roadmap-step { gap: 17px; padding: 20px 0; border-bottom: 1px solid #edf1ed; }.roadmap-number { width: 34px; height: 34px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 50%; background: #f0f5ed; color: #60746a; font-weight: 900; }.roadmap-step.complete .roadmap-number { background: #d9ef79; color: #173329; }.roadmap-step div { flex: 1; }.roadmap-step h3 { margin: 0; font-size: .95rem; }.roadmap-step p { margin: 5px 0 0; color: #75847b; font-size: .8rem; }.login-page { min-height: 100vh; display: grid; place-items: center; padding: 24px; background: #edf3e7; }.login-card { width: min(430px, 100%); padding: 38px; border: 1px solid #dce5dc; border-radius: 12px; background: #fff; box-shadow: 0 20px 50px rgba(30,60,40,.08); }.login-card .candidate-brand { color: #18352d; margin-bottom: 48px; }.login-card h1 { margin: 0 0 10px; font-size: 2rem; letter-spacing: -.04em; }.login-card form { display: grid; gap: 16px; margin-top: 28px; }.login-card button { margin-top: 8px; }
 @media (max-width: 900px) { .candidate-sidebar { width: 100%; flex-basis: auto; padding: 18px; }.candidate-shell { display: block; }.candidate-brand { margin-bottom: 18px; }.candidate-nav { display: flex; overflow-x: auto; padding-bottom: 5px; }.candidate-nav a { white-space: nowrap; }.candidate-account { display: none; }.candidate-main { padding: 28px 18px; }.metric-grid, .insight-grid { grid-template-columns: repeat(2, 1fr); }.content-columns, .detail-layout { grid-template-columns: 1fr; }.apply-panel { position: static; } }
 @media (max-width: 560px) { .candidate-topbar, .welcome-panel, .insight-hero { display: block; }.topbar-actions { margin-top: 18px; }.welcome-panel, .insight-hero { padding: 26px; }.completion-ring, .score-bubble { margin-top: 22px; }.metric-grid, .form-grid { grid-template-columns: 1fr; }.form-grid .wide { grid-column: auto; }.skill-checks { grid-template-columns: repeat(2, 1fr); }.job-item-large { align-items: flex-start; flex-wrap: wrap; }.job-action { width: 100%; margin-left: 52px; text-align: left; }.application-item { align-items: flex-start; flex-wrap: wrap; }.application-item .status { order: 3; margin-left: 50px; }.panel { padding: 19px; } }
+
+/* Controlled Animations & States */
+@media (prefers-reduced-motion: no-preference) {
+    .fade-in {
+        animation: fadeIn 0.3s ease-out forwards;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Button and Input Interactive States */
+    .login-page .button, .login-page button, .login-page .btn {
+        transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+    }
+    .login-page .button:active, .login-page button:active, .login-page .btn:active {
+        transform: scale(0.98);
+    }
+    
+    .login-page input, .login-page select, .login-page textarea {
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .login-page input:focus, .login-page select:focus, .login-page textarea:focus {
+        outline: none;
+        border-color: #33715a !important;
+        box-shadow: 0 0 0 3px rgba(51, 113, 90, 0.15) !important;
+    }
+    
+    .login-card {
+        transition: box-shadow 0.3s ease;
+    }
+    .login-card:hover {
+        box-shadow: 0 25px 55px rgba(30,60,40,0.12);
+    }
+}
+
+
+/* Candidate Portal Animations & Enhancements */
+@media (prefers-reduced-motion: no-preference) {
+    .candidate-shell .card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .candidate-shell .metric-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 20px rgba(23,34,29,0.08) !important;
+    }
+    .candidate-shell .job-item:hover {
+        background: #fbfcfa;
+        border-color: #33715a !important;
+        box-shadow: 0 4px 12px rgba(51,113,90,0.05);
+    }
+    .candidate-sidebar .nav-item {
+        color: #edf3ff;
+        opacity: 0.7;
+        text-decoration: none;
+        display: block;
+        padding: 10px 15px;
+        border-radius: 6px;
+        margin-bottom: 5px;
+        transition: all 0.2s;
+        font-size: 0.95rem;
+    }
+    .candidate-sidebar .nav-item:hover {
+        opacity: 1;
+        background: rgba(255,255,255,0.08);
+    }
+    .candidate-sidebar .nav-item.active {
+        opacity: 1;
+        background: rgba(255,255,255,0.15);
+        font-weight: 600;
+    }
+    .candidate-sidebar .logout-btn:hover {
+        background: rgba(255,255,255,0.2) !important;
+        transform: scale(0.98);
+    }
+}
