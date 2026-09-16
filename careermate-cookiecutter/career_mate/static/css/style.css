@@ -944,3 +944,164 @@ a {
     color: var(--cm-text-muted);
     text-align: center;
 }
+
+/* === PREMIUM SPLIT-SCREEN AUTHENTICATION === */
+.auth-split-layout {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+@media (min-width: 992px) {
+    .auth-split-layout {
+        flex-direction: row;
+    }
+}
+.auth-side-brand {
+    background: linear-gradient(145deg, var(--cm-primary-dark) 0%, var(--cm-primary-darker) 100%);
+    color: white;
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    flex: 1;
+}
+@media (min-width: 992px) {
+    .auth-side-brand {
+        flex: 0 0 45%;
+        padding: 5rem;
+    }
+}
+.auth-side-brand::before {
+    content: '';
+    position: absolute;
+    top: -20%;
+    left: -10%;
+    width: 150%;
+    height: 150%;
+    background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 60%);
+    pointer-events: none;
+}
+.auth-side-form {
+    background: white;
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+}
+@media (min-width: 992px) {
+    .auth-side-form {
+        padding: 5rem;
+    }
+}
+.auth-form-container {
+    width: 100%;
+    max-width: 440px;
+}
+.auth-form-container.wide {
+    max-width: 520px;
+}
+.auth-form-container {
+    animation: authFadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes authFadeUp {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Form Polish */
+.auth-split-layout .auth-input {
+    padding: 0.85rem 1.1rem;
+    font-size: 0.95rem;
+    border-radius: 8px;
+    border: 1px solid var(--cm-border);
+    transition: all 0.2s;
+}
+.auth-split-layout .auth-input:focus {
+    box-shadow: 0 0 0 4px rgba(51, 113, 90, 0.1);
+    border-color: var(--cm-primary);
+}
+.auth-split-layout .auth-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    color: var(--cm-text-main);
+    letter-spacing: 0.3px;
+}
+.auth-split-layout .auth-btn {
+    padding: 0.9rem;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 1rem;
+    background: var(--cm-primary);
+    color: white;
+    transition: all 0.2s;
+}
+.auth-split-layout .auth-btn:hover {
+    background: var(--cm-primary-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(51, 113, 90, 0.2);
+}
+
+/* Two-column grid for First Name / Last Name */
+.auth-grid-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 1rem;
+}
+.auth-grid-form .auth-form-group {
+    grid-column: span 2;
+}
+.auth-grid-form .auth-form-group:has(input[name="first_name"]),
+.auth-grid-form .auth-form-group:has(input[name="last_name"]) {
+    grid-column: span 1;
+}
+
+/* Premium Choice Cards */
+.premium-choice-card {
+    display: block;
+    padding: 2rem 1.5rem;
+    border: 2px solid var(--cm-border);
+    border-radius: 12px;
+    text-align: left;
+    text-decoration: none;
+    background: white;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+}
+.premium-choice-card:hover {
+    border-color: var(--cm-primary);
+    background: var(--cm-bg-light);
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(23,34,29,0.06);
+}
+.premium-choice-card.employer:hover {
+    border-color: var(--cm-secondary);
+}
+.premium-choice-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.25rem;
+    background: var(--cm-bg-muted);
+    color: var(--cm-primary);
+    transition: all 0.2s;
+}
+.premium-choice-card.employer .premium-choice-icon {
+    color: var(--cm-secondary);
+}
+.premium-choice-card:hover .premium-choice-icon {
+    background: var(--cm-primary);
+    color: white;
+}
+.premium-choice-card.employer:hover .premium-choice-icon {
+    background: var(--cm-secondary);
+    color: white;
+}
