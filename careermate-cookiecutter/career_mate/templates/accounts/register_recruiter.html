@@ -3,62 +3,54 @@
 {% block header %}{% endblock %}
 {% block title %}Employer Sign Up | CareerMate AI{% endblock %}
 {% block content %}
-<main class="auth-split-layout">
-    <!-- Brand Side -->
-    <div class="auth-side-brand" style="background: linear-gradient(145deg, var(--cm-secondary) 0%, var(--cm-primary-darker) 100%);">
-        <a href="{% url 'home' %}" style="display:inline-flex; align-items:center; text-decoration:none; color:white; font-weight:800; font-size:1.5rem; margin-bottom:3rem;">
-            <span style="background:white; color:var(--cm-secondary); width:40px; height:40px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; margin-right:12px; font-size:1.2rem;">C</span>
-            CareerMate AI
+<main class="auth-centered-wrapper stagger-enter">
+    
+    <div class="auth-brand-header">
+        <a href="{% url 'home' %}" style="display:inline-flex; align-items:center; text-decoration:none; color:var(--cm-text-main); font-weight:700; font-size:1.5rem; margin-bottom:1.5rem;">
+            <span class="cm-fraunces" style="color:var(--cm-accent); font-style:italic; margin-right:10px; font-size:1.8rem;">C</span>
+            CareerMate
         </a>
-        <h1 style="font-size:3rem; font-weight:800; line-height:1.1; margin-bottom:1.5rem; max-width:400px;">Hire the Best Talent</h1>
-        <p style="font-size:1.1rem; opacity:0.8; max-width:350px;">Join to post jobs and let our AI engine instantly surface the most qualified candidates.</p>
+        <h1 class="cm-fraunces" style="font-size:2.5rem; font-weight:500; margin-bottom:0.5rem; color:var(--cm-text-main);">Create your employer account.</h1>
+        <p style="font-size:1rem; color:var(--cm-text-muted);">Join to post jobs and let our AI engine instantly surface the most qualified candidates.</p>
     </div>
 
-    <!-- Form Side -->
-    <div class="auth-side-form">
-        <div class="auth-form-container wide">
-            <p style="font-size:0.75rem; font-weight:700; letter-spacing:1px; color:var(--cm-text-muted); text-transform:uppercase; margin-bottom:0.5rem;">EMPLOYER ONBOARDING</p>
-            <h2 style="font-size:2rem; font-weight:800; color:var(--cm-text-main); margin-bottom:0.25rem;">Create your employer account.</h2>
-            <p style="color:var(--cm-text-muted); font-size:1rem; margin-bottom:2rem;">Start building your team with AI-driven insights.</p>
-            
-            <form method="post" class="auth-grid-form">
-                {% csrf_token %}
-                {% if form.non_field_errors %}
-                    <div class="auth-global-error" style="grid-column: span 2;">
-                        {{ form.non_field_errors }}
-                    </div>
-                {% endif %}
-                
-                {% for field in form %}
-                    <div class="auth-form-group">
-                        <label class="auth-label" for="{{ field.id_for_label }}">
-                            {{ field.label }} {% if field.field.required %}<span class="required" style="color:var(--cm-error);">*</span>{% endif %}
-                        </label>
-                        <input class="auth-input"
-                               type="{{ field.field.widget.input_type|default:'text' }}" 
-                               name="{{ field.html_name }}" 
-                               id="{{ field.id_for_label }}"
-                               {% if field.value %}value="{{ field.value }}"{% endif %}
-                               {% if field.field.required %}required{% endif %}>
-                        {% if field.help_text %}
-                            <small class="auth-help-text" style="color:var(--cm-text-light); font-size:0.75rem; margin-top:0.2rem; display:block;">{{ field.help_text }}</small>
-                        {% endif %}
-                        {% for error in field.errors %}
-                            <small class="auth-error-text" style="color:var(--cm-error); font-size:0.8rem; font-weight:600; display:block;">{{ error }}</small>
-                        {% endfor %}
-                    </div>
-                {% endfor %}
-                
-                <div style="grid-column: span 2; margin-top: 1rem;">
-                    <button class="auth-btn w-100" type="submit" style="background:var(--cm-secondary);">Create Employer Account</button>
+    <div class="auth-glass-container wide glass-panel">
+        <form method="post" class="auth-grid-form">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="mb-3 auth-form-group" style="padding:10px; background:var(--cm-error-bg); border-left:4px solid var(--cm-error); color:var(--cm-error); border-radius:4px; font-size:0.9rem;">
+                    {{ form.non_field_errors }}
                 </div>
-            </form>
+            {% endif %}
             
-            <div style="text-align:center; margin-top:2rem; font-size:0.9rem; color:var(--cm-text-muted);">
-                Already have an account? <a href="{% url 'accounts:login' %}" style="color:var(--cm-secondary); font-weight:700; text-decoration:none;">Sign in here</a>.
+            {% for field in form %}
+                <div class="auth-form-group">
+                    <label class="cm-input-label" for="{{ field.id_for_label }}">
+                        {{ field.label }} {% if field.field.required %}<span style="color:var(--cm-error);">*</span>{% endif %}
+                    </label>
+                    <input class="cm-underline-input"
+                           type="{{ field.field.widget.input_type|default:'text' }}" 
+                           name="{{ field.html_name }}" 
+                           id="{{ field.id_for_label }}"
+                           {% if field.value %}value="{{ field.value }}"{% endif %}
+                           {% if field.field.required %}required{% endif %}>
+                    {% if field.help_text %}
+                        <small style="color:var(--cm-text-dim); font-size:0.75rem; display:block; margin-top:4px;">{{ field.help_text }}</small>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <small style="color:var(--cm-error); font-size:0.8rem; font-weight:600; display:block; margin-top:4px;">{{ error }}</small>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            
+            <div class="auth-form-group mt-3">
+                <button class="cm-btn-accent w-100" type="submit">Create Employer Account</button>
             </div>
+        </form>
+        
+        <div style="text-align:center; margin-top:2.5rem; font-size:0.9rem; color:var(--cm-text-muted);">
+            Already have an account? <a href="{% url 'accounts:login' %}" class="cm-underline-tag" style="text-decoration:none; padding:0;">Sign in here</a>.
         </div>
     </div>
 </main>
 {% endblock %}
-

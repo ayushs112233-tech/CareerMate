@@ -3,51 +3,60 @@
 {% block header %}{% endblock %}
 {% block title %}Get Started | CareerMate AI{% endblock %}
 {% block content %}
-<main class="auth-split-layout">
-    <!-- Brand Side -->
-    <div class="auth-side-brand">
-        <a href="{% url 'home' %}" style="display:inline-flex; align-items:center; text-decoration:none; color:white; font-weight:800; font-size:1.5rem; margin-bottom:3rem;">
-            <span style="background:white; color:var(--cm-primary-darker); width:40px; height:40px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; margin-right:12px; font-size:1.2rem;">C</span>
-            CareerMate AI
+<main class="auth-centered-wrapper stagger-enter">
+    
+    <div class="auth-brand-header">
+        <a href="{% url 'home' %}" style="display:inline-flex; align-items:center; text-decoration:none; color:var(--cm-text-main); font-weight:700; font-size:1.5rem; margin-bottom:1.5rem;">
+            <span class="cm-fraunces" style="color:var(--cm-accent); font-style:italic; margin-right:10px; font-size:1.8rem;">C</span>
+            CareerMate
         </a>
-        <h1 style="font-size:3rem; font-weight:800; line-height:1.1; margin-bottom:1.5rem; max-width:400px;">Unlock Your Potential</h1>
-        <p style="font-size:1.1rem; opacity:0.8; max-width:350px;">Join the platform where world-class talent and innovative companies meet.</p>
+        <h1 class="cm-fraunces" style="font-size:2.5rem; font-weight:500; margin-bottom:0.5rem; color:var(--cm-text-main);">Unlock your potential.</h1>
+        <p style="font-size:1rem; color:var(--cm-text-muted);">Select your path to get started.</p>
     </div>
 
-    <!-- Form Side -->
-    <div class="auth-side-form">
-        <div class="auth-form-container wide">
-            <p style="font-size:0.75rem; font-weight:700; letter-spacing:1px; color:var(--cm-text-muted); text-transform:uppercase; margin-bottom:0.5rem;">JOIN CAREERMATE</p>
-            <h2 style="font-size:2rem; font-weight:800; color:var(--cm-text-main); margin-bottom:0.25rem;">How do you want to use CareerMate?</h2>
-            <p style="color:var(--cm-text-muted); font-size:1rem; margin-bottom:2rem;">Select your role to get started.</p>
-            
-            <div class="row g-4 mb-4">
-                <div class="col-12 col-md-6">
-                    <a href="{% url 'accounts:register_candidate' %}" class="premium-choice-card h-100">
-                        <div class="premium-choice-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                        </div>
-                        <strong style="display:block; font-size:1.1rem; font-weight:800; color:var(--cm-text-main); margin-bottom:0.4rem;">I am a Candidate</strong>
-                        <span style="display:block; font-size:0.85rem; color:var(--cm-text-muted); line-height:1.4;">Get AI-powered resume feedback, match with top roles, and accelerate your career.</span>
-                    </a>
-                </div>
-                
-                <div class="col-12 col-md-6">
-                    <a href="{% url 'accounts:register_recruiter' %}" class="premium-choice-card employer h-100">
-                        <div class="premium-choice-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
-                        </div>
-                        <strong style="display:block; font-size:1.1rem; font-weight:800; color:var(--cm-text-main); margin-bottom:0.4rem;">I am an Employer</strong>
-                        <span style="display:block; font-size:0.85rem; color:var(--cm-text-muted); line-height:1.4;">Post jobs, review AI-scored applicants, and hire the best talent faster than ever.</span>
-                    </a>
-                </div>
+    <div class="auth-glass-container wide">
+        <div class="row g-4 mb-4">
+            <!-- Candidate Choice -->
+            <div class="col-12 col-md-6">
+                <a href="{% url 'accounts:register_candidate' %}" class="glass-panel glass-panel-interactive scatter-card-left h-100" style="display:block; padding:2.5rem 2rem; text-decoration:none; position:relative; overflow:hidden;">
+                    <span class="ghost-numeral">1</span>
+                    <div style="margin-bottom:1.5rem;">
+                        <svg class="cm-line-art-icon" width="42" height="42" viewBox="0 0 24 24">
+                            <polyline points="3 17 9 11 13 15 21 7"></polyline>
+                            <polyline points="14 7 21 7 21 14"></polyline>
+                        </svg>
+                    </div>
+                    <strong style="display:block; font-size:1.2rem; font-weight:700; color:var(--cm-text-main); margin-bottom:0.5rem;">I am a Candidate</strong>
+                    <span style="display:block; font-size:0.9rem; color:var(--cm-text-muted); line-height:1.5;">Get AI-powered resume feedback, match with top roles, and accelerate your career.</span>
+                </a>
             </div>
             
-            <div style="text-align:center; font-size:0.9rem; color:var(--cm-text-muted);">
-                Already have an account? <a href="{% url 'accounts:login' %}" style="color:var(--cm-primary); font-weight:700; text-decoration:none;">Sign in here</a>.
+            <!-- Employer Choice -->
+            <div class="col-12 col-md-6">
+                <a href="{% url 'accounts:register_recruiter' %}" class="glass-panel glass-panel-interactive scatter-card-right h-100" style="display:block; padding:2.5rem 2rem; text-decoration:none; position:relative; overflow:hidden;">
+                    <span class="ghost-numeral">2</span>
+                    <div style="margin-bottom:1.5rem;">
+                        <svg class="cm-line-art-icon" width="42" height="42" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M19 12h-2"></path>
+                            <path d="M7 12H5"></path>
+                            <path d="M12 19v-2"></path>
+                            <path d="M12 7V5"></path>
+                            <path d="M16.95 16.95l-1.41-1.41"></path>
+                            <path d="M8.46 8.46L7.05 7.05"></path>
+                            <path d="M16.95 7.05l-1.41 1.41"></path>
+                            <path d="M8.46 15.54l-1.41 1.41"></path>
+                        </svg>
+                    </div>
+                    <strong style="display:block; font-size:1.2rem; font-weight:700; color:var(--cm-text-main); margin-bottom:0.5rem;">I am an Employer</strong>
+                    <span style="display:block; font-size:0.9rem; color:var(--cm-text-muted); line-height:1.5;">Post jobs, review AI-scored applicants, and hire the best talent faster than ever.</span>
+                </a>
             </div>
+        </div>
+        
+        <div style="text-align:center; font-size:0.9rem; color:var(--cm-text-muted);">
+            Already have an account? <a href="{% url 'accounts:login' %}" class="cm-underline-tag" style="text-decoration:none; padding:0;">Sign in here</a>.
         </div>
     </div>
 </main>
 {% endblock %}
-
