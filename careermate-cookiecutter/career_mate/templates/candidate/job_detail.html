@@ -1,28 +1,102 @@
 ﻿{% extends "candidate/base.html" %}
 {% block title %}{{ job.title }} | CareerMate{% endblock %}
-{% block candidate_content %}<div class="detail-layout"><section class="panel"><div class="detail-heading"><div class="job-logo large">{{ job.company.name|slice:":1"|upper }}</div><div><p class="eyebrow">{{ job.company.name }}</p><h2>{{ job.title }}</h2><p class="muted">{{ job.location }} ┬╖ {{ job.get_employment_type_display }} ┬╖ {{ job.min_experience }}+ years experience</p></div></div><div class="detail-section"><p class="eyebrow">THE ROLE</p><div class="prose">{{ job.description|linebreaks }}</div></div><div class="detail-section"><p class="eyebrow">WHAT YOU NEED</p><div class="prose">{{ job.requirements|default:"The employer has not added detailed requirements yet."|linebreaks }}</div></div><div class="detail-section">
-    <p class="eyebrow">YOUR MATCH ANALYSIS</p>
-    <div style="background: #fbfcfa; padding: 15px; border: 1px solid #dce5dc; border-radius: 6px; margin-bottom: 20px;">
-        <h4 style="margin-top:0; color: #33715a;">Match Score: {{ skill_gap.match_percentage }}%</h4>
-        {% if skill_gap.matching %}
-            <p style="margin-bottom: 5px;"><strong>Matching Skills:</strong></p>
-            <div class="tag-row" style="margin-bottom: 15px;">
-                {% for skill in skill_gap.matching %}
-                    <span class="tag" style="background:#eaf0eb;">{{ skill.name }}</span>
-                {% endfor %}
+{% block candidate_content %}
+<div class="stagger-enter">
+    
+    <!-- Hero Header -->
+    <section class="glass-panel p-4 mb-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-4">
+            <div class="d-flex gap-4">
+                <div class="d-flex align-items-center justify-content-center flex-shrink-0" style="width:70px; height:70px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:14px; font-weight:700; font-size:1.8rem; color:var(--cm-text-main);">
+                    {{ job.company.name|slice:":1"|upper }}
+                </div>
+                <div>
+                    <span class="d-block mb-1" style="font-size:0.85rem; font-weight:600; color:var(--cm-accent); text-transform:uppercase; letter-spacing:1px;">{{ job.company.name }}</span>
+                    <h1 class="cm-fraunces mb-2" style="font-size:2.2rem; font-weight:500; color:var(--cm-text-main);">{{ job.title }}</h1>
+                    
+                    <div class="d-flex flex-wrap align-items-center" style="font-size:0.95rem; color:var(--cm-text-muted); gap:12px;">
+                        <span>{{ job.location }}</span>
+                        <span style="color:rgba(255,255,255,0.2);">|</span>
+                        <span>{{ job.get_employment_type_display }}</span>
+                        <span style="color:rgba(255,255,255,0.2);">|</span>
+                        <span>{{ job.min_experience }}+ years experience</span>
+                    </div>
+                </div>
             </div>
-        {% endif %}
-        
-        {% if skill_gap.missing %}
-            <p style="margin-bottom: 5px; color: #a44639;"><strong>Missing Skills:</strong></p>
-            <div class="tag-row">
-                {% for skill in skill_gap.missing %}
-                    <span class="tag" style="background:#fbe5e1; color:#a44639;">{{ skill.name }}</span>
-                {% endfor %}
-            </div>
-        {% else %}
-            <p style="color: #33715a;"><strong>You have all the required skills for this job!</strong></p>
-        {% endif %}
-    </div>
-</div></section><aside class="panel apply-panel"><p class="eyebrow">YOUR MATCH</p><h2>Ready to apply?</h2>{% if application %}<span class="status status-{{ application.status }}">{{ application.get_status_display }}</span><p class="muted">You applied on {{ application.applied_at|date:"M d, Y" }}.</p><a class="button button-quiet" href="{% url 'candidate_application_detail' application.pk %}">Track application</a>{% else %}<p class="muted">Your latest resume will be attached to this application.</p><form method="post">{% csrf_token %}<button class="button button-primary" type="submit">Apply now</button></form>{% endif %}</aside></div>{% endblock %}
 
+            <!-- Action Area -->
+            <div class="d-flex flex-column align-items-md-end text-md-end flex-shrink-0">
+                {% if application %}
+                    <span style="display:inline-block; padding:8px 16px; background:rgba(255,255,255,0.05); color:var(--cm-text-main); font-size:0.9rem; font-weight:600; border-radius:8px; margin-bottom:12px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        Applied on {{ application.applied_at|date:"M d" }}
+                    </span>
+                    <a href="{% url 'candidate_application_detail' application.pk %}" class="cm-underline-tag text-decoration-none">Track application</a>
+                {% else %}
+                    <form method="post" class="mb-2">
+                        {% csrf_token %}
+                        <button class="cm-btn-accent" type="submit">Apply for this role</button>
+                    </form>
+                    <small style="color:var(--cm-text-dim); font-size:0.8rem;">Your latest resume will be attached.</small>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <div class="row g-4">
+        <!-- Main Content -->
+        <div class="col-12 col-lg-8">
+            <section class="glass-panel p-4 mb-4">
+                <h2 class="mb-4" style="font-size:1.1rem; font-weight:600; color:var(--cm-text-main); text-transform:uppercase; letter-spacing:1px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:12px;">The Role</h2>
+                <div style="font-size:1rem; line-height:1.7; color:var(--cm-text-main); margin-bottom:2rem;">
+                    {{ job.description|linebreaks }}
+                </div>
+
+                <h2 class="mb-4" style="font-size:1.1rem; font-weight:600; color:var(--cm-text-main); text-transform:uppercase; letter-spacing:1px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:12px;">What You Need</h2>
+                <div style="font-size:1rem; line-height:1.7; color:var(--cm-text-main);">
+                    {{ job.requirements|default:"The employer has not added detailed requirements yet."|linebreaks }}
+                </div>
+            </section>
+        </div>
+
+        <!-- Sidebar / Match Analysis -->
+        <div class="col-12 col-lg-4">
+            <section class="glass-panel p-4 h-100">
+                <h3 class="mb-4" style="font-size:1.1rem; font-weight:600; color:var(--cm-text-main); text-transform:uppercase; letter-spacing:1px;">AI Match Analysis</h3>
+                
+                <div class="d-flex align-items-end mb-4">
+                    <strong style="font-size:3rem; font-weight:700; color:var(--cm-accent); line-height:1; font-family:'Fraunces', serif;">{{ skill_gap.match_percentage }}<span style="font-size:1.5rem;">%</span></strong>
+                    <span style="color:var(--cm-text-muted); font-size:0.9rem; margin-left:12px; margin-bottom:6px;">Overall Fit</span>
+                </div>
+
+                {% if skill_gap.matching %}
+                <div class="mb-4">
+                    <strong class="d-block mb-3" style="font-size:0.85rem; color:var(--cm-text-main);">Matching Skills</strong>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for skill in skill_gap.matching %}
+                            <span class="cm-underline-tag" style="border-bottom-color:var(--cm-accent); color:var(--cm-text-main);">{{ skill.name }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if skill_gap.missing %}
+                <div>
+                    <strong class="d-block mb-3" style="font-size:0.85rem; color:var(--cm-error);">Missing Skills</strong>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for skill in skill_gap.missing %}
+                            <span style="font-size:0.8rem; font-weight:600; padding:4px 8px; border:1px solid rgba(164,70,57,0.3); color:var(--cm-error); border-radius:4px; background:rgba(164,70,57,0.1);">{{ skill.name }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% else %}
+                <div class="p-3 mt-4" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:8px;">
+                    <strong style="color:var(--cm-accent); font-size:0.95rem; display:block; margin-bottom:4px;">Highly Qualified</strong>
+                    <p style="color:var(--cm-text-muted); font-size:0.85rem; margin:0;">You have all the required core skills for this role.</p>
+                </div>
+                {% endif %}
+            </section>
+        </div>
+    </div>
+</div>
+{% endblock %}

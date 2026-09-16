@@ -1,3 +1,134 @@
 ﻿{% extends "candidate/base.html" %}
 {% block title %}Resume Center | CareerMate{% endblock %}
-{% block candidate_content %}<div class="content-columns resume-columns"><section class="panel"><div class="panel-heading"><div><p class="eyebrow">RESUME CENTER</p><h2>Keep your strongest version ready.</h2></div></div><form method="post" enctype="multipart/form-data" class="upload-zone">{% csrf_token %}<div class="upload-icon">Γåæ</div><h3>Upload or replace your resume</h3><p>PDF, DOC, or DOCX files are accepted. Your latest upload is used when applying.</p>{{ form.file }}{% if form.file.errors %}<div class="form-error">{{ form.file.errors }}</div>{% endif %}<button type="submit" class="button button-primary">Upload resume</button></form>{% if latest_resume %}<div class="resume-summary"><div class="file-mark">PDF</div><div><strong>{{ latest_resume.file_name }}</strong><span>Uploaded {{ latest_resume.uploaded_at|date:"M d, Y" }} ┬╖ {{ latest_resume.get_status_display }}</span></div><a class="text-link" href="{% url 'candidate_resume_download' latest_resume.pk %}">Download</a></div>{% endif %}</section><section class="panel"><div class="panel-heading"><div><p class="eyebrow">EXTRACTED SIGNALS</p><h2>What the system sees</h2></div><a href="{% url 'candidate_ats_score' %}">AI insights</a></div>{% if latest_resume and latest_resume.parsed_text %}<p class="muted">Your parsed resume text is ready for matching and analysis.</p><div class="resume-text">{{ latest_resume.parsed_text|truncatewords:80 }}</div>{% elif latest_resume %}<div class="empty-state compact"><strong>Analysis is queued</strong><p>Your resume is uploaded. Extracted skills and feedback will appear once processing completes.</p></div>{% else %}<div class="empty-state compact"><strong>No resume yet</strong><p>Upload a resume to unlock ATS feedback and faster applications.</p></div>{% endif %}</section></div>{% endblock %}
+{% block candidate_content %}
+<div class="stagger-enter">
+    <div class="mb-4">
+        <h2 class="cm-fraunces mb-1" style="font-size:2rem; font-weight:500; color:var(--cm-text-main);">Resume Center</h2>
+        <p style="color:var(--cm-text-muted); font-size:1rem;">Manage your active document and review what the ATS engine extracts.</p>
+    </div>
+
+    <div class="row g-4">
+        <!-- Upload & Status Column -->
+        <div class="col-12 col-lg-6">
+            <!-- Active Resume Status -->
+            {% if latest_resume %}
+            <section class="glass-panel p-4 mb-4">
+                <h3 class="mb-3" style="font-size:1.1rem; font-weight:600; color:var(--cm-text-main);">Current Resume</h3>
+                <div class="d-flex align-items-center justify-content-between p-3" style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:8px;">
+                    <div class="d-flex align-items-center">
+                        <div class="d-flex align-items-center justify-content-center" style="width:40px; height:40px; background:rgba(212,168,74,0.1); color:var(--cm-accent); border-radius:8px; font-weight:700; font-size:0.75rem; margin-right:16px;">
+                            PDF
+                        </div>
+                        <div>
+                            <strong class="d-block" style="color:var(--cm-text-main); font-size:0.95rem; margin-bottom:2px;">{{ latest_resume.file_name }}</strong>
+                            <div class="d-flex align-items-center" style="font-size:0.8rem; color:var(--cm-text-muted);">
+                                <span>Uploaded {{ latest_resume.uploaded_at|date:"M d, Y" }}</span>
+                                <span style="margin:0 8px; color:rgba(255,255,255,0.2);">|</span>
+                                <span style="
+                                    {% if latest_resume.status == 'PARSED' or latest_resume.status == 'SCORED' %}color:var(--cm-accent);
+                                    {% elif latest_resume.status == 'FAILED' %}color:var(--cm-error);
+                                    {% else %}color:var(--cm-text-main);{% endif %}
+                                ">{{ latest_resume.get_status_display }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="{% url 'candidate_resume_download' latest_resume.pk %}" class="cm-underline-tag" style="text-decoration:none;">Download</a>
+                </div>
+            </section>
+            {% endif %}
+
+            <!-- Upload Zone -->
+            <section class="glass-panel p-4">
+                <h3 class="mb-3" style="font-size:1.1rem; font-weight:600; color:var(--cm-text-main);">{% if latest_resume %}Replace Resume{% else %}Upload Resume{% endif %}</h3>
+                <p style="color:var(--cm-text-muted); font-size:0.9rem; margin-bottom:1.5rem;">Accepted formats: PDF or DOCX. Your latest upload is used when applying.</p>
+                
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="p-4 text-center mb-4" style="border:1.5px dashed rgba(255,255,255,0.15); border-radius:8px; background:rgba(255,255,255,0.01);">
+                        <svg class="cm-line-art-icon mb-2" width="32" height="32" viewBox="0 0 24 24">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <div class="cm-file-input-wrapper">
+                            {{ form.file }}
+                        </div>
+                    </div>
+                    {% if form.file.errors %}
+                        <div class="mb-3" style="color:var(--cm-error); font-size:0.85rem; font-weight:600;">
+                            {{ form.file.errors }}
+                        </div>
+                    {% endif %}
+                    <button type="submit" class="cm-btn-accent w-100">Upload document</button>
+                </form>
+            </section>
+        </div>
+
+        <!-- Extraction Signals -->
+        <div class="col-12 col-lg-6">
+            <section class="glass-panel p-4 h-100 d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="mb-0" style="font-size:1.1rem; font-weight:600; color:var(--cm-text-main);">Extraction Signals</h3>
+                    {% if latest_resume %}
+                    <a href="{% url 'candidate_ats_score' %}" class="cm-underline-tag" style="text-decoration:none;">View AI insights</a>
+                    {% endif %}
+                </div>
+
+                {% if latest_resume and latest_resume.parsed_text %}
+                <p style="color:var(--cm-text-muted); font-size:0.9rem; margin-bottom:1rem;">The ATS engine has successfully extracted text from your document.</p>
+                <div class="flex-grow-1 p-3" style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:8px; color:var(--cm-text-muted); font-size:0.85rem; font-family:monospace; line-height:1.6; overflow-y:auto; max-height:400px;">
+                    {{ latest_resume.parsed_text|truncatewords:80 }}...
+                </div>
+                
+                {% elif latest_resume %}
+                <div class="flex-grow-1 d-flex flex-column align-items-center justify-content-center text-center p-4">
+                    <svg class="cm-line-art-icon mb-3" width="42" height="42" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    <strong class="d-block mb-2" style="font-size:1.05rem; color:var(--cm-text-main);">Analysis in progress</strong>
+                    <p style="color:var(--cm-text-muted); font-size:0.9rem; max-width:300px;">Your resume is securely stored. Extracted text will appear here once the parsing engine finishes.</p>
+                </div>
+                
+                {% else %}
+                <div class="flex-grow-1 d-flex flex-column align-items-center justify-content-center text-center p-4">
+                    <svg class="cm-line-art-icon mb-3" width="42" height="42" viewBox="0 0 24 24">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    <strong class="d-block mb-2" style="font-size:1.05rem; color:var(--cm-text-main);">No document found</strong>
+                    <p style="color:var(--cm-text-muted); font-size:0.9rem; max-width:300px;">Upload a resume to begin parsing and unlock AI-powered job matching.</p>
+                </div>
+                {% endif %}
+            </section>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Scoped override for Django native file input */
+.cm-file-input-wrapper input[type="file"] {
+    width: 100%;
+    color: var(--cm-text-main);
+    font-size: 0.9rem;
+}
+.cm-file-input-wrapper input[type="file"]::file-selector-button {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: var(--cm-text-main);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    margin-right: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 600;
+}
+.cm-file-input-wrapper input[type="file"]::file-selector-button:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: var(--cm-accent);
+}
+</style>
+{% endblock %}

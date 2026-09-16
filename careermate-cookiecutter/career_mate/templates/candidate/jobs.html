@@ -1,4 +1,89 @@
 ﻿{% extends "candidate/base.html" %}
 {% block title %}Find Jobs | CareerMate{% endblock %}
-{% block candidate_content %}<section class="panel"><div class="panel-heading"><div><p class="eyebrow">OPPORTUNITY BOARD</p><h2>Roles aligned with your direction.</h2></div><span class="result-count">{{ jobs|length }} roles</span></div><form method="get" class="search-form"><input type="search" name="q" value="{{ query }}" placeholder="Search title, company, location, or skill"><button class="button button-primary" type="submit">Search</button></form><div class="job-board">{% for job in jobs %}<article class="job-item job-item-large"><div class="job-logo">{{ job.company.name|slice:":1"|upper }}</div><div class="job-copy"><h3><a href="{% url 'candidate_job_detail' job.pk %}">{{ job.title }}</a></h3><p>{{ job.company.name }} &middot; {{ job.location }} &middot; {{ job.get_employment_type_display }}</p><p style='margin-top: 5px; font-weight: bold; color: #33715a;'>AI Match Score: {{ job.match_score }}%</p><div class="tag-row">{% for skill in job.skills_required.all %}<span class="tag">{{ skill.name }}</span>{% empty %}<span class="muted">Skills not specified</span>{% endfor %}</div></div><div class="job-action">{% if job.pk in applied_ids %}<span class="status status-applied">Applied</span>{% else %}<a class="button button-quiet" href="{% url 'candidate_job_detail' job.pk %}">View details</a>{% endif %}</div></article>{% empty %}<div class="empty-state"><strong>No roles match that search.</strong><p>Try a broader title, company, or location.</p><a class="text-link" href="{% url 'candidate_jobs' %}">Clear search ΓåÆ</a></div>{% endfor %}</div></section>{% endblock %}
+{% block candidate_content %}
+<div class="stagger-enter">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4 gap-3">
+        <div>
+            <h2 class="cm-fraunces mb-1" style="font-size:2rem; font-weight:500; color:var(--cm-text-main);">Find Jobs</h2>
+            <p class="mb-0" style="color:var(--cm-text-muted); font-size:1rem;">Discover roles that match your profile and skills.</p>
+        </div>
+        <span style="font-size:0.85rem; color:var(--cm-text-muted); font-weight:600; padding:6px 12px; background:rgba(255,255,255,0.05); border-radius:16px;">
+            {{ jobs|length }} roles available
+        </span>
+    </div>
 
+    <!-- Search / Filter Bar -->
+    <section class="glass-panel p-3 mb-4">
+        <form method="get" class="d-flex flex-column flex-md-row gap-3">
+            <div class="flex-grow-1 position-relative d-flex align-items-center">
+                <svg class="position-absolute" style="left:12px; stroke:var(--cm-text-dim); stroke-width:2; fill:none; width:20px; height:20px;" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="search" name="q" value="{{ query }}" class="cm-underline-input m-0" style="padding-left:42px; border-bottom:none;" placeholder="Search title, company, location, or skill">
+            </div>
+            <button class="cm-btn-accent px-4 py-2" type="submit" style="white-space:nowrap;">Search Roles</button>
+        </form>
+    </section>
+
+    <!-- Job List -->
+    <div class="row g-4">
+        {% for job in jobs %}
+        <div class="col-12">
+            <article class="glass-panel glass-panel-interactive p-4 d-flex flex-column flex-lg-row gap-4 align-items-lg-center">
+                <div class="d-flex align-items-center justify-content-center flex-shrink-0" style="width:60px; height:60px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:12px; font-weight:700; font-size:1.5rem; color:var(--cm-text-main);">
+                    {{ job.company.name|slice:":1"|upper }}
+                </div>
+                
+                <div class="flex-grow-1">
+                    <h3 class="mb-2"><a href="{% url 'candidate_job_detail' job.pk %}" class="text-decoration-none" style="color:var(--cm-text-main); font-weight:600; font-size:1.25rem;">{{ job.title }}</a></h3>
+                    
+                    <div class="d-flex flex-wrap align-items-center mb-3" style="font-size:0.9rem; color:var(--cm-text-muted); gap:12px;">
+                        <span style="color:var(--cm-text-main); font-weight:500;">{{ job.company.name }}</span>
+                        <span style="color:rgba(255,255,255,0.2);">|</span>
+                        <span>{{ job.location }}</span>
+                        <span style="color:rgba(255,255,255,0.2);">|</span>
+                        <span>{{ job.get_employment_type_display }}</span>
+                        {% if job.match_score %}
+                        <span style="color:rgba(255,255,255,0.2);">|</span>
+                        <span style="font-weight:600; color:var(--cm-accent);">Match: {{ job.match_score }}%</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for skill in job.skills_required.all|slice:":6" %}
+                        <span class="cm-underline-tag" style="font-size:0.75rem; padding:2px 0;">{{ skill.name }}</span>
+                        {% empty %}
+                        <span style="font-size:0.8rem; color:var(--cm-text-dim);">No specific skills required</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <div class="d-flex flex-shrink-0 align-items-center mt-3 mt-lg-0">
+                    {% if job.pk in applied_ids %}
+                    <span style="display:inline-flex; align-items:center; padding:8px 16px; background:rgba(255,255,255,0.05); color:var(--cm-text-main); font-size:0.85rem; font-weight:600; border-radius:8px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        Applied
+                    </span>
+                    {% else %}
+                    <a class="cm-underline-tag text-decoration-none" style="font-size:0.9rem; padding:4px 0;" href="{% url 'candidate_job_detail' job.pk %}">View Details</a>
+                    {% endif %}
+                </div>
+            </article>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="glass-panel p-5 text-center">
+                <svg class="cm-line-art-icon mb-4" width="48" height="48" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <strong class="d-block mb-2" style="font-size:1.2rem; color:var(--cm-text-main);">No roles match that search</strong>
+                <p style="color:var(--cm-text-muted); font-size:0.95rem; margin-bottom:1.5rem;">Try adjusting your title, company, or location keywords.</p>
+                <a class="cm-underline-tag text-decoration-none" href="{% url 'candidate_jobs' %}">Clear search results</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

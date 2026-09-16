@@ -1,3 +1,57 @@
 ﻿{% extends "candidate/base.html" %}
 {% block title %}AI Insights | CareerMate{% endblock %}
-{% block candidate_content %}<section class="insight-hero"><div><p class="eyebrow">AI RESUME REVIEW</p><h2>Make your next application stronger.</h2><p>Use these signals to improve your profile before recruiters see it.</p></div><div class="score-bubble"><strong>{% if score %}{{ score }}{% else %}--{% endif %}</strong><span>ATS score</span></div></section><div class="metric-grid insight-grid">{% for label, value, detail in metrics %}<div class="metric-card"><span>{{ label }}</span><strong>{{ value }}%</strong><small>{{ detail }}</small><div class="meter"><i style="width: {{ value }}%"></i></div></div>{% endfor %}</div>{% if not resume %}<div class="empty-state"><strong>Upload your resume to activate AI results.</strong><p>We need a resume before we can calculate ATS fit, skill gaps, and recommendations.</p><a class="button button-primary" href="{% url 'candidate_resume' %}">Upload resume</a></div>{% endif %}{% endblock %}
+{% block candidate_content %}
+<div class="stagger-enter">
+    <div class="mb-4">
+        <h2 class="cm-fraunces mb-1" style="font-size:2rem; font-weight:500; color:var(--cm-text-main);">AI Resume Insights</h2>
+        <p style="color:var(--cm-text-muted); font-size:1rem;">Optimize your profile before recruiters review it.</p>
+    </div>
+
+    {% if not resume %}
+    <section class="glass-panel p-5 text-center">
+        <svg class="cm-line-art-icon mb-4" width="48" height="48" viewBox="0 0 24 24">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        <strong class="d-block mb-2" style="font-size:1.2rem; color:var(--cm-text-main);">Upload your resume to activate AI results.</strong>
+        <p style="color:var(--cm-text-muted); font-size:0.95rem; margin-bottom:1.5rem; max-width:400px; margin-left:auto; margin-right:auto;">We need your latest resume before we can calculate ATS fit, identify skill gaps, and provide recommendations.</p>
+        <a class="cm-btn-accent" href="{% url 'candidate_resume' %}">Upload Resume</a>
+    </section>
+    
+    {% else %}
+    <!-- Hero Score -->
+    <section class="glass-panel p-4 mb-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+        <div class="mb-4 mb-md-0">
+            <h3 class="mb-2" style="font-size:1.15rem; font-weight:600; color:var(--cm-text-main);">Overall ATS Fit</h3>
+            <p style="color:var(--cm-text-muted); font-size:0.95rem; margin:0; max-width:400px;">This score represents how well your resume structure and keywords align with industry standards.</p>
+        </div>
+        <div class="d-flex align-items-center">
+            <div style="font-size:4.5rem; font-weight:700; color:var(--cm-accent); line-height:1; font-family:'Fraunces', serif;">{% if score %}{{ score }}{% else %}--{% endif %}</div>
+            <span style="font-size:1.5rem; color:var(--cm-accent); margin-top:20px; font-weight:600;">/100</span>
+        </div>
+    </section>
+
+    <!-- Sub Metrics -->
+    <h3 class="mb-4" style="font-size:1rem; font-weight:600; color:var(--cm-text-main); text-transform:uppercase; letter-spacing:1px;">Supporting Analysis</h3>
+    <div class="row g-4">
+        {% for label, value, detail in metrics %}
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="glass-panel p-4 h-100 d-flex flex-column">
+                <span class="d-block mb-3" style="font-size:0.85rem; font-weight:600; color:var(--cm-text-dim); text-transform:uppercase; letter-spacing:0.5px;">{{ label }}</span>
+                <div class="d-flex align-items-end mb-3">
+                    <strong style="font-size:2rem; font-weight:700; color:var(--cm-text-main); line-height:1;">{{ value }}%</strong>
+                </div>
+                <div style="width:100%; height:4px; background:rgba(255,255,255,0.05); border-radius:2px; margin-bottom:16px; overflow:hidden;">
+                    <div style="width:{{ value }}%; height:100%; background:var(--cm-accent); border-radius:2px;"></div>
+                </div>
+                <small style="color:var(--cm-text-muted); font-size:0.85rem; line-height:1.5;">{{ detail }}</small>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

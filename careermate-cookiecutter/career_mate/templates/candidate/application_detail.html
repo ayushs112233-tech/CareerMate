@@ -1,3 +1,80 @@
 ﻿{% extends "candidate/base.html" %}
 {% block title %}Application | CareerMate{% endblock %}
-{% block candidate_content %}<div class="detail-layout"><section class="panel"><p class="eyebrow">APPLICATION STATUS</p><h2>{{ application.job.title }}</h2><p class="muted">{{ application.job.company.name }} ┬╖ Submitted {{ application.applied_at|date:"M d, Y" }}</p><div class="application-timeline"><div class="timeline-step current"><strong>{{ application.get_status_display }}</strong><span>Latest update from the hiring team</span></div><div class="timeline-step"><strong>Resume attached</strong><span>{% if application.resume %}{{ application.resume.file_name }}{% else %}No resume attached{% endif %}</span></div></div></section><aside class="panel"><p class="eyebrow">ROLE</p><h2>{{ application.job.title }}</h2><p class="muted">{{ application.job.location }} ┬╖ {{ application.job.get_employment_type_display }}</p><a class="button button-quiet" href="{% url 'candidate_job_detail' application.job.pk %}">View job details</a></aside></div>{% endblock %}
+{% block candidate_content %}
+<div class="stagger-enter">
+    <div class="mb-4">
+        <a href="{% url 'candidate_applications' %}" class="cm-underline-tag mb-3 text-decoration-none" style="font-size:0.85rem;">← Back to Applications</a>
+        <h2 class="cm-fraunces mb-1" style="font-size:2rem; font-weight:500; color:var(--cm-text-main);">Application Status</h2>
+        <p style="color:var(--cm-text-muted); font-size:1rem;">Track your progress for this role.</p>
+    </div>
+
+    <div class="row g-4">
+        <!-- Status Timeline -->
+        <div class="col-12 col-lg-8">
+            <section class="glass-panel p-4 h-100">
+                <div class="d-flex justify-content-between align-items-start mb-4 pb-4" style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                    <div>
+                        <span class="d-block mb-1" style="font-size:0.85rem; font-weight:600; color:var(--cm-accent); text-transform:uppercase; letter-spacing:1px;">{{ application.job.company.name }}</span>
+                        <h3 class="mb-2" style="font-size:1.5rem; font-weight:600; color:var(--cm-text-main);">{{ application.job.title }}</h3>
+                        <span style="color:var(--cm-text-muted); font-size:0.9rem;">Submitted {{ application.applied_at|date:"M d, Y" }}</span>
+                    </div>
+                    <span style="font-size:0.9rem; padding:8px 16px; border-radius:8px; font-weight:600; white-space:nowrap;
+                        {% if application.status == 'APPLIED' %}color:var(--cm-text-main); background:rgba(255,255,255,0.05);
+                        {% elif application.status == 'REVIEWING' %}color:var(--cm-accent); background:rgba(212,168,74,0.1);
+                        {% elif application.status == 'INTERVIEW' %}color:#12b76a; background:rgba(18,183,106,0.1);
+                        {% elif application.status == 'REJECTED' %}color:var(--cm-error); background:var(--cm-error-bg);
+                        {% else %}color:var(--cm-text-muted);{% endif %}
+                    ">{{ application.get_status_display }}</span>
+                </div>
+                
+                <div>
+                    <h4 class="mb-4" style="font-size:1rem; font-weight:600; color:var(--cm-text-main); text-transform:uppercase; letter-spacing:1px;">Timeline</h4>
+                    
+                    <div class="d-flex align-items-start mb-4">
+                        <div class="d-flex flex-column align-items-center me-3">
+                            <div style="width:12px; height:12px; border-radius:50%; background:var(--cm-accent); box-shadow:0 0 0 4px rgba(212,168,74,0.2);"></div>
+                            <div style="width:2px; height:50px; background:rgba(255,255,255,0.1); margin-top:4px;"></div>
+                        </div>
+                        <div>
+                            <strong class="d-block mb-1" style="font-size:1.05rem; color:var(--cm-text-main);">Current Status: {{ application.get_status_display }}</strong>
+                            <span style="color:var(--cm-text-muted); font-size:0.9rem;">Latest update from the hiring team</span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-start">
+                        <div class="d-flex flex-column align-items-center me-3">
+                            <div style="width:12px; height:12px; border-radius:50%; background:rgba(255,255,255,0.2);"></div>
+                        </div>
+                        <div>
+                            <strong class="d-block mb-1" style="font-size:1.05rem; color:var(--cm-text-main);">Resume Attached</strong>
+                            <span style="color:var(--cm-text-muted); font-size:0.9rem;">
+                                {% if application.resume %}
+                                {{ application.resume.file_name }}
+                                {% else %}
+                                No resume attached
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Role Context -->
+        <div class="col-12 col-lg-4">
+            <aside class="glass-panel p-4 h-100">
+                <h4 class="mb-4" style="font-size:1rem; font-weight:600; color:var(--cm-text-main); text-transform:uppercase; letter-spacing:1px;">Role Information</h4>
+                
+                <h3 class="mb-2" style="font-size:1.2rem; font-weight:600; color:var(--cm-text-main);">{{ application.job.title }}</h3>
+                <div class="d-flex flex-column gap-2 mb-4" style="color:var(--cm-text-muted); font-size:0.9rem;">
+                    <span>{{ application.job.company.name }}</span>
+                    <span>{{ application.job.location }}</span>
+                    <span>{{ application.job.get_employment_type_display }}</span>
+                </div>
+                
+                <a class="cm-underline-tag text-decoration-none" href="{% url 'candidate_job_detail' application.job.pk %}">View full job description</a>
+            </aside>
+        </div>
+    </div>
+</div>
+{% endblock %}

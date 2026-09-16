@@ -1,3 +1,183 @@
 ﻿{% extends "candidate/base.html" %}
 {% block title %}Profile | CareerMate{% endblock %}
-{% block candidate_content %}<form method="post" class="form-layout">{% csrf_token %}<section class="panel"><div class="panel-heading"><div><p class="eyebrow">YOUR STORY</p><h2>Make your profile feel like you.</h2></div><button class="button button-primary" type="submit">Save profile</button></div><div class="form-grid"><label>First name {{ form.first_name }}</label><label>Last name {{ form.last_name }}</label><label>Email {{ form.email }}</label><label>Phone {{ form.phone }}</label><label class="wide">Headline {{ form.headline }}<small>Describe the role you are moving toward.</small></label><label>Location {{ form.location }}</label><label>Experience (years) {{ form.experience_years }}</label><label class="wide">Career objective / bio {{ form.bio }}</label><label class="wide">Education {{ form.education }}</label></div></section><section class="panel"><div class="panel-heading"><div><p class="eyebrow">SKILL SIGNAL</p><h2>What can you bring?</h2></div></div><div class="skill-checks">{{ form.skills }}</div></section></form>{% endblock %}
+
+{% block candidate_content %}
+<div class="stagger-enter">
+    <div class="mb-4">
+        <h2 class="cm-fraunces mb-1" style="font-size:2rem; font-weight:500; color:var(--cm-text-main);">Your Profile</h2>
+        <p style="color:var(--cm-text-muted); font-size:1rem;">Complete your profile to unlock better AI matches and insights.</p>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        
+        {% if form.non_field_errors %}
+            <div class="mb-4 p-3" style="background:var(--cm-error-bg); border-left:4px solid var(--cm-error); color:var(--cm-error); border-radius:4px;">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <div class="row g-4">
+            <!-- Main Info -->
+            <div class="col-12 col-lg-8">
+                <section class="glass-panel p-4 h-100">
+                    <h3 class="mb-4" style="font-size:1.1rem; font-weight:600; color:var(--cm-text-main);">Personal Information</h3>
+                    
+                    <div class="row g-4">
+                        <div class="col-12 col-md-6">
+                            <label class="cm-input-label" for="{{ form.first_name.id_for_label }}">First Name</label>
+                            <input class="cm-underline-input" type="text" name="{{ form.first_name.html_name }}" id="{{ form.first_name.id_for_label }}" {% if form.first_name.value %}value="{{ form.first_name.value }}"{% endif %}>
+                            {{ form.first_name.errors }}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="cm-input-label" for="{{ form.last_name.id_for_label }}">Last Name</label>
+                            <input class="cm-underline-input" type="text" name="{{ form.last_name.html_name }}" id="{{ form.last_name.id_for_label }}" {% if form.last_name.value %}value="{{ form.last_name.value }}"{% endif %}>
+                            {{ form.last_name.errors }}
+                        </div>
+                        
+                        <div class="col-12 col-md-6">
+                            <label class="cm-input-label" for="{{ form.email.id_for_label }}">Email</label>
+                            <input class="cm-underline-input" type="email" name="{{ form.email.html_name }}" id="{{ form.email.id_for_label }}" {% if form.email.value %}value="{{ form.email.value }}"{% endif %}>
+                            {{ form.email.errors }}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="cm-input-label" for="{{ form.phone.id_for_label }}">Phone</label>
+                            <input class="cm-underline-input" type="text" name="{{ form.phone.html_name }}" id="{{ form.phone.id_for_label }}" {% if form.phone.value %}value="{{ form.phone.value }}"{% endif %}>
+                            {{ form.phone.errors }}
+                        </div>
+
+                        <div class="col-12 col-md-8">
+                            <label class="cm-input-label" for="{{ form.headline.id_for_label }}">Professional Headline</label>
+                            <input class="cm-underline-input" type="text" name="{{ form.headline.html_name }}" id="{{ form.headline.id_for_label }}" {% if form.headline.value %}value="{{ form.headline.value }}"{% endif %}>
+                            <small style="color:var(--cm-text-dim); font-size:0.75rem; margin-top:4px; display:block;">Describe the role you are moving toward (e.g. Senior Backend Engineer).</small>
+                            {{ form.headline.errors }}
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label class="cm-input-label" for="{{ form.experience_years.id_for_label }}">Years Experience</label>
+                            <input class="cm-underline-input" type="number" name="{{ form.experience_years.html_name }}" id="{{ form.experience_years.id_for_label }}" {% if form.experience_years.value %}value="{{ form.experience_years.value }}"{% endif %}>
+                            {{ form.experience_years.errors }}
+                        </div>
+
+                        <div class="col-12">
+                            <label class="cm-input-label" for="{{ form.location.id_for_label }}">Location</label>
+                            <input class="cm-underline-input" type="text" name="{{ form.location.html_name }}" id="{{ form.location.id_for_label }}" {% if form.location.value %}value="{{ form.location.value }}"{% endif %}>
+                            {{ form.location.errors }}
+                        </div>
+
+                        <div class="col-12">
+                            <label class="cm-input-label" for="{{ form.bio.id_for_label }}">Career Objective / Bio</label>
+                            <div class="cm-textarea-wrapper">
+                                {{ form.bio }}
+                            </div>
+                            {{ form.bio.errors }}
+                        </div>
+
+                        <div class="col-12">
+                            <label class="cm-input-label" for="{{ form.education.id_for_label }}">Education</label>
+                            <div class="cm-textarea-wrapper">
+                                {{ form.education }}
+                            </div>
+                            {{ form.education.errors }}
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Skills Sidebar -->
+            <div class="col-12 col-lg-4">
+                <section class="glass-panel p-4 h-100 d-flex flex-column">
+                    <h3 class="mb-4" style="font-size:1.1rem; font-weight:600; color:var(--cm-text-main);">Skill Signal</h3>
+                    <p style="color:var(--cm-text-muted); font-size:0.9rem; margin-bottom:1.5rem;">Select the core skills you bring to your next role.</p>
+                    
+                    <div class="cm-checkbox-group flex-grow-1" style="max-height: 500px; overflow-y: auto; padding-right:10px;">
+                        {{ form.skills }}
+                    </div>
+                    {{ form.skills.errors }}
+                    
+                    <div class="mt-4 pt-4" style="border-top:1px solid rgba(255,255,255,0.07);">
+                        <button class="cm-btn-accent w-100" type="submit">Save Profile</button>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </form>
+</div>
+
+<style>
+/* Scoped overrides for Django native widgets in this view */
+.cm-textarea-wrapper textarea {
+    width: 100%;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    color: var(--cm-text-main);
+    padding: 0.75rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+    resize: vertical;
+}
+.cm-textarea-wrapper textarea:focus {
+    outline: none;
+    border-color: var(--cm-accent);
+    box-shadow: 0 0 0 3px rgba(212,168,74,0.15);
+    background: rgba(255,255,255,0.04);
+}
+.cm-checkbox-group ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+.cm-checkbox-group label {
+    display: flex;
+    align-items: center;
+    font-size: 0.95rem;
+    color: var(--cm-text-main);
+    cursor: pointer;
+}
+.cm-checkbox-group input[type="checkbox"] {
+    appearance: none;
+    background-color: rgba(255,255,255,0.05);
+    margin: 0 12px 0 0;
+    font-size: inherit;
+    width: 1.25em;
+    height: 1.25em;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 4px;
+    display: grid;
+    place-content: center;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+.cm-checkbox-group input[type="checkbox"]::before {
+    content: "";
+    width: 0.65em;
+    height: 0.65em;
+    transform: scale(0);
+    transition: 120ms transform ease-in-out;
+    box-shadow: inset 1em 1em var(--cm-primary-darker);
+    background-color: var(--cm-primary-darker);
+    transform-origin: center;
+    clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+}
+.cm-checkbox-group input[type="checkbox"]:checked {
+    background-color: var(--cm-accent);
+    border-color: var(--cm-accent);
+}
+.cm-checkbox-group input[type="checkbox"]:checked::before {
+    transform: scale(1);
+}
+/* Error styling override */
+.errorlist {
+    list-style: none;
+    padding: 0;
+    margin: 4px 0 0 0;
+    color: var(--cm-error);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+</style>
+{% endblock %}

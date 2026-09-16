@@ -1,3 +1,64 @@
 ﻿{% extends "candidate/base.html" %}
 {% block title %}Applications | CareerMate{% endblock %}
-{% block candidate_content %}<section class="panel"><div class="panel-heading"><div><p class="eyebrow">YOUR PROGRESS</p><h2>Applications in motion.</h2></div><a class="button button-primary" href="{% url 'candidate_jobs' %}">Find another role</a></div><div class="application-list">{% for application in applications %}<a class="application-item" href="{% url 'candidate_application_detail' application.pk %}"><div><strong>{{ application.job.title }}</strong><span>{{ application.job.company.name }} ┬╖ Applied {{ application.applied_at|date:"M d, Y" }}</span></div><span class="status status-{{ application.status }}">{{ application.get_status_display }}</span><span class="arrow">ΓåÆ</span></a>{% empty %}<div class="empty-state"><strong>No applications yet.</strong><p>Your next opportunity could start with a ten-minute search.</p><a class="button button-primary" href="{% url 'candidate_jobs' %}">Browse jobs</a></div>{% endfor %}</div></section>{% endblock %}
+{% block candidate_content %}
+<div class="stagger-enter">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4 gap-3">
+        <div>
+            <h2 class="cm-fraunces mb-1" style="font-size:2rem; font-weight:500; color:var(--cm-text-main);">Your Applications</h2>
+            <p class="mb-0" style="color:var(--cm-text-muted); font-size:1rem;">Track your progress and interview status.</p>
+        </div>
+        <a class="cm-btn-accent px-4 py-2" style="font-size:0.9rem;" href="{% url 'candidate_jobs' %}">Explore roles</a>
+    </div>
+
+    <section class="glass-panel p-4">
+        <div class="application-list d-flex flex-column">
+            {% for application in applications %}
+            <a href="{% url 'candidate_application_detail' application.pk %}" class="glass-panel-interactive d-flex flex-column flex-md-row justify-content-between align-items-md-center p-4 text-decoration-none" style="border-bottom:1px solid rgba(255,255,255,0.05); transition:background 0.2s;">
+                <div class="mb-3 mb-md-0">
+                    <strong class="d-block mb-1" style="font-size:1.15rem; color:var(--cm-text-main); font-weight:600;">{{ application.job.title }}</strong>
+                    <div class="d-flex align-items-center flex-wrap" style="color:var(--cm-text-muted); font-size:0.85rem; gap:12px;">
+                        <span>{{ application.job.company.name }}</span>
+                        <span style="color:rgba(255,255,255,0.2);">|</span>
+                        <span>Applied {{ application.applied_at|date:"M d, Y" }}</span>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center gap-4">
+                    <span style="font-size:0.85rem; padding:6px 12px; border-radius:6px; font-weight:600; white-space:nowrap;
+                        {% if application.status == 'APPLIED' %}color:var(--cm-text-main); background:rgba(255,255,255,0.05);
+                        {% elif application.status == 'REVIEWING' %}color:var(--cm-accent); background:rgba(212,168,74,0.1);
+                        {% elif application.status == 'INTERVIEW' %}color:#12b76a; background:rgba(18,183,106,0.1);
+                        {% elif application.status == 'REJECTED' %}color:var(--cm-error); background:var(--cm-error-bg);
+                        {% else %}color:var(--cm-text-muted);{% endif %}
+                    ">{{ application.get_status_display }}</span>
+                    
+                    <svg class="cm-line-art-icon" width="20" height="20" viewBox="0 0 24 24" style="stroke:var(--cm-text-dim); transition:transform 0.2s, stroke 0.2s;">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </div>
+            </a>
+            {% empty %}
+            <div class="p-5 text-center">
+                <svg class="cm-line-art-icon mb-4" width="48" height="48" viewBox="0 0 24 24">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+                <strong class="d-block mb-2" style="font-size:1.2rem; color:var(--cm-text-main);">No applications yet</strong>
+                <p style="color:var(--cm-text-muted); font-size:0.95rem; margin-bottom:1.5rem;">Your next opportunity is waiting. Find roles that fit your profile.</p>
+                <a class="cm-btn-accent" href="{% url 'candidate_jobs' %}">Browse jobs</a>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+
+<style>
+.glass-panel-interactive:hover .cm-line-art-icon {
+    stroke: var(--cm-accent) !important;
+    transform: translateX(4px);
+}
+</style>
+{% endblock %}
