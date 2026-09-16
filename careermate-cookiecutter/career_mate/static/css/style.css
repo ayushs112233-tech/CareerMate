@@ -934,3 +934,13 @@ a {
 .choice-card.employer .choice-icon {
     color: var(--cm-secondary);
 }
+
+/* Additional Auth Scoped Classes */
+.auth-card-wide {
+    width: min(540px, 100%);
+}
+.choice-subtitle {
+    font-size: 0.8rem;
+    color: var(--cm-text-muted);
+    text-align: center;
+}

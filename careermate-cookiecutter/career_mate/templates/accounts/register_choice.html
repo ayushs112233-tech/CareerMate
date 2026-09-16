@@ -3,7 +3,7 @@
 {% block title %}Get Started | CareerMate AI{% endblock %}
 {% block content %}
 <main class="auth-page">
-    <div class="auth-card" style="width: min(540px, 100%);">
+    <div class="auth-card auth-card-wide">
         <a class="auth-brand" href="{% url 'home' %}">
             <span class="auth-brand-mark">C</span>
             <span>CareerMate AI</span>
@@ -19,7 +19,7 @@
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                     </div>
                     <strong class="d-block mb-1">I am a Candidate</strong>
-                    <span style="font-size: 0.8rem; color: var(--cm-text-muted); text-align: center;">Looking for jobs and resume feedback</span>
+                    <span class="choice-subtitle">Looking for jobs and resume feedback</span>
                 </a>
             </div>
             
@@ -29,7 +29,7 @@
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
                     </div>
                     <strong class="d-block mb-1">I am an Employer</strong>
-                    <span style="font-size: 0.8rem; color: var(--cm-text-muted); text-align: center;">Looking to post jobs and hire talent</span>
+                    <span class="choice-subtitle">Looking to post jobs and hire talent</span>
                 </a>
             </div>
         </div>
@@ -40,3 +40,4 @@
     </div>
 </main>
 {% endblock %}
+
