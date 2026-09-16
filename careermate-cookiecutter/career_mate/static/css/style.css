@@ -1,4 +1,178 @@
-﻿:root {
+﻿
+/* ==========================================================================
+   CAREERMATE GLOBAL DESIGN SYSTEM (PHASE 1)
+   ========================================================================== */
+
+:root {
+  /* Strict Palette */
+  --cm-primary: #33715a;
+  --cm-primary-dark: #1e4537;
+  --cm-primary-darker: #101913;
+  --cm-secondary: #52675b;
+  --cm-border: #dce5dc;
+  --cm-error: #a44639;
+  --cm-error-bg: #fbe5e1;
+  --cm-accent: #d4a84a;
+  --cm-accent-dim: #8a6f31;
+  
+  --cm-text-main: #f2f4f0;
+  --cm-text-muted: #9aac9f;
+  --cm-text-dim: #5f7268;
+}
+
+body {
+    background-color: var(--cm-primary-darker) !important;
+    color: var(--cm-text-main) !important;
+    font-family: 'Inter', sans-serif !important;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Ambient Grain & Blobs */
+.cm-grain-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    opacity: 0.05;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    z-index: 9999;
+}
+.cm-ambient-blobs {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: -1;
+    filter: blur(90px);
+}
+.cm-ambient-blobs .blob {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.28;
+}
+.cm-ambient-blobs .blob-1 {
+    top: -10%; left: -10%;
+    width: 50vw; height: 50vw;
+    background: var(--cm-primary);
+}
+.cm-ambient-blobs .blob-2 {
+    bottom: -20%; right: -10%;
+    width: 60vw; height: 60vw;
+    background: var(--cm-primary-dark);
+}
+.cm-ambient-blobs .blob-3 {
+    top: 30%; left: 40%;
+    width: 30vw; height: 30vw;
+    background: var(--cm-accent);
+    opacity: 0.15;
+}
+
+/* Typography Overrides */
+h1, h2, h3, .cm-fraunces {
+    font-family: 'Fraunces', serif;
+}
+
+/* Approved Components */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 16px;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    color: var(--cm-text-main);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+.glass-panel-interactive:hover {
+    border-color: var(--cm-accent-dim);
+    transform: translateY(-3px);
+}
+
+.cm-shell-panel {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
+
+/* Buttons */
+.cm-btn-accent {
+    background: var(--cm-accent);
+    color: var(--cm-primary-darker);
+    border-radius: 9px;
+    font-weight: 700;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+.cm-btn-accent:hover {
+    box-shadow: 0 6px 24px -6px rgba(212, 168, 74, 0.5);
+    color: var(--cm-primary-darker);
+}
+.cm-btn-accent:active {
+    transform: scale(0.98);
+}
+
+/* Tags & Icons */
+.cm-underline-tag {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--cm-text-muted);
+    border-bottom: 1.5px solid rgba(255, 255, 255, 0.15);
+    transition: all 0.2s;
+}
+.cm-underline-tag:hover {
+    color: var(--cm-accent);
+    border-bottom-color: var(--cm-accent);
+    box-shadow: 0 2px 8px -2px rgba(212, 168, 74, 0.3);
+}
+.cm-line-art-icon {
+    stroke: var(--cm-accent);
+    stroke-width: 1.8;
+    fill: none;
+}
+.glass-panel-interactive:hover .cm-line-art-icon path,
+.glass-panel-interactive:hover .cm-line-art-icon polyline {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    animation: drawIn 0.7s ease forwards;
+}
+@keyframes drawIn {
+    to { stroke-dashoffset: 0; }
+}
+
+/* Stagger Animation */
+.stagger-enter > * {
+    opacity: 0;
+    transform: translateY(10px);
+    animation: staggerFadeRise 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.stagger-enter > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger-enter > *:nth-child(2) { animation-delay: 0.15s; }
+.stagger-enter > *:nth-child(3) { animation-delay: 0.25s; }
+.stagger-enter > *:nth-child(4) { animation-delay: 0.35s; }
+.stagger-enter > *:nth-child(5) { animation-delay: 0.45s; }
+
+@keyframes staggerFadeRise {
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation: none !important;
+        transition: none !important;
+        transform: none !important;
+        opacity: 1 !important;
+    }
+}
+:root {
   /* CareerMate Auth-Derived Palette */
   --cm-primary: var(--cm-primary);
   --cm-primary-dark: #1e4537;
@@ -1105,3 +1279,4 @@ a {
     background: var(--cm-secondary);
     color: white;
 }
+

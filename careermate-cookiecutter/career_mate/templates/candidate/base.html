@@ -1,76 +1,76 @@
 ﻿{% extends "base.html" %}
 {% load static %}
 {% block content %}
-<div class="candidate-shell d-flex fade-in">
+<div class="candidate-shell d-flex fade-in" style="min-height: 100vh;">
   <!-- Mobile Offcanvas Navbar -->
-  <nav class="navbar d-lg-none px-3 py-2 border-bottom" style="background: linear-gradient(180deg, var(--cm-primary-dark) 0%, var(--cm-primary-darker) 100%);">
+  <nav class="navbar d-lg-none px-3 py-2 cm-shell-panel" style="border-bottom: 1px solid rgba(255,255,255,0.07);">
       <a class="navbar-brand text-white d-flex align-items-center" href="{% url 'candidate_dashboard' %}" style="font-weight:700; font-size:1.2rem;">
-          <span style="background: #33715a; color: white; width: 30px; height: 30px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; margin-right: 10px;">C</span>
+          <span style="color: var(--cm-accent); margin-right: 10px; font-family: 'Fraunces', serif; font-style: italic;">C</span>
           CareerMate
       </a>
-      <button class="btn text-white p-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#candidateSidebar">
+      <button class="btn p-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#candidateSidebar" style="color: var(--cm-text-main);">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
       </button>
   </nav>
 
   <!-- Sidebar (Offcanvas on mobile, fixed on desktop) -->
-  <aside class="candidate-sidebar offcanvas-lg offcanvas-start" tabindex="-1" id="candidateSidebar">
-    <div class="offcanvas-header d-lg-none border-bottom border-light border-opacity-10">
-      <h5 class="offcanvas-title text-white">CareerMate</h5>
+  <aside class="candidate-sidebar offcanvas-lg offcanvas-start cm-shell-panel" tabindex="-1" id="candidateSidebar" style="width: 280px; border-right: 1px solid rgba(255,255,255,0.07); border-radius: 0;">
+    <div class="offcanvas-header d-lg-none" style="border-bottom: 1px solid rgba(255,255,255,0.07);">
+      <h5 class="offcanvas-title cm-fraunces" style="color: var(--cm-text-main);">CareerMate</h5>
       <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" data-bs-target="#candidateSidebar"></button>
     </div>
     
     <div class="offcanvas-body d-flex flex-column h-100 p-0">
-        <a class="candidate-brand d-none d-lg-flex p-4" href="{% url 'candidate_dashboard' %}">
-            <span class="brand-mark" style="background:var(--cm-primary); color:white; width:32px; height:32px; border-radius:6px; display:inline-flex; align-items:center; justify-content:center; font-weight:bold; margin-right:12px;">C</span>
-            <span style="color:white; font-weight:700; font-size:1.25rem;">CareerMate</span>
+        <a class="candidate-brand d-none d-lg-flex p-4 align-items-center" href="{% url 'candidate_dashboard' %}" style="text-decoration:none;">
+            <span class="brand-mark cm-fraunces" style="color:var(--cm-accent); font-style:italic; font-size:1.5rem; margin-right:12px;">C</span>
+            <span style="color:var(--cm-text-main); font-weight:700; font-size:1.25rem;">CareerMate</span>
         </a>
         
         <nav class="candidate-nav flex-grow-1 px-3 py-2" aria-label="Candidate navigation">
-          <a class="nav-item {% if request.resolver_match.url_name == 'candidate_dashboard' %}active{% endif %}" href="{% url 'candidate_dashboard' %}">Overview</a>
-          <a class="nav-item {% if request.resolver_match.url_name == 'candidate_profile' %}active{% endif %}" href="{% url 'candidate_profile' %}">My profile</a>
-          <a class="nav-item {% if request.resolver_match.url_name == 'candidate_resume' %}active{% endif %}" href="{% url 'candidate_resume' %}">Resume center</a>
-          <a class="nav-item {% if 'job' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'candidate_jobs' %}">Find jobs</a>
-          <a class="nav-item {% if 'application' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'candidate_applications' %}">Applications</a>
-          <a class="nav-item {% if request.resolver_match.url_name == 'candidate_ats_score' %}active{% endif %}" href="{% url 'candidate_ats_score' %}">AI insights</a>
-          <a class="nav-item {% if request.resolver_match.url_name == 'candidate_career_path' %}active{% endif %}" href="{% url 'candidate_career_path' %}">Career roadmap</a>
+          <a class="nav-item {% if request.resolver_match.url_name == 'candidate_dashboard' %}active{% endif %}" href="{% url 'candidate_dashboard' %}" style="color: var(--cm-text-muted); text-decoration: none; display: block; padding: 10px 15px; border-radius: 8px; margin-bottom: 5px; font-weight: 500; font-size: 0.95rem; transition: color 0.2s;">Overview</a>
+          <a class="nav-item {% if request.resolver_match.url_name == 'candidate_profile' %}active{% endif %}" href="{% url 'candidate_profile' %}" style="color: var(--cm-text-muted); text-decoration: none; display: block; padding: 10px 15px; border-radius: 8px; margin-bottom: 5px; font-weight: 500; font-size: 0.95rem; transition: color 0.2s;">My profile</a>
+          <a class="nav-item {% if request.resolver_match.url_name == 'candidate_resume' %}active{% endif %}" href="{% url 'candidate_resume' %}" style="color: var(--cm-text-muted); text-decoration: none; display: block; padding: 10px 15px; border-radius: 8px; margin-bottom: 5px; font-weight: 500; font-size: 0.95rem; transition: color 0.2s;">Resume center</a>
+          <a class="nav-item {% if 'job' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'candidate_jobs' %}" style="color: var(--cm-text-muted); text-decoration: none; display: block; padding: 10px 15px; border-radius: 8px; margin-bottom: 5px; font-weight: 500; font-size: 0.95rem; transition: color 0.2s;">Find jobs</a>
+          <a class="nav-item {% if 'application' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'candidate_applications' %}" style="color: var(--cm-text-muted); text-decoration: none; display: block; padding: 10px 15px; border-radius: 8px; margin-bottom: 5px; font-weight: 500; font-size: 0.95rem; transition: color 0.2s;">Applications</a>
+          <a class="nav-item {% if request.resolver_match.url_name == 'candidate_ats_score' %}active{% endif %}" href="{% url 'candidate_ats_score' %}" style="color: var(--cm-text-muted); text-decoration: none; display: block; padding: 10px 15px; border-radius: 8px; margin-bottom: 5px; font-weight: 500; font-size: 0.95rem; transition: color 0.2s;">AI insights</a>
+          <a class="nav-item {% if request.resolver_match.url_name == 'candidate_career_path' %}active{% endif %}" href="{% url 'candidate_career_path' %}" style="color: var(--cm-text-muted); text-decoration: none; display: block; padding: 10px 15px; border-radius: 8px; margin-bottom: 5px; font-weight: 500; font-size: 0.95rem; transition: color 0.2s;">Career roadmap</a>
         </nav>
         
-        <div class="candidate-account p-3 m-3 mt-auto rounded" style="background: rgba(255,255,255,0.05);">
+        <div class="candidate-account p-3 m-3 mt-auto rounded" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);">
             <div class="d-flex align-items-center mb-2">
-                <span class="avatar rounded-circle d-flex align-items-center justify-content-center me-2" style="width:36px; height:36px; background:var(--cm-primary); color:white; font-weight:bold;">{{ candidate_name|slice:":1"|upper }}</span>
-                <div class="text-white text-truncate">
-                    <strong class="d-block" style="font-size:0.9rem;">{{ candidate_name }}</strong>
-                    <small style="color:#86958b; font-size:0.8rem;">Candidate</small>
+                <span class="avatar rounded-circle d-flex align-items-center justify-content-center me-2" style="width:36px; height:36px; background:rgba(255,255,255,0.05); color:var(--cm-accent); font-weight:bold; font-family:'Fraunces', serif;">{{ candidate_name|slice:":1"|upper }}</span>
+                <div class="text-truncate">
+                    <strong class="d-block" style="font-size:0.9rem; color:var(--cm-text-main);">{{ candidate_name }}</strong>
+                    <small style="color:var(--cm-text-dim); font-size:0.8rem;">Candidate</small>
                 </div>
             </div>
             <form method="post" action="{% url 'accounts:logout' %}" class="no-loader w-100">
                 {% csrf_token %}
-                <button type="submit" class="btn btn-sm w-100 logout-btn" style="background:rgba(255,255,255,0.1); color:white; border:none; transition:background 0.2s;">Sign out</button>
+                <button type="submit" class="btn btn-sm w-100" style="background:transparent; color:var(--cm-text-muted); border:1px solid rgba(255,255,255,0.1); transition:background 0.2s;">Sign out</button>
             </form>
         </div>
     </div>
   </aside>
 
   <!-- Main Content Area -->
-  <main class="candidate-main flex-grow-1 bg-light min-vh-100 d-flex flex-column">
-    <header class="candidate-topbar px-4 py-3 bg-white border-bottom d-flex justify-content-between align-items-center sticky-top z-1">
+  <main class="candidate-main flex-grow-1 d-flex flex-column" style="background: transparent;">
+    <header class="candidate-topbar px-4 py-3 d-flex justify-content-between align-items-center sticky-top z-1" style="background: rgba(16, 25, 19, 0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.05);">
         <div>
-            <p class="text-muted text-uppercase mb-1" style="font-size:0.75rem; letter-spacing:1px; font-weight:600;">Candidate Portal</p>
-            <h1 class="h4 mb-0 fw-bold" style="color:var(--cm-text-main);">{{ page_title }}</h1>
+            <p class="text-uppercase mb-1" style="font-size:0.7rem; letter-spacing:1px; font-weight:600; color:var(--cm-text-dim);">Candidate Portal</p>
+            <h1 class="h4 mb-0 cm-fraunces" style="color:var(--cm-text-main);">{{ page_title }}</h1>
         </div>
         <div class="d-none d-sm-flex gap-2">
-            <a class="btn" style="border:1px solid var(--cm-border); color:var(--cm-text-main); font-size:0.9rem; font-weight:600;" href="{% url 'candidate_profile' %}">Edit Profile</a>
-            <a class="btn text-white" style="background:var(--cm-primary); font-size:0.9rem; font-weight:600;" href="{% url 'candidate_resume' %}">Upload Resume</a>
+            <a class="cm-underline-tag" style="text-decoration:none;" href="{% url 'candidate_profile' %}">Edit Profile</a>
+            <a class="cm-btn-accent px-3 py-1" style="font-size:0.85rem;" href="{% url 'candidate_resume' %}">Upload Resume</a>
         </div>
     </header>
     
-    <div class="candidate-content p-4 flex-grow-1" style="max-width: 1400px;">
+    <div class="candidate-content p-4 flex-grow-1" style="max-width: 1400px; position:relative; z-index:1;">
         <!-- Global Toasts for Messages -->
         <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1090;">
             {% if messages %}
                 {% for message in messages %}
-                <div class="toast show align-items-center text-white border-0 {% if message.tags == 'error' %}bg-danger{% else %}bg-success{% endif %}" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast show align-items-center border-0 {% if message.tags == 'error' %}bg-danger text-white{% else %}bg-success text-white{% endif %}" role="alert" aria-live="assertive" aria-atomic="true" style="background: var(--cm-primary-dark);">
                   <div class="d-flex">
                     <div class="toast-body fw-bold">
                       {{ message }}
@@ -86,5 +86,15 @@
     </div>
   </main>
 </div>
-{% endblock %}
 
+<style>
+.candidate-nav .nav-item.active {
+    color: var(--cm-accent) !important;
+    background: rgba(255,255,255,0.05);
+}
+.candidate-nav .nav-item:hover {
+    color: var(--cm-text-main) !important;
+    background: rgba(255,255,255,0.03);
+}
+</style>
+{% endblock %}
