@@ -2,7 +2,7 @@
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
-from django.views.generic import RedirectView
+from django.views.generic import TemplateView
 
 # Django Low-Level Admin Site Customization
 admin.site.site_header = "CareerMate AI — Low Level DB Administration"
@@ -11,7 +11,7 @@ admin.site.index_title = "Database Administration"
 
 urlpatterns = [
     # Root: redirect to accounts login (shared auth entry point)
-    path("", RedirectView.as_view(pattern_name="accounts:login", permanent=False), name="home"),
+    path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
 
     # Shared accounts (register / login / logout)
     path("accounts/", include("apps.accounts.urls")),
@@ -34,3 +34,4 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
