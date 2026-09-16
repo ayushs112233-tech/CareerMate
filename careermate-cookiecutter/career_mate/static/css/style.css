@@ -1,4 +1,22 @@
 ﻿:root {
+  /* CareerMate Auth-Derived Palette */
+  --cm-primary: var(--cm-primary);
+  --cm-primary-dark: #1e4537;
+  --cm-primary-darker: #17221d;
+  --cm-secondary: #52675b;
+  --cm-bg-light: #fbfcfa;
+  --cm-bg-muted: #f0f5f2;
+  --cm-border: #dce5dc;
+  --cm-error: #a44639;
+  --cm-error-bg: #fbe5e1;
+  
+  /* Additional neutral shades */
+  --cm-text-main: #17221d;
+  --cm-text-muted: #75847b;
+  --cm-text-light: #86958b;
+}
+
+:root {
   --bg: #f4f7ff;
   --card: #ffffff;
   --primary: #2f5cff;
@@ -36,7 +54,7 @@ a {
 
 .sidebar {
   width: 280px;
-  background: linear-gradient(180deg, #121b3a 0%, #1a2a53 100%);
+  background: linear-gradient(180deg, var(--cm-primary-dark) 0%, var(--cm-primary-darker) 100%);
   color: #edf3ff;
   padding: 28px 20px;
   position: sticky;
@@ -610,7 +628,7 @@ a {
 .metric-card { padding: 19px; border: 1px solid #e0e8df; border-radius: 9px; background: #fff; }
 .metric-card span, .metric-card small { display: block; color: #76857b; font-size: .78rem; }
 .metric-card strong { display: block; margin: 13px 0 6px; font-size: 1.8rem; letter-spacing: -.04em; }
-.metric-card a, .panel-heading a, .text-link { color: #33715a; font-weight: 800; }
+.metric-card a, .panel-heading a, .text-link { color: var(--cm-primary); font-weight: 800; }
 .content-columns, .detail-layout { display: grid; grid-template-columns: 1.35fr .85fr; gap: 18px; align-items: start; }
 .panel { padding: 25px; border: 1px solid #e0e8df; border-radius: 9px; background: #fff; }
 .panel-heading { justify-content: space-between; gap: 15px; margin-bottom: 21px; }
@@ -675,7 +693,7 @@ a {
     }
     .login-page input:focus, .login-page select:focus, .login-page textarea:focus {
         outline: none;
-        border-color: #33715a !important;
+        border-color: var(--cm-primary) !important;
         box-shadow: 0 0 0 3px rgba(51, 113, 90, 0.15) !important;
     }
     
@@ -699,7 +717,7 @@ a {
     }
     .candidate-shell .job-item:hover {
         background: #fbfcfa;
-        border-color: #33715a !important;
+        border-color: var(--cm-primary) !important;
         box-shadow: 0 4px 12px rgba(51,113,90,0.05);
     }
     .candidate-sidebar .nav-item {
@@ -727,3 +745,5 @@ a {
         transform: scale(0.98);
     }
 }
+
+

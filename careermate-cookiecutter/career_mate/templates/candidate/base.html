@@ -3,7 +3,7 @@
 {% block content %}
 <div class="candidate-shell d-flex fade-in">
   <!-- Mobile Offcanvas Navbar -->
-  <nav class="navbar d-lg-none px-3 py-2 border-bottom" style="background: linear-gradient(180deg, #121b3a 0%, #1a2a53 100%);">
+  <nav class="navbar d-lg-none px-3 py-2 border-bottom" style="background: linear-gradient(180deg, var(--cm-primary-dark) 0%, var(--cm-primary-darker) 100%);">
       <a class="navbar-brand text-white d-flex align-items-center" href="{% url 'candidate_dashboard' %}" style="font-weight:700; font-size:1.2rem;">
           <span style="background: #33715a; color: white; width: 30px; height: 30px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; margin-right: 10px;">C</span>
           CareerMate
@@ -22,8 +22,8 @@
     
     <div class="offcanvas-body d-flex flex-column h-100 p-0">
         <a class="candidate-brand d-none d-lg-flex p-4" href="{% url 'candidate_dashboard' %}">
-            <span class="brand-mark" style="background:#33715a; color:white; width:32px; height:32px; border-radius:6px; display:inline-flex; align-items:center; justify-content:center; font-weight:bold; margin-right:12px;">C</span>
-            <span style="color:#edf3ff; font-weight:700; font-size:1.25rem;">CareerMate</span>
+            <span class="brand-mark" style="background:var(--cm-primary); color:white; width:32px; height:32px; border-radius:6px; display:inline-flex; align-items:center; justify-content:center; font-weight:bold; margin-right:12px;">C</span>
+            <span style="color:white; font-weight:700; font-size:1.25rem;">CareerMate</span>
         </a>
         
         <nav class="candidate-nav flex-grow-1 px-3 py-2" aria-label="Candidate navigation">
@@ -38,15 +38,15 @@
         
         <div class="candidate-account p-3 m-3 mt-auto rounded" style="background: rgba(255,255,255,0.05);">
             <div class="d-flex align-items-center mb-2">
-                <span class="avatar rounded-circle d-flex align-items-center justify-content-center me-2" style="width:36px; height:36px; background:#33715a; color:white; font-weight:bold;">{{ candidate_name|slice:":1"|upper }}</span>
+                <span class="avatar rounded-circle d-flex align-items-center justify-content-center me-2" style="width:36px; height:36px; background:var(--cm-primary); color:white; font-weight:bold;">{{ candidate_name|slice:":1"|upper }}</span>
                 <div class="text-white text-truncate">
                     <strong class="d-block" style="font-size:0.9rem;">{{ candidate_name }}</strong>
-                    <small style="color:#a8b6d4; font-size:0.8rem;">Candidate</small>
+                    <small style="color:#86958b; font-size:0.8rem;">Candidate</small>
                 </div>
             </div>
             <form method="post" action="{% url 'accounts:logout' %}" class="no-loader w-100">
                 {% csrf_token %}
-                <button type="submit" class="btn btn-sm w-100 logout-btn" style="background:rgba(255,255,255,0.1); color:#edf3ff; border:none; transition:background 0.2s;">Sign out</button>
+                <button type="submit" class="btn btn-sm w-100 logout-btn" style="background:rgba(255,255,255,0.1); color:white; border:none; transition:background 0.2s;">Sign out</button>
             </form>
         </div>
     </div>
@@ -57,11 +57,11 @@
     <header class="candidate-topbar px-4 py-3 bg-white border-bottom d-flex justify-content-between align-items-center sticky-top z-1">
         <div>
             <p class="text-muted text-uppercase mb-1" style="font-size:0.75rem; letter-spacing:1px; font-weight:600;">Candidate Portal</p>
-            <h1 class="h4 mb-0 fw-bold" style="color:#17221d;">{{ page_title }}</h1>
+            <h1 class="h4 mb-0 fw-bold" style="color:var(--cm-text-main);">{{ page_title }}</h1>
         </div>
         <div class="d-none d-sm-flex gap-2">
-            <a class="btn" style="border:1px solid #dce5dc; color:#17221d; font-size:0.9rem; font-weight:600;" href="{% url 'candidate_profile' %}">Edit Profile</a>
-            <a class="btn text-white" style="background:#33715a; font-size:0.9rem; font-weight:600;" href="{% url 'candidate_resume' %}">Upload Resume</a>
+            <a class="btn" style="border:1px solid var(--cm-border); color:var(--cm-text-main); font-size:0.9rem; font-weight:600;" href="{% url 'candidate_profile' %}">Edit Profile</a>
+            <a class="btn text-white" style="background:var(--cm-primary); font-size:0.9rem; font-weight:600;" href="{% url 'candidate_resume' %}">Upload Resume</a>
         </div>
     </header>
     
@@ -87,3 +87,4 @@
   </main>
 </div>
 {% endblock %}
+
