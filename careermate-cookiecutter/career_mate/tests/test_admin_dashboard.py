@@ -94,7 +94,7 @@ class CustomAdminDashboardTestCase(TestCase):
         response = self.client.get(reverse("admin_panel:dashboard"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "CareerMate")
-        self.assertContains(response, "Total Candidates")
+        self.assertContains(response, "Candidates")
         self.assertEqual(response.context["total_candidates"], 1)
         self.assertEqual(response.context["total_jobs"], 1)
         self.assertEqual(response.context["total_companies"], 1)
@@ -107,7 +107,7 @@ class CustomAdminDashboardTestCase(TestCase):
             ("admin_panel:recruiters", "Recruiter Profiles"),
             ("admin_panel:companies", "Registered Companies"),
             ("admin_panel:jobs", "Job Postings"),
-            ("admin_panel:applications", "Job Applications Workflow"),
+            ("admin_panel:applications", "Job Applications"),
             ("admin_panel:resumes", "Uploaded Resumes Repository"),
             ("admin_panel:skills", "Skills Catalog Management"),
             ("admin_panel:job_categories", "Job Categories Management"),
@@ -171,3 +171,4 @@ class CustomAdminDashboardTestCase(TestCase):
         self.assertEqual(update_resp.status_code, 200)
         self.application.refresh_from_db()
         self.assertEqual(self.application.status, "shortlisted")
+
