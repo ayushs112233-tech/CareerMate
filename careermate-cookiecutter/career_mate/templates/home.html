@@ -1,0 +1,283 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+
+{% block header %}
+<nav class="home-nav">
+    <div class="container home-nav-inner">
+        <a class="home-brand" href="{% url 'home' %}">CareerMate <span class="brand-accent">AI</span></a>
+        <div class="home-nav-links">
+            <a href="#features">Features</a>
+            <a href="#how-it-works">How It Works</a>
+            <a href="#candidate">Candidate</a>
+            <a href="#recruiter">Recruiter</a>
+        </div>
+        <div class="home-nav-actions">
+            <a href="{% url 'accounts:login' %}" class="home-btn-login">Login</a>
+            <a href="{% url 'accounts:register' %}" class="cm-btn-accent cm-btn-sm">Get Started</a>
+        </div>
+    </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="home-hero stagger-enter">
+    <div class="container text-center">
+        <h1 class="hero-title cm-fraunces">AI-powered resume analysis,<br>career assistance, and<br>intelligent recruitment.</h1>
+        <p class="hero-subtitle">Build a stronger career. Find better matches. CareerMate AI analyzes resumes, identifies skill gaps, and matches the best candidates with top opportunities.</p>
+        <div class="hero-ctas">
+            <a href="{% url 'accounts:register_candidate' %}" class="cm-btn-accent hero-primary-cta">I'm a Candidate</a>
+            <a href="{% url 'accounts:register_recruiter' %}" class="home-btn-secondary hero-secondary-cta">I'm a Recruiter</a>
+        </div>
+    </div>
+</section>
+
+<!-- Split Section (Candidate/Recruiter) -->
+<section class="home-split-section" id="portals">
+    <div class="container">
+        <div class="row g-5">
+            <div class="col-lg-6">
+                <div class="glass-panel portal-card" id="candidate">
+                    <div class="portal-icon">
+                        <svg class="cm-line-art-icon" viewBox="0 0 24 24" width="32" height="32">
+                           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                           <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+                    <h2 class="cm-fraunces portal-title">For Candidates</h2>
+                    <ul class="portal-features">
+                        <li><span class="bullet"></span>Profile management</li>
+                        <li><span class="bullet"></span>Resume upload &amp; analysis</li>
+                        <li><span class="bullet"></span>ATS evaluation scoring</li>
+                        <li><span class="bullet"></span>Skill-gap analysis</li>
+                        <li><span class="bullet"></span>Intelligent Job matching</li>
+                        <li><span class="bullet"></span>Career recommendations</li>
+                    </ul>
+                    <a href="{% url 'accounts:register_candidate' %}" class="home-link-accent">Join as Candidate &rarr;</a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="glass-panel portal-card" id="recruiter">
+                    <div class="portal-icon">
+                        <svg class="cm-line-art-icon" viewBox="0 0 24 24" width="32" height="32">
+                           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                           <circle cx="9" cy="7" r="4"></circle>
+                           <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                           <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                    </div>
+                    <h2 class="cm-fraunces portal-title">For Recruiters</h2>
+                    <ul class="portal-features">
+                        <li><span class="bullet"></span>Company profile management</li>
+                        <li><span class="bullet"></span>Intelligent Job posting</li>
+                        <li><span class="bullet"></span>AI Resume analysis</li>
+                        <li><span class="bullet"></span>Candidate matching</li>
+                        <li><span class="bullet"></span>Automated Shortlisting</li>
+                        <li><span class="bullet"></span>Application management</li>
+                    </ul>
+                    <a href="{% url 'accounts:register_recruiter' %}" class="home-link-accent">Join as Recruiter &rarr;</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="home-features" id="features">
+    <div class="container">
+        <h2 class="cm-fraunces section-title text-center">Intelligent Capabilities</h2>
+        <div class="row g-4 mt-4">
+            <div class="col-md-4">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <svg class="cm-line-art-icon" viewBox="0 0 24 24" width="28" height="28">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                    </div>
+                    <h4>AI Resume Analysis</h4>
+                    <p>Deep parsing of resumes to extract skills, experience, and educational background accurately.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <svg class="cm-line-art-icon" viewBox="0 0 24 24" width="28" height="28">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                    </div>
+                    <h4>ATS Compatibility</h4>
+                    <p>Evaluate and score resumes against real-world Applicant Tracking System requirements.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <svg class="cm-line-art-icon" viewBox="0 0 24 24" width="28" height="28">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                    </div>
+                    <h4>Skill Extraction</h4>
+                    <p>Identify core competencies and map them automatically to industry standards.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <svg class="cm-line-art-icon" viewBox="0 0 24 24" width="28" height="28">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                        </svg>
+                    </div>
+                    <h4>Skill Gap Analysis</h4>
+                    <p>Highlight missing skills required for desired roles, providing actionable career growth insights.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <svg class="cm-line-art-icon" viewBox="0 0 24 24" width="28" height="28">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M12 16v-4"></path>
+                            <path d="M12 8h.01"></path>
+                        </svg>
+                    </div>
+                    <h4>Intelligent Job Matching</h4>
+                    <p>Align candidate profiles with job postings based on similarity scoring and skill overlap.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <svg class="cm-line-art-icon" viewBox="0 0 24 24" width="28" height="28">
+                            <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                        </svg>
+                    </div>
+                    <h4>Career Recommendations</h4>
+                    <p>Receive tailored advice for learning paths and career trajectories based on your profile.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- AI Section -->
+<section class="home-ai-section">
+    <div class="container">
+        <div class="glass-panel ai-panel">
+            <div class="row align-items-center">
+                <div class="col-lg-6 ai-content">
+                    <h2 class="cm-fraunces ai-title">True Intelligence Built-In</h2>
+                    <p>CareerMate doesn't just store data; it understands it. Our system leverages advanced algorithms for:</p>
+                    <ul class="ai-list">
+                        <li><strong>Resume Parsing &amp; Extraction:</strong> Break down complex resumes into structured data.</li>
+                        <li><strong>Semantic Matching:</strong> Calculate resume-to-job similarity beyond simple keyword matching.</li>
+                        <li><strong>ATS Scoring:</strong> Provide candidates with instant feedback on ATS readability.</li>
+                    </ul>
+                </div>
+                <div class="col-lg-6 ai-visual">
+                    <div class="ai-glass-visual">
+                        <div class="ai-code-line">Parsing resume.pdf...</div>
+                        <div class="ai-code-line">Extracting: Python, Django, React</div>
+                        <div class="ai-code-line">Calculating Similarity: <span style="color: var(--cm-accent);">87% Match</span></div>
+                        <div class="ai-code-line">Skill Gap Identified: Docker</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How it Works -->
+<section class="home-how-it-works" id="how-it-works">
+    <div class="container">
+        <h2 class="cm-fraunces section-title text-center">How It Works</h2>
+        <div class="workflow-container mt-5">
+            <div class="workflow-track">
+                <h3 class="workflow-role">Candidate Journey</h3>
+                <div class="workflow-steps">
+                    <div class="step">Profile</div>
+                    <div class="step-connector"><svg class="cm-line-art-icon" viewBox="0 0 24 24" width="20" height="20"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+                    <div class="step">Resume</div>
+                    <div class="step-connector"><svg class="cm-line-art-icon" viewBox="0 0 24 24" width="20" height="20"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+                    <div class="step">AI Analysis</div>
+                    <div class="step-connector"><svg class="cm-line-art-icon" viewBox="0 0 24 24" width="20" height="20"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+                    <div class="step">Skill Gap</div>
+                    <div class="step-connector"><svg class="cm-line-art-icon" viewBox="0 0 24 24" width="20" height="20"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+                    <div class="step">Job Match</div>
+                    <div class="step-connector"><svg class="cm-line-art-icon" viewBox="0 0 24 24" width="20" height="20"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+                    <div class="step">Apply</div>
+                </div>
+            </div>
+            
+            <div class="workflow-track mt-5">
+                <h3 class="workflow-role">Recruiter Journey</h3>
+                <div class="workflow-steps">
+                    <div class="step">Company</div>
+                    <div class="step-connector"><svg class="cm-line-art-icon" viewBox="0 0 24 24" width="20" height="20"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+                    <div class="step">Job Post</div>
+                    <div class="step-connector"><svg class="cm-line-art-icon" viewBox="0 0 24 24" width="20" height="20"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+                    <div class="step">Review</div>
+                    <div class="step-connector"><svg class="cm-line-art-icon" viewBox="0 0 24 24" width="20" height="20"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+                    <div class="step">AI Score</div>
+                    <div class="step-connector"><svg class="cm-line-art-icon" viewBox="0 0 24 24" width="20" height="20"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+                    <div class="step">Shortlist</div>
+                    <div class="step-connector"><svg class="cm-line-art-icon" viewBox="0 0 24 24" width="20" height="20"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+                    <div class="step">Manage</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="home-cta text-center">
+    <div class="container">
+        <h2 class="cm-fraunces cta-title">Build a stronger career.<br>Find better matches.</h2>
+        <div class="hero-ctas mt-4">
+            <a href="{% url 'accounts:register_candidate' %}" class="cm-btn-accent hero-primary-cta">I'm a Candidate</a>
+            <a href="{% url 'accounts:register_recruiter' %}" class="home-btn-secondary hero-secondary-cta">I'm a Recruiter</a>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="home-footer">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <a class="home-brand" href="{% url 'home' %}">CareerMate <span class="brand-accent">AI</span></a>
+                <p class="footer-desc mt-3">Intelligent career assistance and recruitment platform driven by advanced resume parsing and similarity scoring.</p>
+            </div>
+            <div class="col-lg-8">
+                <div class="footer-links">
+                    <div class="footer-col">
+                        <h4>Platform</h4>
+                        <a href="#features">Features</a>
+                        <a href="#how-it-works">How It Works</a>
+                        <a href="{% url 'accounts:register_candidate' %}">Candidate Portal</a>
+                        <a href="{% url 'accounts:register_recruiter' %}">Recruiter Portal</a>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Account</h4>
+                        <a href="{% url 'accounts:login' %}">Login</a>
+                        <a href="{% url 'accounts:register' %}">Sign Up</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom mt-5 text-center">
+            <p>&copy; {% now "Y" %} CareerMate AI. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+{% endblock %}

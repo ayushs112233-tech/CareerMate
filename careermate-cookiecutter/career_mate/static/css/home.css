@@ -1,0 +1,485 @@
+/* ==========================================================================
+   CAREERMATE AI — PUBLIC LANDING PAGE CSS
+   Extension of global style.css & admin_dashboard.css
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   NAVIGATION
+   -------------------------------------------------------------------------- */
+.home-nav {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: rgba(16, 25, 19, 0.82);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    padding: 1rem 0;
+}
+
+.home-nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.home-brand {
+    font-family: 'Fraunces', serif;
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: var(--cm-text-main);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.home-brand .brand-accent {
+    font-style: italic;
+    color: var(--cm-accent);
+}
+
+.home-brand:hover {
+    color: var(--cm-text-main);
+}
+
+.home-nav-links {
+    display: flex;
+    gap: 2rem;
+}
+
+.home-nav-links a {
+    color: var(--cm-text-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.15s;
+}
+
+.home-nav-links a:hover {
+    color: var(--cm-text-main);
+}
+
+.home-nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.home-btn-login {
+    color: var(--cm-text-main);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.15s;
+}
+
+.home-btn-login:hover {
+    color: var(--cm-accent);
+}
+
+/* --------------------------------------------------------------------------
+   HERO SECTION
+   -------------------------------------------------------------------------- */
+.home-hero {
+    padding: 8rem 0 6rem;
+    position: relative;
+    z-index: 10;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 500;
+    line-height: 1.15;
+    margin-bottom: 1.5rem;
+    color: var(--cm-text-main);
+}
+
+.hero-subtitle {
+    font-size: 1.15rem;
+    color: var(--cm-text-muted);
+    max-width: 600px;
+    margin: 0 auto 2.5rem;
+    line-height: 1.6;
+}
+
+.hero-ctas {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+}
+
+.hero-primary-cta {
+    font-size: 1rem;
+    padding: 0.85rem 1.8rem;
+}
+
+.home-btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0.85rem 1.8rem;
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.035);
+    color: var(--cm-text-main);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.15s ease;
+    backdrop-filter: blur(16px);
+}
+
+.home-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: var(--cm-text-main);
+}
+.home-btn-secondary:active {
+    transform: scale(0.98);
+}
+
+/* --------------------------------------------------------------------------
+   SPLIT SECTION (PORTALS)
+   -------------------------------------------------------------------------- */
+.home-split-section {
+    padding: 4rem 0;
+    position: relative;
+    z-index: 10;
+}
+
+.portal-card {
+    padding: 3rem 2.5rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.portal-icon {
+    margin-bottom: 1.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    background: rgba(212, 168, 74, 0.08);
+    border: 1px solid rgba(212, 168, 74, 0.15);
+}
+
+.portal-title {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+}
+
+.portal-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2.5rem;
+    flex: 1;
+}
+
+.portal-features li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.85rem;
+    color: var(--cm-text-muted);
+    font-size: 0.95rem;
+}
+
+.portal-features .bullet {
+    width: 6px;
+    height: 6px;
+    background: var(--cm-accent);
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.home-link-accent {
+    color: var(--cm-accent);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(212, 168, 74, 0.3);
+    padding-bottom: 2px;
+    transition: color 0.15s, border-color 0.15s;
+    align-self: flex-start;
+}
+
+.home-link-accent:hover {
+    color: var(--cm-text-main);
+    border-color: var(--cm-text-main);
+}
+
+/* --------------------------------------------------------------------------
+   FEATURES SECTION
+   -------------------------------------------------------------------------- */
+.home-features {
+    padding: 6rem 0;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.feature-item {
+    padding: 2rem 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    height: 100%;
+}
+
+.feature-icon {
+    margin-bottom: 1.25rem;
+}
+
+.feature-item h4 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: var(--cm-text-main);
+}
+
+.feature-item p {
+    color: var(--cm-text-muted);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   AI SECTION
+   -------------------------------------------------------------------------- */
+.home-ai-section {
+    padding: 6rem 0;
+}
+
+.ai-panel {
+    padding: 4rem;
+}
+
+.ai-title {
+    font-size: 2.2rem;
+    margin-bottom: 1.5rem;
+}
+
+.ai-content p {
+    color: var(--cm-text-muted);
+    font-size: 1.05rem;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.ai-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.ai-list li {
+    margin-bottom: 1.25rem;
+    color: var(--cm-text-muted);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.ai-list li strong {
+    color: var(--cm-text-main);
+}
+
+.ai-glass-visual {
+    background: rgba(16, 25, 19, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 12px;
+    padding: 2rem;
+    font-family: monospace;
+    font-size: 0.9rem;
+    color: var(--cm-text-muted);
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+.ai-code-line {
+    margin-bottom: 0.75rem;
+    opacity: 0;
+    animation: codeType 0.5s forwards;
+}
+
+.ai-code-line:nth-child(1) { animation-delay: 0.2s; }
+.ai-code-line:nth-child(2) { animation-delay: 0.8s; }
+.ai-code-line:nth-child(3) { animation-delay: 1.4s; }
+.ai-code-line:nth-child(4) { animation-delay: 2.0s; }
+
+@keyframes codeType {
+    to { opacity: 1; }
+}
+
+/* --------------------------------------------------------------------------
+   HOW IT WORKS
+   -------------------------------------------------------------------------- */
+.home-how-it-works {
+    padding: 6rem 0;
+}
+
+.workflow-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.workflow-track {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 2rem 2.5rem;
+}
+
+.workflow-role {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--cm-accent);
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.workflow-steps {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+}
+
+.step {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--cm-text-main);
+    background: rgba(255, 255, 255, 0.04);
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    white-space: nowrap;
+}
+
+.step-connector {
+    color: var(--cm-text-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 0.5rem;
+}
+
+/* --------------------------------------------------------------------------
+   CTA SECTION
+   -------------------------------------------------------------------------- */
+.home-cta {
+    padding: 8rem 0;
+}
+
+.cta-title {
+    font-size: 3rem;
+    line-height: 1.2;
+    margin-bottom: 2rem;
+}
+
+/* --------------------------------------------------------------------------
+   FOOTER
+   -------------------------------------------------------------------------- */
+.home-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    padding: 4rem 0 2rem;
+    background: rgba(16, 25, 19, 0.4);
+}
+
+.footer-desc {
+    color: var(--cm-text-dim);
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.footer-links {
+    display: flex;
+    gap: 4rem;
+    justify-content: flex-end;
+}
+
+.footer-col h4 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--cm-text-main);
+    margin-bottom: 1.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.footer-col a {
+    display: block;
+    color: var(--cm-text-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+    transition: color 0.15s;
+}
+
+.footer-col a:hover {
+    color: var(--cm-text-main);
+}
+
+.footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+    padding-top: 2rem;
+    color: var(--cm-text-dim);
+    font-size: 0.85rem;
+}
+
+/* --------------------------------------------------------------------------
+   RESPONSIVE ALIGNMENT
+   -------------------------------------------------------------------------- */
+@media (max-width: 991px) {
+    .home-nav-links { display: none; }
+    
+    .hero-title { font-size: 2.8rem; }
+    
+    .ai-panel { padding: 2.5rem; }
+    
+    .ai-visual { margin-top: 2.5rem; }
+    
+    .footer-links {
+        justify-content: flex-start;
+        margin-top: 2.5rem;
+    }
+}
+
+@media (max-width: 767px) {
+    .hero-title { font-size: 2.2rem; }
+    
+    .hero-ctas {
+        flex-direction: column;
+        width: 100%;
+        max-width: 300px;
+        margin: 0 auto;
+    }
+    
+    .hero-primary-cta, .home-btn-secondary {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .portal-card { padding: 2rem 1.5rem; }
+    
+    .workflow-steps {
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: flex-start;
+    }
+    
+    .step-connector { display: none; }
+    
+    .home-cta { padding: 5rem 0; }
+    .cta-title { font-size: 2.2rem; }
+}

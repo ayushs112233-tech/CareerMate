@@ -21,7 +21,7 @@ class UserLoginView(LoginView):
         elif hasattr(user, 'recruiter_profile'):
             return reverse_lazy("recruiters:dashboard")
         elif user.is_staff or user.is_superuser:
-            return reverse_lazy("admin:index")
+            return reverse_lazy("admin_panel:dashboard")
             
         # Fallback if no specific role profile is found
         return reverse_lazy("home")

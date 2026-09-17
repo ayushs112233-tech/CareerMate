@@ -81,13 +81,13 @@ class CustomAdminDashboardTestCase(TestCase):
     def test_unauthenticated_access_redirects_to_login(self):
         response = self.client.get(reverse("admin_panel:dashboard"))
         self.assertEqual(response.status_code, 302)
-        self.assertIn(reverse("admin_panel:login"), response.url)
+        self.assertIn(reverse("accounts:login"), response.url)
 
     def test_non_staff_user_is_denied(self):
         self.client.login(username="normal_candidate", password="normalpassword123")
         response = self.client.get(reverse("admin_panel:dashboard"))
         self.assertEqual(response.status_code, 302)
-        self.assertIn(reverse("admin_panel:login"), response.url)
+        self.assertIn(reverse("accounts:login"), response.url)
 
     def test_staff_login_and_dashboard_renders(self):
         self.client.login(username="dashboard_admin", password="adminpassword123")

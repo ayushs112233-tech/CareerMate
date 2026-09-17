@@ -1,9 +1,7 @@
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import Count, Q
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import (
@@ -31,7 +29,7 @@ from .forms import (
 class StaffRequiredMixin(UserPassesTestMixin):
     """
     Mixin that ensures the user is logged in and is a staff or superuser.
-    Redirects unauthenticated or non-staff users to the admin dashboard login.
+    Redirects unauthenticated or non-staff users to the shared account login.
     """
 
     def test_func(self):
@@ -40,9 +38,9 @@ class StaffRequiredMixin(UserPassesTestMixin):
 
     def handle_no_permission(self):
         if not self.request.user.is_authenticated:
-            return redirect(f"{reverse_lazy('admin_panel:login')}?next={self.request.path}")
+            return redirect(f"{reverse_lazy('accounts:login')}?next={self.request.path}")
         messages.error(self.request, "Access denied. Administrator privileges are required.")
-        return redirect("admin_panel:login")
+        return redirect("accounts:login")
 
 
 # ==========================================
@@ -51,37 +49,18 @@ class StaffRequiredMixin(UserPassesTestMixin):
 
 class AdminLoginView(View):
     def get(self, request):
-        if request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser):
-            return redirect("admin_panel:dashboard")
-        form = AuthenticationForm()
-        return render(request, "admin_dashboard/login.html", {"form": form})
+        return redirect(f"{reverse_lazy('accounts:login')}?next={reverse_lazy('admin_panel:dashboard')}")
 
     def post(self, request):
-        form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            user = form.get_user()
-            if user.is_staff or user.is_superuser:
-                login(request, user)
-                messages.success(request, f"Welcome back, {user.get_full_name() or user.username}!")
-                next_url = request.GET.get("next") or reverse_lazy("admin_panel:dashboard")
-                return redirect(next_url)
-            else:
-                messages.error(request, "Your account does not have administrator privileges.")
-        else:
-            messages.error(request, "Invalid username or password.")
-        return render(request, "admin_dashboard/login.html", {"form": form})
+        return self.get(request)
 
 
 class AdminLogoutView(View):
     def get(self, request):
-        logout(request)
-        messages.info(request, "You have been logged out.")
-        return redirect("admin_panel:login")
+        return redirect("accounts:login")
 
     def post(self, request):
-        logout(request)
-        messages.info(request, "You have been logged out.")
-        return redirect("admin_panel:login")
+        return redirect("accounts:login")
 
 
 # ==========================================
