@@ -58,6 +58,10 @@ class ResumeUploadForm(forms.ModelForm):
         resume.candidate = candidate
         resume.file_name = resume.file.name
         resume.status = "uploaded"
+        
+        last_resume = candidate.resumes.order_by("-version_number").first()
+        resume.version_number = (last_resume.version_number + 1) if last_resume and last_resume.version_number else 1
+        
         if commit:
             resume.save()
         return resume

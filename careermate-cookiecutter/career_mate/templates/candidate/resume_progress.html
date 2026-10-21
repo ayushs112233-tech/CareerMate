@@ -1,0 +1,612 @@
+{% extends "candidate/base.html" %}
+{% block title %}Resume Progress & Version Comparison | CareerMate{% endblock %}
+
+{% block candidate_content %}
+<div class="stagger-enter">
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+            <h2 class="cm-fraunces mb-1" style="font-size:2rem; font-weight:500; color:var(--cm-text-main);">Resume Progress & Comparison</h2>
+            <p style="color:var(--cm-text-muted); font-size:1rem; margin:0;">Track ATS improvements across versions, compare skill coverage, and verify resolved suggestions.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'candidate_resume' %}" class="cm-btn-accent px-3 py-2 text-decoration-none" style="font-size:0.875rem;">
+                + Upload New Version
+            </a>
+        </div>
+    </div>
+
+    {% if matching_status.is_fallback %}
+    <div class="alert mb-4 d-flex align-items-center gap-3" style="background:rgba(212,168,74,0.12); border:1px solid rgba(212,168,74,0.3); color:var(--cm-accent); border-radius:8px;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <div style="font-size:0.9rem;">
+            <strong>Matching Source Notice:</strong> {{ matching_status.fallback_reason }}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if total_versions == 0 %}
+    <!-- Empty State: No Resumes Yet -->
+    <section class="glass-panel p-5 text-center my-4">
+        <svg class="cm-line-art-icon mb-4" width="48" height="48" viewBox="0 0 24 24">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        <strong class="d-block mb-2" style="font-size:1.25rem; color:var(--cm-text-main);">No resume versions uploaded yet</strong>
+        <p style="color:var(--cm-text-muted); font-size:0.95rem; max-width:440px; margin:0 auto 1.5rem auto;">
+            Upload your first resume in the Resume Center to begin tracking your ATS score and unlock version comparison history.
+        </p>
+        <a class="cm-btn-accent" href="{% url 'candidate_resume' %}">Upload First Resume</a>
+    </section>
+
+    {% elif total_versions == 1 %}
+    <!-- State: 1 Version Uploaded (Baseline) -->
+    <div class="row g-4 mb-4">
+        <div class="col-12 col-lg-8">
+            <section class="glass-panel p-4 h-100">
+                <span class="d-block mb-2" style="font-size:0.75rem; font-weight:600; color:var(--cm-accent); text-transform:uppercase; letter-spacing:1px;">
+                    Baseline Version
+                </span>
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h3 class="cm-fraunces mb-0" style="color:var(--cm-text-main); font-size:1.5rem;">
+                        Version {{ curr_resume.version_number }}
+                    </h3>
+                    <span class="badge" style="background:rgba(212,168,74,0.15); color:var(--cm-accent); font-size:0.8rem; border:1px solid rgba(212,168,74,0.3); padding:4px 10px;">
+                        Initial Upload
+                    </span>
+                </div>
+                <div class="d-flex align-items-baseline mb-3 gap-2">
+                    <span style="font-size:3.5rem; font-weight:700; color:var(--cm-accent); line-height:1; font-family:'Fraunces', serif;">
+                        {% if curr_resume.ats_score is not None %}{{ curr_resume.ats_score }}{% else %}--{% endif %}
+                    </span>
+                    <span style="font-size:1.25rem; color:var(--cm-text-muted);">/ 100 ATS Score</span>
+                </div>
+                <p style="color:var(--cm-text-muted); font-size:0.95rem; line-height:1.6; margin-bottom:1.5rem;">
+                    This is your initial baseline score. When you update your resume with revised wording, new projects, or added skills, upload Version 2 to unlock side-by-side score progression, skill detection deltas, and suggestion resolution tracking.
+                </p>
+                <div class="d-flex gap-3">
+                    <a href="{% url 'candidate_resume_version_detail' curr_resume.pk %}" class="cm-underline-tag" style="text-decoration:none;">
+                        View Detailed Version Analysis &rarr;
+                    </a>
+                    <a href="{% url 'candidate_resume' %}" class="cm-underline-tag" style="text-decoration:none;">
+                        Upload Version 2 &rarr;
+                    </a>
+                </div>
+            </section>
+        </div>
+
+        <div class="col-12 col-lg-4">
+            <section class="glass-panel p-4 h-100 d-flex flex-column justify-content-center text-center">
+                <div class="p-3 mb-3 mx-auto rounded-circle d-flex align-items-center justify-content-center" style="width:60px; height:60px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08);">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--cm-accent)" stroke-width="2">
+                        <line x1="18" y1="20" x2="18" y2="10"></line>
+                        <line x1="12" y1="20" x2="12" y2="4"></line>
+                        <line x1="6" y1="20" x2="6" y2="14"></line>
+                    </svg>
+                </div>
+                <strong style="color:var(--cm-text-main); font-size:1.05rem; display:block; margin-bottom:6px;">Comparison Awaiting Next Upload</strong>
+                <p style="color:var(--cm-text-muted); font-size:0.85rem; line-height:1.5; margin:0;">
+                    Score deltas (+/- points), newly detected skills, and resolved suggestions will automatically appear once a second version is analyzed.
+                </p>
+            </section>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- State: 2+ Versions Available (Comparison Active) -->
+
+    <!-- Version Selection Toolbar (for custom pair comparison) -->
+    <div class="glass-panel p-3 mb-4">
+        <form method="get" class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div class="d-flex align-items-center gap-2">
+                <span style="font-size:0.85rem; font-weight:600; color:var(--cm-text-dim); text-transform:uppercase; letter-spacing:0.5px;">Comparing:</span>
+                <span class="badge" style="background:rgba(255,255,255,0.05); color:var(--cm-text-main); border:1px solid rgba(255,255,255,0.1); font-size:0.85rem; padding:6px 12px;">
+                    Baseline: Version {{ prev_resume.version_number }}
+                </span>
+                <span style="color:var(--cm-text-dim); font-weight:bold;">&rarr;</span>
+                <span class="badge" style="background:rgba(212,168,74,0.15); color:var(--cm-accent); border:1px solid rgba(212,168,74,0.3); font-size:0.85rem; padding:6px 12px;">
+                    Updated: Version {{ curr_resume.version_number }}
+                </span>
+            </div>
+
+            {% if total_versions > 2 %}
+            <div class="d-flex align-items-center gap-2">
+                <label for="v1Select" style="font-size:0.8rem; color:var(--cm-text-muted);">Compare</label>
+                <select name="v1" id="v1Select" class="form-select form-select-sm" style="background:rgba(0,0,0,0.4); color:var(--cm-text-main); border:1px solid rgba(255,255,255,0.15); width:auto; font-size:0.8rem;">
+                    {% for r in analyzed_resumes %}
+                    <option value="{{ r.pk }}" {% if r.pk == prev_resume.pk %}selected{% endif %}>Version {{ r.version_number }}</option>
+                    {% endfor %}
+                </select>
+                <span style="color:var(--cm-text-muted); font-size:0.8rem;">with</span>
+                <select name="v2" id="v2Select" class="form-select form-select-sm" style="background:rgba(0,0,0,0.4); color:var(--cm-text-main); border:1px solid rgba(255,255,255,0.15); width:auto; font-size:0.8rem;">
+                    {% for r in analyzed_resumes %}
+                    <option value="{{ r.pk }}" {% if r.pk == curr_resume.pk %}selected{% endif %}>Version {{ r.version_number }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-sm" style="background:rgba(255,255,255,0.08); color:var(--cm-text-main); border:1px solid rgba(255,255,255,0.15); font-size:0.8rem; padding:4px 10px;">
+                    Update View
+                </button>
+            </div>
+            {% endif %}
+        </form>
+    </div>
+
+    <!-- Section B: ATS Score Progression & Comparison Cards -->
+    <div class="row g-4 mb-4">
+        <!-- Main Score Delta Card -->
+        <div class="col-12 col-lg-5">
+            <section class="glass-panel p-4 h-100 d-flex flex-column justify-content-between">
+                <div>
+                    <span class="d-block mb-2" style="font-size:0.75rem; font-weight:600; color:var(--cm-text-dim); text-transform:uppercase; letter-spacing:1px;">
+                        ATS Score Progression
+                    </span>
+                    <h3 class="cm-fraunces mb-3" style="color:var(--cm-text-main); font-size:1.35rem;">
+                        Version {{ prev_resume.version_number }} &rarr; Version {{ curr_resume.version_number }}
+                    </h3>
+
+                    <!-- Side-by-side Score Numbers -->
+                    <div class="d-flex align-items-center justify-content-between p-3 mb-3 rounded" style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06);">
+                        <div>
+                            <span class="d-block" style="font-size:0.75rem; color:var(--cm-text-dim);">Previous (V{{ prev_resume.version_number }})</span>
+                            <strong style="font-size:2.2rem; font-family:'Fraunces', serif; color:var(--cm-text-muted);">
+                                {{ comparison.previous_score }}
+                            </strong>
+                            <small style="color:var(--cm-text-dim);">/100</small>
+                        </div>
+                        <div style="font-size:1.5rem; color:var(--cm-text-dim);">&rarr;</div>
+                        <div>
+                            <span class="d-block" style="font-size:0.75rem; color:var(--cm-accent);">Latest (V{{ curr_resume.version_number }})</span>
+                            <strong style="font-size:2.2rem; font-family:'Fraunces', serif; color:var(--cm-accent);">
+                                {{ comparison.current_score }}
+                            </strong>
+                            <small style="color:var(--cm-text-dim);">/100</small>
+                        </div>
+                        <div class="text-end">
+                            <span class="d-block" style="font-size:0.75rem; color:var(--cm-text-dim);">Difference</span>
+                            <span class="badge" style="
+                                font-size:1.1rem;
+                                padding:6px 12px;
+                                {% if comparison.point_difference > 0 %}
+                                    background:rgba(46,125,50,0.25); color:#81c784; border:1px solid rgba(76,175,80,0.4);
+                                {% elif comparison.point_difference < 0 %}
+                                    background:rgba(198,40,40,0.25); color:#e57373; border:1px solid rgba(229,115,115,0.4);
+                                {% else %}
+                                    background:rgba(255,255,255,0.08); color:var(--cm-text-main); border:1px solid rgba(255,255,255,0.2);
+                                {% endif %}
+                            ">
+                                {{ comparison.difference_display }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Summary Note -->
+                    <p style="font-size:0.9rem; color:var(--cm-text-muted); line-height:1.5; margin:0;">
+                        {{ comparison.summary }}
+                    </p>
+                </div>
+
+                <div class="mt-4 pt-3 d-flex justify-content-between align-items-center" style="border-top:1px solid rgba(255,255,255,0.06); font-size:0.8rem; color:var(--cm-text-dim);">
+                    <span>Scoring Model: <code>{{ comparison.scoring_version }}</code></span>
+                    <a href="{% url 'candidate_resume_version_detail' curr_resume.pk %}" class="cm-underline-tag" style="text-decoration:none;">
+                        View V{{ curr_resume.version_number }} Analysis &rarr;
+                    </a>
+                </div>
+            </section>
+        </div>
+
+        <!-- Visual Progression Timeline / Bar Graph -->
+        <div class="col-12 col-lg-7">
+            <section class="glass-panel p-4 h-100 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span style="font-size:0.75rem; font-weight:600; color:var(--cm-text-dim); text-transform:uppercase; letter-spacing:1px;">
+                            Historical Score Progression Timeline
+                        </span>
+                        <span style="font-size:0.8rem; color:var(--cm-text-dim);">{{ total_versions }} Total Versions</span>
+                    </div>
+
+                    <!-- Visual Timeline Bars -->
+                    <div class="p-3 rounded mb-3" style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06);">
+                        <div class="d-flex flex-column gap-3">
+                            {% for entry in history %}
+                            <div>
+                                <div class="d-flex justify-content-between align-items-center mb-1" style="font-size:0.85rem;">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <strong style="color:var(--cm-text-main);">Version {{ entry.version_number }}</strong>
+                                        {% if entry.is_latest %}
+                                        <span class="badge" style="background:rgba(212,168,74,0.15); color:var(--cm-accent); font-size:0.65rem;">LATEST</span>
+                                        {% endif %}
+                                        <span style="color:var(--cm-text-dim); font-size:0.75rem;">({{ entry.uploaded_at|date:"M d, Y" }})</span>
+                                    </div>
+                                    <div>
+                                        {% if entry.ats_score is not None %}
+                                        <strong style="color:{% if entry.ats_score >= 70 %}#81c784{% elif entry.ats_score >= 50 %}var(--cm-accent){% else %}#e57373{% endif %}; font-weight:700;">
+                                            {{ entry.ats_score }}/100
+                                        </strong>
+                                        {% else %}
+                                        <span style="color:var(--cm-text-dim);">Pending</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div style="width:100%; height:8px; background:rgba(255,255,255,0.05); border-radius:4px; overflow:hidden;">
+                                    <div style="
+                                        width:{% if entry.ats_score %}{{ entry.ats_score }}{% else %}0{% endif %}%;
+                                        height:100%;
+                                        background:{% if entry.ats_score >= 70 %}#81c784{% elif entry.ats_score >= 50 %}var(--cm-accent){% else %}#e57373{% endif %};
+                                        border-radius:4px;
+                                        transition: width 0.6s ease;
+                                    "></div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Category Breakdown Delta comparison -->
+                    {% if comparison.breakdown_comparison %}
+                    <span class="d-block mb-2" style="font-size:0.75rem; font-weight:600; color:var(--cm-text-dim); text-transform:uppercase; letter-spacing:0.5px;">
+                        Component Breakdown Shifts
+                    </span>
+                    <div class="row g-2">
+                        {% for b in comparison.breakdown_comparison %}
+                        <div class="col-12 col-sm-6">
+                            <div class="p-2 rounded d-flex justify-content-between align-items-center" style="background:rgba(255,255,255,0.015); border:1px solid rgba(255,255,255,0.04); font-size:0.8rem;">
+                                <span style="color:var(--cm-text-muted);">{{ b.category }}</span>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span style="color:var(--cm-text-dim);">{{ b.prev_score }}% &rarr; {{ b.curr_score }}%</span>
+                                    <span class="badge" style="
+                                        font-size:0.7rem;
+                                        {% if b.delta > 0 %}color:#81c784; background:rgba(46,125,50,0.2);
+                                        {% elif b.delta < 0 %}color:#e57373; background:rgba(198,40,40,0.2);
+                                        {% else %}color:var(--cm-text-dim); background:rgba(255,255,255,0.05);{% endif %}
+                                    ">
+                                        {% if b.delta > 0 %}+{{ b.delta }}%{% elif b.delta < 0 %}{{ b.delta }}%{% else %}0%{% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="mt-3 pt-2 text-end" style="border-top:1px solid rgba(255,255,255,0.06);">
+                    <small style="color:var(--cm-text-dim);">Word count: {{ comparison.prev_word_count }} &rarr; {{ comparison.curr_word_count }} words (Δ {% if comparison.word_count_delta > 0 %}+{% endif %}{{ comparison.word_count_delta }})</small>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Section C: Skills Comparison -->
+    <div class="glass-panel p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <span class="d-block" style="font-size:0.75rem; font-weight:600; color:var(--cm-accent); text-transform:uppercase; letter-spacing:1px;">
+                    Skills Evolution
+                </span>
+                <h3 class="cm-fraunces mb-0" style="color:var(--cm-text-main); font-size:1.35rem;">
+                    Skills Detected Across Versions
+                </h3>
+            </div>
+            <div class="d-flex gap-3 text-end" style="font-size:0.85rem;">
+                <span style="color:#81c784;"><strong>+{{ comparison.skills.added_count }}</strong> newly detected</span>
+                <span style="color:var(--cm-text-muted);"><strong>{{ comparison.skills.retained_count }}</strong> retained</span>
+                <span style="color:#e57373;"><strong>{{ comparison.skills.dropped_count }}</strong> not detected</span>
+            </div>
+        </div>
+
+        <p style="color:var(--cm-text-muted); font-size:0.85rem; margin-bottom:1.5rem;">
+            <em>Note:</em> Skills marked "Newly Detected" reflect terms detected in the text of the newer resume version for the first time.
+        </p>
+
+        <div class="row g-4">
+            <!-- Newly Detected Skills -->
+            <div class="col-12 col-md-4">
+                <div class="p-3 rounded h-100" style="background:rgba(46,125,50,0.08); border:1px solid rgba(76,175,80,0.2);">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="badge me-2" style="background:rgba(46,125,50,0.3); color:#81c784;">+</span>
+                        <strong style="color:#81c784; font-size:0.9rem;">Newly Detected ({{ comparison.skills.added_count }})</strong>
+                    </div>
+                    <small class="d-block mb-3" style="color:var(--cm-text-dim); font-size:0.75rem;">Detected in Version {{ curr_resume.version_number }} but absent in Version {{ prev_resume.version_number }}</small>
+                    
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for skill in comparison.skills.added %}
+                        <span class="badge" style="background:rgba(46,125,50,0.25); color:#a5d6a7; border:1px solid rgba(76,175,80,0.3); font-size:0.8rem; padding:5px 9px;">
+                            + {{ skill }}
+                        </span>
+                        {% empty %}
+                        <span style="color:var(--cm-text-dim); font-size:0.8rem; font-style:italic;">No new skills detected</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Retained Skills -->
+            <div class="col-12 col-md-4">
+                <div class="p-3 rounded h-100" style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06);">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="badge me-2" style="background:rgba(212,168,74,0.2); color:var(--cm-accent);">&check;</span>
+                        <strong style="color:var(--cm-text-main); font-size:0.9rem;">Retained Skills ({{ comparison.skills.retained_count }})</strong>
+                    </div>
+                    <small class="d-block mb-3" style="color:var(--cm-text-dim); font-size:0.75rem;">Present consistently in both versions</small>
+                    
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for skill in comparison.skills.retained %}
+                        <span class="badge" style="background:rgba(255,255,255,0.06); color:var(--cm-text-main); border:1px solid rgba(255,255,255,0.1); font-size:0.8rem; padding:5px 9px;">
+                            {{ skill }}
+                        </span>
+                        {% empty %}
+                        <span style="color:var(--cm-text-dim); font-size:0.8rem; font-style:italic;">No overlapping skills</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skills No Longer Detected -->
+            <div class="col-12 col-md-4">
+                <div class="p-3 rounded h-100" style="background:rgba(198,40,40,0.06); border:1px solid rgba(229,115,115,0.2);">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="badge me-2" style="background:rgba(198,40,40,0.3); color:#e57373;">&minus;</span>
+                        <strong style="color:#e57373; font-size:0.9rem;">No Longer Detected ({{ comparison.skills.dropped_count }})</strong>
+                    </div>
+                    <small class="d-block mb-3" style="color:var(--cm-text-dim); font-size:0.75rem;">Present in Version {{ prev_resume.version_number }} but omitted from Version {{ curr_resume.version_number }}</small>
+                    
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for skill in comparison.skills.dropped %}
+                        <span class="badge" style="background:rgba(198,40,40,0.2); color:#ef9a9a; border:1px solid rgba(229,115,115,0.3); font-size:0.8rem; padding:5px 9px; text-decoration:line-through;">
+                            {{ skill }}
+                        </span>
+                        {% empty %}
+                        <span style="color:var(--cm-text-dim); font-size:0.8rem; font-style:italic;">All previous skills retained</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section D: Suggestions & Improvement Tracking -->
+    <div class="glass-panel p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <span class="d-block" style="font-size:0.75rem; font-weight:600; color:var(--cm-accent); text-transform:uppercase; letter-spacing:1px;">
+                    Improvement Verification
+                </span>
+                <h3 class="cm-fraunces mb-0" style="color:var(--cm-text-main); font-size:1.35rem;">
+                    Suggestion Resolution Status
+                </h3>
+            </div>
+            <div class="d-flex gap-2" style="font-size:0.85rem;">
+                <span class="badge" style="background:rgba(46,125,50,0.2); color:#81c784;">{{ comparison.suggestions.addressed|length }} Addressed</span>
+                <span class="badge" style="background:rgba(212,168,74,0.2); color:var(--cm-accent);">{{ comparison.suggestions.still_relevant|length }} Still Relevant</span>
+                {% if comparison.suggestions.new_issues %}
+                <span class="badge" style="background:rgba(30,136,229,0.2); color:#90caf9;">{{ comparison.suggestions.new_issues|length }} New Issues</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <p style="color:var(--cm-text-muted); font-size:0.85rem; margin-bottom:1.5rem;">
+            Our engine verifies whether suggestions from Version {{ prev_resume.version_number }} were resolved based on parsed resume content and ATS thresholds, rather than simply disappearing.
+        </p>
+
+        <div class="d-flex flex-column gap-3">
+            <!-- Addressed suggestions -->
+            {% for item in comparison.suggestions.addressed %}
+            <div class="p-3 rounded d-flex align-items-start gap-3" style="background:rgba(46,125,50,0.08); border:1px solid rgba(76,175,80,0.25);">
+                <span class="badge mt-1" style="background:rgba(46,125,50,0.4); color:#81c784; font-size:0.9rem;">&check;</span>
+                <div class="flex-grow-1">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <strong style="color:var(--cm-text-main); font-size:0.95rem;">{{ item.suggestion.title }}</strong>
+                        <span class="badge" style="background:rgba(46,125,50,0.25); color:#81c784; font-size:0.7rem; text-transform:uppercase;">Addressed</span>
+                    </div>
+                    <p style="color:var(--cm-text-muted); font-size:0.85rem; margin-bottom:4px;">{{ item.suggestion.description }}</p>
+                    <small style="color:#a5d6a7; font-size:0.8rem; font-style:italic;">
+                        &bull; {{ item.evidence }}
+                    </small>
+                </div>
+            </div>
+            {% endfor %}
+
+            <!-- Still Relevant suggestions -->
+            {% for item in comparison.suggestions.still_relevant %}
+            <div class="p-3 rounded d-flex align-items-start gap-3" style="background:rgba(212,168,74,0.06); border:1px solid rgba(212,168,74,0.25);">
+                <span class="badge mt-1" style="background:rgba(212,168,74,0.3); color:var(--cm-accent); font-size:0.9rem;">&excl;</span>
+                <div class="flex-grow-1">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <strong style="color:var(--cm-text-main); font-size:0.95rem;">{{ item.suggestion.title }}</strong>
+                        <span class="badge" style="background:rgba(212,168,74,0.25); color:var(--cm-accent); font-size:0.7rem; text-transform:uppercase;">Still Relevant</span>
+                    </div>
+                    <p style="color:var(--cm-text-muted); font-size:0.85rem; margin-bottom:4px;">{{ item.suggestion.description }}</p>
+                    <small style="color:var(--cm-accent); font-size:0.8rem; font-style:italic;">
+                        &bull; {{ item.evidence }}
+                    </small>
+                </div>
+            </div>
+            {% endfor %}
+
+            <!-- New Issues in latest version -->
+            {% for item in comparison.suggestions.new_issues %}
+            <div class="p-3 rounded d-flex align-items-start gap-3" style="background:rgba(30,136,229,0.06); border:1px solid rgba(30,136,229,0.25);">
+                <span class="badge mt-1" style="background:rgba(30,136,229,0.3); color:#90caf9; font-size:0.9rem;">&plus;</span>
+                <div class="flex-grow-1">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <strong style="color:var(--cm-text-main); font-size:0.95rem;">{{ item.suggestion.title }}</strong>
+                        <span class="badge" style="background:rgba(30,136,229,0.25); color:#90caf9; font-size:0.7rem; text-transform:uppercase;">New Consideration</span>
+                    </div>
+                    <p style="color:var(--cm-text-muted); font-size:0.85rem; margin-bottom:4px;">{{ item.suggestion.description }}</p>
+                    <small style="color:#90caf9; font-size:0.8rem; font-style:italic;">
+                        &bull; {{ item.evidence }}
+                    </small>
+                </div>
+            </div>
+            {% endfor %}
+
+            <!-- Requiring Review suggestions -->
+            {% for item in comparison.suggestions.requiring_review %}
+            <div class="p-3 rounded d-flex align-items-start gap-3" style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.08);">
+                <span class="badge mt-1" style="background:rgba(255,255,255,0.1); color:var(--cm-text-dim); font-size:0.9rem;">?</span>
+                <div class="flex-grow-1">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <strong style="color:var(--cm-text-main); font-size:0.95rem;">{{ item.suggestion.title }}</strong>
+                        <span class="badge" style="background:rgba(255,255,255,0.08); color:var(--cm-text-dim); font-size:0.7rem; text-transform:uppercase;">Requires Review</span>
+                    </div>
+                    <p style="color:var(--cm-text-muted); font-size:0.85rem; margin-bottom:4px;">{{ item.suggestion.description }}</p>
+                    <small style="color:var(--cm-text-dim); font-size:0.8rem; font-style:italic;">
+                        &bull; {{ item.evidence }}
+                    </small>
+                </div>
+            </div>
+            {% endfor %}
+
+            {% if not comparison.suggestions.addressed and not comparison.suggestions.still_relevant and not comparison.suggestions.new_issues %}
+            <div class="text-center p-4">
+                <span style="color:var(--cm-text-muted); font-size:0.9rem;">No actionable suggestion changes recorded between these versions.</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Section A: Complete Resume Version History Table -->
+    <div class="glass-panel p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <span class="d-block" style="font-size:0.75rem; font-weight:600; color:var(--cm-accent); text-transform:uppercase; letter-spacing:1px;">
+                    Historical Ledger
+                </span>
+                <h3 class="cm-fraunces mb-0" style="color:var(--cm-text-main); font-size:1.35rem;">
+                    All Uploaded Resume Versions
+                </h3>
+            </div>
+            <a href="{% url 'candidate_resume' %}" class="cm-underline-tag" style="text-decoration:none; font-size:0.85rem;">
+                + Upload New Resume
+            </a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-dark table-hover mb-0" style="background:transparent; font-size:0.875rem;">
+                <thead>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.08); color:var(--cm-text-dim);">
+                        <th scope="col" style="background:transparent;">Version</th>
+                        <th scope="col" style="background:transparent;">Document File</th>
+                        <th scope="col" style="background:transparent;">Upload Timestamp</th>
+                        <th scope="col" style="background:transparent;">ATS Score</th>
+                        <th scope="col" style="background:transparent;">Processing Status</th>
+                        <th scope="col" style="background:transparent;" class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in resumes %}
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.04); vertical-align:middle;">
+                        <td style="background:transparent;">
+                            <div class="d-flex align-items-center gap-2">
+                                <strong style="color:var(--cm-accent);">Version {{ r.version_number }}</strong>
+                                {% if forloop.first %}
+                                <span class="badge" style="background:rgba(212,168,74,0.15); color:var(--cm-accent); font-size:0.65rem; border:1px solid rgba(212,168,74,0.3);">
+                                    ACTIVE / LATEST
+                                </span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td style="background:transparent;">
+                            <span style="color:var(--cm-text-main); font-weight:500;">{{ r.file_name }}</span>
+                        </td>
+                        <td style="background:transparent; color:var(--cm-text-muted);">
+                            {{ r.uploaded_at|date:"M d, Y H:i" }}
+                        </td>
+                        <td style="background:transparent;">
+                            {% if r.ats_score is not None %}
+                            <span class="badge" style="
+                                font-size:0.85rem;
+                                padding:4px 8px;
+                                {% if r.ats_score >= 70 %}background:rgba(46,125,50,0.25); color:#81c784; border:1px solid rgba(76,175,80,0.3);
+                                {% elif r.ats_score >= 50 %}background:rgba(212,168,74,0.25); color:var(--cm-accent); border:1px solid rgba(212,168,74,0.3);
+                                {% else %}background:rgba(198,40,40,0.25); color:#e57373; border:1px solid rgba(229,115,115,0.3);{% endif %}
+                            ">
+                                {{ r.ats_score }}/100
+                            </span>
+                            {% else %}
+                            <span style="color:var(--cm-text-dim);">&mdash;</span>
+                            {% endif %}
+                        </td>
+                        <td style="background:transparent;">
+                            <span class="badge" style="
+                                font-size:0.75rem;
+                                {% if r.status == 'parsed' or r.status == 'PARSED' or r.status == 'SCORED' %}
+                                    background:rgba(46,125,50,0.15); color:#81c784;
+                                {% elif r.status == 'error' or r.status == 'FAILED' %}
+                                    background:rgba(198,40,40,0.15); color:#e57373;
+                                {% else %}
+                                    background:rgba(255,255,255,0.06); color:var(--cm-text-main);
+                                {% endif %}
+                            ">
+                                {{ r.get_status_display }}
+                            </span>
+                        </td>
+                        <td style="background:transparent;" class="text-end">
+                            <div class="d-inline-flex gap-3 align-items-center">
+                                <a href="{% url 'candidate_resume_version_detail' r.pk %}" class="cm-underline-tag" style="text-decoration:none;">
+                                    View Analysis
+                                </a>
+                                <a href="{% url 'candidate_resume_download' r.pk %}" class="cm-underline-tag" style="text-decoration:none;">
+                                    Download
+                                </a>
+                                {% if r.applications.all %}
+                                <span class="badge" style="background:rgba(255,255,255,0.06); color:var(--cm-text-dim); font-size:0.75rem;" title="Submitted with {{ r.applications.count }} job application(s)">&bull; In Application</span>
+                                {% else %}
+                                <button type="button" class="btn btn-link p-0 text-decoration-none" style="color:#ef5350; font-size:0.85rem;" data-bs-toggle="modal" data-bs-target="#deleteModal{{ r.pk }}">
+                                    Delete
+                                </button>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4" style="color:var(--cm-text-muted); background:transparent;">
+                            No resume versions found.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modals -->
+    {% for r in resumes %}
+    {% if not r.applications.all %}
+    <div class="modal fade" id="deleteModal{{ r.pk }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ r.pk }}" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background: #141f17; border: 1px solid rgba(255,255,255,0.1); color: var(--cm-text-main);">
+          <div class="modal-header" style="border-bottom: 1px solid rgba(255,255,255,0.08);">
+            <h5 class="modal-title cm-fraunces" id="deleteModalLabel{{ r.pk }}">Delete Resume Version {{ r.version_number }}?</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" style="font-size:0.9rem; color:var(--cm-text-muted);">
+            <p class="mb-2">Are you sure you want to permanently delete <strong>Version {{ r.version_number }} ({{ r.file_name }})</strong>?</p>
+            <div class="p-3 rounded mb-2" style="background:rgba(229,115,115,0.08); border:1px solid rgba(229,115,115,0.25); color:#ef9a9a; font-size:0.85rem;">
+                &bull; The uploaded file and its historical ATS score snapshot will be permanently removed. This action cannot be undone.
+            </div>
+          </div>
+          <div class="modal-footer" style="border-top: 1px solid rgba(255,255,255,0.08);">
+            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <form method="post" action="{% url 'candidate_resume_delete' r.pk %}" class="d-inline">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm btn-danger fw-bold">Delete Version {{ r.version_number }}</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>
+{% endblock %}

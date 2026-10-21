@@ -1,0 +1,216 @@
+{% extends "candidate/base.html" %}
+{% block title %}Resume Version {{ resume.version_number }} Analysis | CareerMate{% endblock %}
+
+{% block candidate_content %}
+<div class="stagger-enter">
+    <!-- Breadcrumb & Navigation -->
+    <div class="mb-3 d-flex align-items-center gap-2" style="font-size:0.85rem;">
+        <a href="{% url 'candidate_resume' %}" class="cm-underline-tag" style="text-decoration:none;">Resume Center</a>
+        <span style="color:var(--cm-text-dim);">&rsaquo;</span>
+        <a href="{% url 'candidate_resume_progress' %}" class="cm-underline-tag" style="text-decoration:none;">Resume Progress</a>
+        <span style="color:var(--cm-text-dim);">&rsaquo;</span>
+        <span style="color:var(--cm-accent); font-weight:600;">Version {{ resume.version_number }} Snapshot</span>
+    </div>
+
+    <!-- Header Banner -->
+    <section class="glass-panel p-4 mb-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="badge" style="background:rgba(212,168,74,0.15); color:var(--cm-accent); font-size:0.8rem; border:1px solid rgba(212,168,74,0.3); padding:4px 10px;">
+                    Version {{ resume.version_number }}
+                </span>
+                {% if resume.is_latest %}
+                <span class="badge" style="background:rgba(46,125,50,0.2); color:#81c784; font-size:0.75rem;">LATEST VERSION</span>
+                {% else %}
+                <span class="badge" style="background:rgba(255,255,255,0.06); color:var(--cm-text-dim); font-size:0.75rem;">HISTORICAL SNAPSHOT</span>
+                {% endif %}
+            </div>
+            <h2 class="cm-fraunces mb-1" style="font-size:1.8rem; color:var(--cm-text-main);">{{ resume.file_name }}</h2>
+            <div class="d-flex align-items-center gap-3" style="font-size:0.85rem; color:var(--cm-text-muted);">
+                <span>Uploaded: <strong>{{ resume.uploaded_at|date:"M d, Y H:i" }}</strong></span>
+                <span style="color:rgba(255,255,255,0.2);">|</span>
+                <span>Status: <strong>{{ resume.get_status_display }}</strong></span>
+                <span style="color:rgba(255,255,255,0.2);">|</span>
+                <span>Length: <strong>{{ word_count }} words</strong></span>
+                <span style="color:rgba(255,255,255,0.2);">|</span>
+                <span>Ruleset: <code>{{ scoring_version }}</code></span>
+            </div>
+        </div>
+
+        <div class="d-flex align-items-center gap-3">
+            <div class="text-end me-2">
+                <span class="d-block" style="font-size:0.75rem; color:var(--cm-text-dim); text-transform:uppercase;">Snapshot ATS Score</span>
+                <div class="d-flex align-items-baseline">
+                    <span style="font-size:3.5rem; font-weight:700; color:var(--cm-accent); line-height:1; font-family:'Fraunces', serif;">
+                        {% if score is not None %}{{ score }}{% else %}--{% endif %}
+                    </span>
+                    <span style="font-size:1.2rem; color:var(--cm-text-dim); margin-left:4px;">/100</span>
+                </div>
+            </div>
+            <div class="d-flex flex-column gap-2">
+                <a href="{% url 'candidate_resume_download' resume.pk %}" class="cm-btn-accent px-3 py-2 text-decoration-none text-center" style="font-size:0.85rem;">
+                    Download Original File
+                </a>
+                {% if has_applications %}
+                <span class="badge py-2 px-3 text-center" style="background:rgba(255,255,255,0.06); color:var(--cm-text-dim); font-size:0.75rem;" title="Preserved for submitted job applications">
+                    &bull; Preserved in Application
+                </span>
+                {% else %}
+                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteDetailModal">
+                    Delete Version
+                </button>
+                {% endif %}
+                <a href="{% url 'candidate_resume_progress' %}" class="btn btn-sm" style="background:rgba(255,255,255,0.05); color:var(--cm-text-muted); border:1px solid rgba(255,255,255,0.1); font-size:0.8rem;">
+                    &larr; Back to Progress
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Breakdown Metrics -->
+    <h3 class="mb-3" style="font-size:1rem; font-weight:600; color:var(--cm-text-main); text-transform:uppercase; letter-spacing:1px;">
+        Saved Component Analysis (Version {{ resume.version_number }})
+    </h3>
+    <div class="row g-4 mb-4">
+        {% for item in breakdown %}
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="glass-panel p-4 h-100 d-flex flex-column justify-content-between">
+                <div>
+                    <span class="d-block mb-2" style="font-size:0.75rem; font-weight:600; color:var(--cm-text-dim); text-transform:uppercase; letter-spacing:0.5px;">
+                        {{ item.category }}
+                    </span>
+                    <div class="d-flex align-items-baseline mb-2">
+                        <strong style="font-size:1.8rem; font-weight:700; color:var(--cm-text-main); line-height:1;">
+                            {{ item.score }}%
+                        </strong>
+                    </div>
+                    <div style="width:100%; height:4px; background:rgba(255,255,255,0.05); border-radius:2px; margin-bottom:12px; overflow:hidden;">
+                        <div style="width:{{ item.score }}%; height:100%; background:var(--cm-accent); border-radius:2px;"></div>
+                    </div>
+                </div>
+                <small style="color:var(--cm-text-muted); font-size:0.8rem; line-height:1.4;">{{ item.message }}</small>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="glass-panel p-4 text-center">
+                <span style="color:var(--cm-text-muted);">No detailed breakdown metrics stored for this version.</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Extracted Skills & Suggestions -->
+    <div class="row g-4 mb-4">
+        <!-- Extracted Skills in this version -->
+        <div class="col-12 col-lg-6">
+            <section class="glass-panel p-4 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="cm-fraunces mb-0" style="color:var(--cm-text-main); font-size:1.25rem;">
+                        Extracted Skills ({{ extracted_skills|length }})
+                    </h3>
+                    <span style="color:var(--cm-text-dim); font-size:0.8rem;">Saved at upload</span>
+                </div>
+                <p style="color:var(--cm-text-muted); font-size:0.85rem; margin-bottom:1rem;">
+                    These technical and soft skills were recognized in Version {{ resume.version_number }} by the parsing engine:
+                </p>
+
+                <div class="d-flex flex-wrap gap-2">
+                    {% for skill in extracted_skills %}
+                    <span class="badge" style="background:rgba(255,255,255,0.05); color:var(--cm-text-main); border:1px solid rgba(255,255,255,0.1); font-size:0.8rem; padding:6px 10px;">
+                        {{ skill }}
+                    </span>
+                    {% empty %}
+                    <div class="p-3 text-center w-100" style="color:var(--cm-text-dim); font-size:0.85rem;">
+                        No skills were extracted from this version's text.
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+        </div>
+
+        <!-- Suggestions generated for this version -->
+        <div class="col-12 col-lg-6">
+            <section class="glass-panel p-4 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="cm-fraunces mb-0" style="color:var(--cm-text-main); font-size:1.25rem;">
+                        Actionable Recommendations ({{ suggestions|length }})
+                    </h3>
+                    <span style="color:var(--cm-text-dim); font-size:0.8rem;">Snapshot Advice</span>
+                </div>
+                <p style="color:var(--cm-text-muted); font-size:0.85rem; margin-bottom:1rem;">
+                    Targeted improvements suggested for this document version:
+                </p>
+
+                <div class="d-flex flex-column gap-3">
+                    {% for s in suggestions %}
+                    <div class="p-3 rounded" style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06);">
+                        <div class="d-flex justify-content-between align-items-start mb-1">
+                            <strong style="color:var(--cm-text-main); font-size:0.9rem;">{{ s.title }}</strong>
+                            <span class="badge" style="
+                                font-size:0.65rem;
+                                text-transform:uppercase;
+                                {% if s.category == 'sections' %}background:rgba(198,40,40,0.2); color:#ef9a9a;
+                                {% elif s.category == 'keywords' %}background:rgba(212,168,74,0.2); color:var(--cm-accent);
+                                {% else %}background:rgba(255,255,255,0.08); color:var(--cm-text-dim);{% endif %}
+                            ">
+                                {{ s.category }}
+                            </span>
+                        </div>
+                        <p style="color:var(--cm-text-muted); font-size:0.8rem; margin:0; line-height:1.4;">
+                            {{ s.description }}
+                        </p>
+                    </div>
+                    {% empty %}
+                    <div class="p-3 text-center w-100" style="color:var(--cm-text-dim); font-size:0.85rem;">
+                        No explicit suggestions recorded for this version.
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Extracted Document Text Preview -->
+    {% if resume.parsed_text %}
+    <section class="glass-panel p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="cm-fraunces mb-0" style="color:var(--cm-text-main); font-size:1.2rem;">
+                Extracted Document Text
+            </h3>
+            <span style="color:var(--cm-text-dim); font-size:0.8rem;">Raw Text Extracted During Ingestion</span>
+        </div>
+        <div class="p-3 rounded" style="background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.06); font-family:monospace; font-size:0.85rem; color:var(--cm-text-muted); line-height:1.6; max-height:350px; overflow-y:auto; white-space:pre-wrap;">
+{{ resume.parsed_text }}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Delete Modal -->
+    {% if not has_applications %}
+    <div class="modal fade" id="deleteDetailModal" tabindex="-1" aria-labelledby="deleteDetailModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background: #141f17; border: 1px solid rgba(255,255,255,0.1); color: var(--cm-text-main);">
+          <div class="modal-header" style="border-bottom: 1px solid rgba(255,255,255,0.08);">
+            <h5 class="modal-title cm-fraunces" id="deleteDetailModalLabel">Delete Resume Version {{ resume.version_number }}?</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" style="font-size:0.9rem; color:var(--cm-text-muted);">
+            <p class="mb-2">Are you sure you want to permanently delete <strong>Version {{ resume.version_number }} ({{ resume.file_name }})</strong>?</p>
+            <div class="p-3 rounded mb-2" style="background:rgba(229,115,115,0.08); border:1px solid rgba(229,115,115,0.25); color:#ef9a9a; font-size:0.85rem;">
+                &bull; The uploaded file and its historical ATS score snapshot will be permanently removed. This action cannot be undone.
+            </div>
+          </div>
+          <div class="modal-footer" style="border-top: 1px solid rgba(255,255,255,0.08);">
+            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <form method="post" action="{% url 'candidate_resume_delete' resume.pk %}" class="d-inline">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm btn-danger fw-bold">Delete Version {{ resume.version_number }}</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

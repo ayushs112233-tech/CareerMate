@@ -137,6 +137,11 @@ class Application(models.Model):
         choices=STATUS_CHOICES,
         default="applied",
     )
+    match_score = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        help_text="Match compatibility score snapshot calculated at application time",
+    )
     applied_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

@@ -1,6 +1,6 @@
 import re
 
-def calculate_ats_score(resume, candidate):
+def calculate_ats_score(resume, candidate, extracted_skills=None):
     """
     Calculates a weighted ATS score from 0-100 based on the parsed resume text and candidate profile.
     
@@ -18,10 +18,7 @@ def calculate_ats_score(resume, candidate):
     total_score = 0
     
     # 1. Skill Volume & Breadth (Max 40 points)
-    # Give points based on the number of distinct skills extracted (up to 8 skills for max points).
-    # Note: This is an independent ATS evaluation of the resume's standalone richness,
-    # not its relevance to a specific job (which is handled by job matching).
-    num_skills = candidate.skills.count()
+    num_skills = len(extracted_skills) if extracted_skills is not None else candidate.skills.count()
     skill_score = min(40, num_skills * 5)
     total_score += skill_score
     breakdown.append({
@@ -57,7 +54,6 @@ def calculate_ats_score(resume, candidate):
     })
     
     # 3. Readability & Formatting (Max 15 points)
-    # Check word count. Optimal is roughly between 250 and 800 words.
     word_count = len(text.split())
     readability_score = 0
     readability_msg = ""
@@ -80,7 +76,6 @@ def calculate_ats_score(resume, candidate):
     })
     
     # 4. Profile Completeness (Max 15 points)
-    # A complete profile helps match better.
     completion_items = [candidate.headline, candidate.bio, candidate.education, candidate.location, candidate.phone]
     completion_score = min(15, sum(3 for item in completion_items if item))
     total_score += completion_score
@@ -92,3 +87,102 @@ def calculate_ats_score(resume, candidate):
     })
     
     return total_score, breakdown
+
+
+def generate_resume_suggestions(resume, candidate, breakdown=None, extracted_skills=None):
+    """
+    Generates structured, actionable resume improvement suggestions based on the
+    existing ATS scoring rules and candidate document content.
+    """
+    if not resume or not resume.parsed_text:
+        return []
+
+    text = resume.parsed_text.lower()
+    suggestions = []
+    
+    # 1. Section Header suggestions
+    if not re.search(r'\b(experience|employment|work history)\b', text):
+        suggestions.append({
+            'id': 'section_experience',
+            'category': 'Sections',
+            'title': 'Add an Experience Section',
+            'description': 'Include a clearly labeled "Experience" or "Work History" section to help ATS parsers accurately index your past responsibilities.',
+            'impact': '+15 pts',
+            'automatic_verification': True,
+        })
+        
+    if not re.search(r'\b(education|academic|degree)\b', text):
+        suggestions.append({
+            'id': 'section_education',
+            'category': 'Sections',
+            'title': 'Add an Education Section',
+            'description': 'Add an "Education" or "Academic Background" section with your degree, college, or graduation details.',
+            'impact': '+10 pts',
+            'automatic_verification': True,
+        })
+        
+    if not re.search(r'\b(projects|portfolio)\b', text):
+        suggestions.append({
+            'id': 'section_projects',
+            'category': 'Sections',
+            'title': 'Include Projects or Portfolio',
+            'description': 'Add a "Projects" or "Portfolio" section with practical implementations to demonstrate technical proficiency.',
+            'impact': '+5 pts',
+            'automatic_verification': True,
+        })
+        
+    # 2. Length & Readability suggestions
+    words = len(text.split())
+    if words < 250:
+        suggestions.append({
+            'id': 'length_short',
+            'category': 'Readability',
+            'title': 'Expand Resume Content',
+            'description': f'Your resume contains only {words} words. Expand on your project details, tools, and quantified achievements (optimal: 250–800 words).',
+            'impact': '+10 pts',
+            'automatic_verification': True,
+        })
+    elif words > 800:
+        suggestions.append({
+            'id': 'length_long',
+            'category': 'Readability',
+            'title': 'Condense Resume Content',
+            'description': f'Your resume contains {words} words. Aim for concise bullet points to keep it easily scannable by recruiters and ATS software.',
+            'impact': '+5 pts',
+            'automatic_verification': True,
+        })
+        
+    # 3. Skill Volume suggestions
+    num_skills = len(extracted_skills) if extracted_skills is not None else candidate.skills.count()
+    if num_skills < 5:
+        suggestions.append({
+            'id': 'skill_density',
+            'category': 'Skills',
+            'title': 'Increase Technical Skill Density',
+            'description': f'Only {num_skills} industry skills were detected. Explicitly list standard technologies (e.g. Python, SQL, React, AWS) in your skills section.',
+            'impact': '+15 pts',
+            'automatic_verification': True,
+        })
+        
+    # 4. Profile Completeness suggestions
+    if not candidate.headline:
+        suggestions.append({
+            'id': 'profile_headline',
+            'category': 'Profile',
+            'title': 'Add a Professional Headline',
+            'description': 'Set a professional headline (e.g., "Full Stack Python Developer") on your profile to align your resume with target roles.',
+            'impact': '+3 pts',
+            'automatic_verification': True,
+        })
+        
+    if not candidate.bio:
+        suggestions.append({
+            'id': 'profile_bio',
+            'category': 'Profile',
+            'title': 'Add a Professional Bio',
+            'description': 'Add a brief summary or career objective to provide valuable context for ATS match scoring.',
+            'impact': '+3 pts',
+            'automatic_verification': True,
+        })
+        
+    return suggestions

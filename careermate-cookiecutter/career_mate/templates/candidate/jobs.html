@@ -1,4 +1,4 @@
-﻿{% extends "candidate/base.html" %}
+{% extends "candidate/base.html" %}
 {% block title %}Find Jobs | CareerMate{% endblock %}
 {% block candidate_content %}
 <div class="stagger-enter">
@@ -11,6 +11,22 @@
             {{ jobs|length }} roles available
         </span>
     </div>
+
+    {% if matching_status.is_fallback %}
+    <div class="p-3 rounded mb-4 d-flex align-items-center justify-content-between" style="background:rgba(212,168,74,0.08); border:1px solid rgba(212,168,74,0.3);">
+        <div class="d-flex align-items-center gap-3">
+            <span class="badge" style="background:rgba(212,168,74,0.3); color:var(--cm-accent); font-size:1rem; padding:6px 10px;">!</span>
+            <div>
+                <strong style="color:var(--cm-accent); font-size:0.95rem;">Match Scores Powered by Resume Version {{ matching_status.active_version }}</strong>
+                <p class="mb-0" style="color:var(--cm-text-muted); font-size:0.85rem;">
+                    Your latest uploaded resume (Version {{ matching_status.latest_version }}) is currently {{ matching_status.latest_status }}. 
+                    Job compatibility match scores are safely calculated using your last successfully analyzed resume (Version {{ matching_status.active_version }}).
+                </p>
+            </div>
+        </div>
+        <a href="{% url 'candidate_resume' %}" class="cm-underline-tag text-nowrap ms-3" style="font-size:0.85rem;">Manage Resumes &rarr;</a>
+    </div>
+    {% endif %}
 
     <!-- Search / Filter Bar -->
     <section class="glass-panel p-3 mb-4">

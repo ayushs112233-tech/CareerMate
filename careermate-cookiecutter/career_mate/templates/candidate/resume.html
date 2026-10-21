@@ -1,4 +1,4 @@
-﻿{% extends "candidate/base.html" %}
+{% extends "candidate/base.html" %}
 {% block title %}Resume Center | CareerMate{% endblock %}
 {% block candidate_content %}
 <div class="stagger-enter">
@@ -7,13 +7,40 @@
         <p style="color:var(--cm-text-muted); font-size:1rem;">Manage your active document and review what the ATS engine extracts.</p>
     </div>
 
+    {% if matching_status.is_fallback %}
+    <div class="p-3 rounded mb-4 d-flex align-items-center justify-content-between" style="background:rgba(212,168,74,0.08); border:1px solid rgba(212,168,74,0.3);">
+        <div class="d-flex align-items-center gap-3">
+            <span class="badge" style="background:rgba(212,168,74,0.3); color:var(--cm-accent); font-size:1rem; padding:6px 10px;">!</span>
+            <div>
+                <strong style="color:var(--cm-accent); font-size:0.95rem;">Active Matching Source: Version {{ matching_status.active_version }}</strong>
+                <p class="mb-0" style="color:var(--cm-text-muted); font-size:0.85rem;">
+                    Your latest uploaded resume (Version {{ matching_status.latest_version }}) encountered a processing state (<code>{{ matching_status.latest_status }}</code>). 
+                    Career recommendations and match scores are safely using your last successfully analyzed resume (Version {{ matching_status.active_version }}).
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     <div class="row g-4">
         <!-- Upload & Status Column -->
         <div class="col-12 col-lg-6">
             <!-- Active Resume Status -->
             {% if latest_resume %}
             <section class="glass-panel p-4 mb-4">
-                <h3 class="mb-3" style="font-size:1.1rem; font-weight:600; color:var(--cm-text-main);">Current Resume</h3>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="mb-0" style="font-size:1.1rem; font-weight:600; color:var(--cm-text-main);">Current Resume</h3>
+                    <div class="d-flex gap-2 align-items-center">
+                        <span class="badge" style="background:rgba(212,168,74,0.15); color:var(--cm-accent); font-size:0.75rem; border:1px solid rgba(212,168,74,0.3); padding:4px 8px; border-radius:4px; font-weight:600;">
+                            Version {{ latest_resume.version_number }} (Latest)
+                        </span>
+                        {% if latest_resume.ats_score is not None %}
+                        <span class="badge" style="background:rgba(46,125,50,0.15); color:#81c784; font-size:0.75rem; border:1px solid rgba(76,175,80,0.3); padding:4px 8px; border-radius:4px; font-weight:600;">
+                            ATS: {{ latest_resume.ats_score }}/100
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
                 <div class="d-flex align-items-center justify-content-between p-3" style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:8px;">
                     <div class="d-flex align-items-center">
                         <div class="d-flex align-items-center justify-content-center" style="width:40px; height:40px; background:rgba(212,168,74,0.1); color:var(--cm-accent); border-radius:8px; font-weight:700; font-size:0.75rem; margin-right:16px;">
@@ -22,25 +49,35 @@
                         <div>
                             <strong class="d-block" style="color:var(--cm-text-main); font-size:0.95rem; margin-bottom:2px;">{{ latest_resume.file_name }}</strong>
                             <div class="d-flex align-items-center" style="font-size:0.8rem; color:var(--cm-text-muted);">
-                                <span>Uploaded {{ latest_resume.uploaded_at|date:"M d, Y" }}</span>
+                                <span>Uploaded {{ latest_resume.uploaded_at|date:"M d, Y H:i" }}</span>
                                 <span style="margin:0 8px; color:rgba(255,255,255,0.2);">|</span>
                                 <span style="
-                                    {% if latest_resume.status == 'PARSED' or latest_resume.status == 'SCORED' %}color:var(--cm-accent);
-                                    {% elif latest_resume.status == 'FAILED' %}color:var(--cm-error);
+                                    {% if latest_resume.status == 'PARSED' or latest_resume.status == 'SCORED' or latest_resume.status == 'parsed' %}color:var(--cm-accent);
+                                    {% elif latest_resume.status == 'FAILED' or latest_resume.status == 'error' %}color:var(--cm-error);
                                     {% else %}color:var(--cm-text-main);{% endif %}
                                 ">{{ latest_resume.get_status_display }}</span>
                             </div>
                         </div>
                     </div>
-                    <a href="{% url 'candidate_resume_download' latest_resume.pk %}" class="cm-underline-tag" style="text-decoration:none;">Download</a>
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'candidate_resume_version_detail' latest_resume.pk %}" class="cm-underline-tag" style="text-decoration:none; font-size:0.85rem;">Analysis</a>
+                        <a href="{% url 'candidate_resume_download' latest_resume.pk %}" class="cm-underline-tag" style="text-decoration:none; font-size:0.85rem;">Download</a>
+                    </div>
+                </div>
+                <div class="mt-3 pt-2 text-end">
+                    <a href="{% url 'candidate_resume_progress' %}" class="cm-underline-tag" style="text-decoration:none; font-size:0.85rem; color:var(--cm-accent);">
+                        View Version History & Compare &rarr;
+                    </a>
                 </div>
             </section>
             {% endif %}
 
             <!-- Upload Zone -->
             <section class="glass-panel p-4">
-                <h3 class="mb-3" style="font-size:1.1rem; font-weight:600; color:var(--cm-text-main);">{% if latest_resume %}Replace Resume{% else %}Upload Resume{% endif %}</h3>
-                <p style="color:var(--cm-text-muted); font-size:0.9rem; margin-bottom:1.5rem;">Accepted formats: PDF or DOCX. Your latest upload is used when applying.</p>
+                <h3 class="mb-2" style="font-size:1.1rem; font-weight:600; color:var(--cm-text-main);">{% if latest_resume %}Upload New Version{% else %}Upload Resume{% endif %}</h3>
+                <p style="color:var(--cm-text-muted); font-size:0.9rem; margin-bottom:1.5rem;">
+                    Accepted formats: PDF or DOCX. Uploading creates a new version while securely preserving your complete history and past analysis.
+                </p>
                 
                 <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
@@ -59,7 +96,7 @@
                             {{ form.file.errors }}
                         </div>
                     {% endif %}
-                    <button type="submit" class="cm-btn-accent w-100">Upload document</button>
+                    <button type="submit" class="cm-btn-accent w-100">Upload & Analyze Version</button>
                 </form>
             </section>
         </div>
@@ -70,12 +107,15 @@
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h3 class="mb-0" style="font-size:1.1rem; font-weight:600; color:var(--cm-text-main);">Extraction Signals</h3>
                     {% if latest_resume %}
-                    <a href="{% url 'candidate_ats_score' %}" class="cm-underline-tag" style="text-decoration:none;">View AI insights</a>
+                    <div class="d-flex gap-3">
+                        <a href="{% url 'candidate_resume_progress' %}" class="cm-underline-tag" style="text-decoration:none; font-size:0.85rem;">Progress</a>
+                        <a href="{% url 'candidate_ats_score' %}" class="cm-underline-tag" style="text-decoration:none; font-size:0.85rem;">AI insights</a>
+                    </div>
                     {% endif %}
                 </div>
 
                 {% if latest_resume and latest_resume.parsed_text %}
-                <p style="color:var(--cm-text-muted); font-size:0.9rem; margin-bottom:1rem;">The ATS engine has successfully extracted text from your document.</p>
+                <p style="color:var(--cm-text-muted); font-size:0.9rem; margin-bottom:1rem;">The ATS engine has successfully extracted text from Version {{ latest_resume.version_number }}.</p>
                 <div class="flex-grow-1 p-3" style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:8px; color:var(--cm-text-muted); font-size:0.85rem; font-family:monospace; line-height:1.6; overflow-y:auto; max-height:400px;">
                     {{ latest_resume.parsed_text|truncatewords:80 }}...
                 </div>
@@ -106,7 +146,102 @@
             </section>
         </div>
     </div>
+
+    <!-- Resume Version History Quick Access Table -->
+    {% if resumes.count > 1 %}
+    <div class="mt-4">
+        <section class="glass-panel p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="mb-0" style="font-size:1.1rem; font-weight:600; color:var(--cm-text-main);">All Resume Versions ({{ resumes.count }})</h3>
+                <a href="{% url 'candidate_resume_progress' %}" class="cm-underline-tag" style="text-decoration:none;">Open Full Progress & Comparison &rarr;</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-dark table-hover mb-0" style="background:transparent; font-size:0.875rem;">
+                    <thead>
+                        <tr style="border-bottom:1px solid rgba(255,255,255,0.08); color:var(--cm-text-dim);">
+                            <th scope="col" style="background:transparent;">Version</th>
+                            <th scope="col" style="background:transparent;">Filename</th>
+                            <th scope="col" style="background:transparent;">Uploaded Date</th>
+                            <th scope="col" style="background:transparent;">ATS Score</th>
+                            <th scope="col" style="background:transparent;">Status</th>
+                            <th scope="col" style="background:transparent;" class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in resumes %}
+                        <tr style="border-bottom:1px solid rgba(255,255,255,0.04); vertical-align:middle;">
+                            <td style="background:transparent;">
+                                <strong style="color:var(--cm-accent);">Version {{ r.version_number }}</strong>
+                                {% if r.pk == latest_resume.pk %}
+                                <span class="badge ms-1" style="background:rgba(212,168,74,0.15); color:var(--cm-accent); font-size:0.65rem;">LATEST</span>
+                                {% endif %}
+                            </td>
+                            <td style="background:transparent; color:var(--cm-text-main);">{{ r.file_name }}</td>
+                            <td style="background:transparent; color:var(--cm-text-muted);">{{ r.uploaded_at|date:"M d, Y H:i" }}</td>
+                            <td style="background:transparent;">
+                                {% if r.ats_score is not None %}
+                                <span style="font-weight:700; color:{% if r.ats_score >= 70 %}#81c784{% elif r.ats_score >= 50 %}var(--cm-accent){% else %}#e57373{% endif %};">
+                                    {{ r.ats_score }}/100
+                                </span>
+                                {% else %}
+                                <span style="color:var(--cm-text-dim);">&mdash;</span>
+                                {% endif %}
+                            </td>
+                            <td style="background:transparent;">
+                                <span class="badge" style="background:rgba(255,255,255,0.05); color:var(--cm-text-main); font-size:0.75rem;">
+                                    {{ r.get_status_display }}
+                                </span>
+                            </td>
+                            <td style="background:transparent;" class="text-end">
+                                <a href="{% url 'candidate_resume_version_detail' r.pk %}" class="cm-underline-tag me-3" style="text-decoration:none;">View Analysis</a>
+                                <a href="{% url 'candidate_resume_download' r.pk %}" class="cm-underline-tag me-3" style="text-decoration:none;">Download</a>
+                                {% if r.applications.all %}
+                                <span class="badge" style="background:rgba(255,255,255,0.06); color:var(--cm-text-dim); font-size:0.75rem;" title="Preserved for submitted job applications">&bull; In Application</span>
+                                {% else %}
+                                <button type="button" class="btn btn-link p-0 text-decoration-none" style="color:#ef5350; font-size:0.85rem;" data-bs-toggle="modal" data-bs-target="#deleteResumeModal{{ r.pk }}">
+                                    Delete
+                                </button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+    {% endif %}
 </div>
+</div>
+
+<!-- Delete Confirmation Modals -->
+{% for r in resumes %}
+{% if not r.applications.all %}
+<div class="modal fade" id="deleteResumeModal{{ r.pk }}" tabindex="-1" aria-labelledby="deleteResumeModalLabel{{ r.pk }}" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="background: #141f17; border: 1px solid rgba(255,255,255,0.1); color: var(--cm-text-main);">
+      <div class="modal-header" style="border-bottom: 1px solid rgba(255,255,255,0.08);">
+        <h5 class="modal-title cm-fraunces" id="deleteResumeModalLabel{{ r.pk }}">Delete Resume Version {{ r.version_number }}?</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" style="font-size:0.9rem; color:var(--cm-text-muted);">
+        <p class="mb-2">Are you sure you want to permanently delete <strong>Version {{ r.version_number }} ({{ r.file_name }})</strong>?</p>
+        <div class="p-3 rounded mb-2" style="background:rgba(229,115,115,0.08); border:1px solid rgba(229,115,115,0.25); color:#ef9a9a; font-size:0.85rem;">
+            &bull; The uploaded file and its historical ATS score snapshot will be permanently removed. This action cannot be undone.
+        </div>
+      </div>
+      <div class="modal-footer" style="border-top: 1px solid rgba(255,255,255,0.08);">
+        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form method="post" action="{% url 'candidate_resume_delete' r.pk %}" class="d-inline">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-sm btn-danger fw-bold">Delete Version {{ r.version_number }}</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endfor %}
 
 <style>
 /* Scoped override for Django native file input */

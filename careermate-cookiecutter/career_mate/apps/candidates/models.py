@@ -72,3 +72,14 @@ class Candidate(models.Model):
         if full_name:
             return f"{full_name} ({self.user.username})"
         return self.user.username
+
+    @property
+    def active_resume(self):
+        """Returns the candidate's latest successfully analyzed resume version."""
+        from apps.ai_engine.job_matching import get_active_analyzed_resume
+        return get_active_analyzed_resume(self)
+
+    @property
+    def latest_resume(self):
+        """Returns the candidate's newest uploaded resume version regardless of status."""
+        return self.resumes.first()

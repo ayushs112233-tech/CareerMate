@@ -1,4 +1,4 @@
-﻿{% extends "base.html" %}
+{% extends "base.html" %}
 {% load static %}
 {% block content %}
 <div class="candidate-shell d-flex fade-in" style="min-height: 100vh;">
@@ -30,6 +30,7 @@
           <a class="nav-item {% if request.resolver_match.url_name == 'candidate_dashboard' %}active{% endif %}" href="{% url 'candidate_dashboard' %}" style="color: var(--cm-text-muted); text-decoration: none; display: block; padding: 10px 15px; border-radius: 8px; margin-bottom: 5px; font-weight: 500; font-size: 0.95rem; transition: color 0.2s;">Overview</a>
           <a class="nav-item {% if request.resolver_match.url_name == 'candidate_profile' %}active{% endif %}" href="{% url 'candidate_profile' %}" style="color: var(--cm-text-muted); text-decoration: none; display: block; padding: 10px 15px; border-radius: 8px; margin-bottom: 5px; font-weight: 500; font-size: 0.95rem; transition: color 0.2s;">My profile</a>
           <a class="nav-item {% if request.resolver_match.url_name == 'candidate_resume' %}active{% endif %}" href="{% url 'candidate_resume' %}" style="color: var(--cm-text-muted); text-decoration: none; display: block; padding: 10px 15px; border-radius: 8px; margin-bottom: 5px; font-weight: 500; font-size: 0.95rem; transition: color 0.2s;">Resume center</a>
+          <a class="nav-item {% if 'progress' in request.resolver_match.url_name or 'version' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'candidate_resume_progress' %}" style="color: var(--cm-text-muted); text-decoration: none; display: block; padding: 10px 15px; border-radius: 8px; margin-bottom: 5px; font-weight: 500; font-size: 0.95rem; transition: color 0.2s;">Resume progress</a>
           <a class="nav-item {% if 'job' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'candidate_jobs' %}" style="color: var(--cm-text-muted); text-decoration: none; display: block; padding: 10px 15px; border-radius: 8px; margin-bottom: 5px; font-weight: 500; font-size: 0.95rem; transition: color 0.2s;">Find jobs</a>
           <a class="nav-item {% if 'application' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'candidate_applications' %}" style="color: var(--cm-text-muted); text-decoration: none; display: block; padding: 10px 15px; border-radius: 8px; margin-bottom: 5px; font-weight: 500; font-size: 0.95rem; transition: color 0.2s;">Applications</a>
           <a class="nav-item {% if request.resolver_match.url_name == 'candidate_ats_score' %}active{% endif %}" href="{% url 'candidate_ats_score' %}" style="color: var(--cm-text-muted); text-decoration: none; display: block; padding: 10px 15px; border-radius: 8px; margin-bottom: 5px; font-weight: 500; font-size: 0.95rem; transition: color 0.2s;">AI insights</a>

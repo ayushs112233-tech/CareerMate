@@ -1,4 +1,4 @@
-﻿from django.urls import path
+from django.urls import path
 
 from .views import (
     candidate_application_detail,
@@ -11,6 +11,9 @@ from .views import (
     candidate_profile,
     candidate_resume,
     candidate_resume_download,
+    candidate_resume_progress,
+    candidate_resume_version_detail,
+    candidate_resume_delete,
 )
 
 urlpatterns = [
@@ -18,6 +21,9 @@ urlpatterns = [
     path("profile/", candidate_profile, name="candidate_profile"),
     path("resume/", candidate_resume, name="candidate_resume"),
     path("resume/<int:pk>/download/", candidate_resume_download, name="candidate_resume_download"),
+    path("resume/progress/", candidate_resume_progress, name="candidate_resume_progress"),
+    path("resume/versions/<int:pk>/", candidate_resume_version_detail, name="candidate_resume_version_detail"),
+    path("resume/versions/<int:pk>/delete/", candidate_resume_delete, name="candidate_resume_delete"),
     path("jobs/", candidate_jobs, name="candidate_jobs"),
     path("jobs/<int:pk>/", candidate_job_detail, name="candidate_job_detail"),
     path("applications/", candidate_applications, name="candidate_applications"),
@@ -25,3 +31,4 @@ urlpatterns = [
     path("ats-score/", candidate_ats_score, name="candidate_ats_score"),
     path("career-path/", candidate_career_path, name="candidate_career_path"),
 ]
+

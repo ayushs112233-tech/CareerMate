@@ -1,4 +1,4 @@
-﻿{% extends "candidate/base.html" %}
+{% extends "candidate/base.html" %}
 {% block title %}Dashboard | CareerMate{% endblock %}
 {% block candidate_content %}
 
@@ -9,6 +9,22 @@
         <h2 class="cm-fraunces mb-3" style="font-size:2.5rem; font-weight:600; color:var(--cm-text-main);">Welcome back, {{ candidate_name }}.</h2>
         <p style="color:var(--cm-text-muted); font-size:1.1rem; max-width:550px;">Keep your profile sharp, discover roles that fit your skills, and turn AI insight into career momentum.</p>
     </section>
+
+    {% if matching_status.is_fallback %}
+    <div class="p-3 rounded mb-4 d-flex align-items-center justify-content-between" style="background:rgba(212,168,74,0.08); border:1px solid rgba(212,168,74,0.3);">
+        <div class="d-flex align-items-center gap-3">
+            <span class="badge" style="background:rgba(212,168,74,0.3); color:var(--cm-accent); font-size:1rem; padding:6px 10px;">!</span>
+            <div>
+                <strong style="color:var(--cm-accent); font-size:0.95rem;">Active Matching Source: Resume Version {{ matching_status.active_version }}</strong>
+                <p class="mb-0" style="color:var(--cm-text-muted); font-size:0.85rem;">
+                    Your latest upload (Version {{ matching_status.latest_version }}) is currently {{ matching_status.latest_status }}. 
+                    Job recommendations and match scoring are safely powered by your last successfully analyzed resume (Version {{ matching_status.active_version }}).
+                </p>
+            </div>
+        </div>
+        <a href="{% url 'candidate_resume' %}" class="cm-underline-tag text-nowrap ms-3" style="font-size:0.85rem;">Manage Resumes &rarr;</a>
+    </div>
+    {% endif %}
 
     <!-- ONE Unified Metric Panel -->
     <section class="glass-panel mb-5">
@@ -35,12 +51,16 @@
                 <a href="{% url 'candidate_resume' %}" class="cm-underline-tag" style="text-decoration:none;">Open resume center</a>
             </div>
             
-            <!-- ATS Score -->
-            <div class="col-12 col-md-6 col-lg-3 p-4 metric-grid-col" style="border-right: 1px solid rgba(255,255,255,0.07);">
-                <span class="d-block mb-3" style="font-size:0.75rem; font-weight:600; color:var(--cm-text-dim); text-transform:uppercase;">AI ATS Score</span>
-                <strong class="d-block lh-1 mb-2" style="font-size:1.8rem; font-weight:700; color:var(--cm-text-main);">{% if ats_score %}{{ ats_score }}%{% else %}--{% endif %}</strong>
-                <a href="{% url 'candidate_ats_score' %}" class="cm-underline-tag" style="text-decoration:none;">View AI insights</a>
-            </div>
+                <!-- ATS Score -->
+                <div class="col-12 col-md-6 col-lg-3 p-4 metric-grid-col" style="border-right: 1px solid rgba(255,255,255,0.07);">
+                    <span class="d-block mb-3" style="font-size:0.75rem; font-weight:600; color:var(--cm-text-dim); text-transform:uppercase;">AI ATS Score</span>
+                    <strong class="d-block lh-1 mb-2" style="font-size:1.8rem; font-weight:700; color:var(--cm-text-main);">{% if ats_score %}{{ ats_score }}%{% else %}--{% endif %}</strong>
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'candidate_ats_score' %}" class="cm-underline-tag" style="text-decoration:none;">Insights</a>
+                        <span style="color:rgba(255,255,255,0.2);">|</span>
+                        <a href="{% url 'candidate_resume_progress' %}" class="cm-underline-tag" style="text-decoration:none;">Progress</a>
+                    </div>
+                </div>
             
             <!-- Active Apps -->
             <div class="col-12 col-md-6 col-lg-3 p-4 metric-grid-col">
