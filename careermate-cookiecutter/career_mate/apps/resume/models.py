@@ -36,3 +36,11 @@ class Resume(models.Model):
 
     def __str__(self):
         return f"{self.candidate} - {self.file_name}"
+
+    @property
+    def file_exists(self):
+        """Check if the physical file exists in storage."""
+        try:
+            return bool(self.file and self.file.name and self.file.storage.exists(self.file.name))
+        except Exception:
+            return False

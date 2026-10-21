@@ -1,1 +1,70 @@
-﻿{% extends "recruiters/base.html" %}{% block title %}Job postings{% endblock %}{% block heading %}Your job postings{% endblock %}{% block top_action_url %}{% url 'jobs:create' %}{% endblock %}{% block top_action %}Post a job{% endblock %}{% block content %}<section class="card"><div class="toolbar"><form class="search" method="get"><input class="input" name="q" value="{{ request.GET.q }}" placeholder="Search title or location"><select class="select" name="status"><option value="">All statuses</option><option value="active">Active</option><option value="draft">Draft</option><option value="closed">Closed</option></select><button class="btn" type="submit">Filter</button></form></div><div class="table-wrap"><table class="table"><thead><tr><th>Role</th><th>Location</th><th>Applications</th><th>Status</th><th></th></tr></thead><tbody>{% for job in jobs %}<tr><td><a class="title" href="{% url 'jobs:recruiter_detail' job.pk %}">{{ job.title }}</a><div class="meta">{{ job.category|default:"Uncategorized" }}</div></td><td>{{ job.location }}</td><td>{{ job.application_count }}</td><td><span class="badge">{{ job.get_status_display }}</span></td><td><a class="btn" href="{% url 'jobs:edit' job.pk %}">Edit</a></td></tr>{% empty %}<tr><td colspan="5"><div class="empty">No postings found.</div></td></tr>{% endfor %}</tbody></table></div></section>{% endblock %}
+{% extends "recruiters/base.html" %}
+
+{% block title %}Job postings — CareerMate Recruiter{% endblock %}
+{% block heading %}Your job postings{% endblock %}
+{% block top_action_url %}{% url 'jobs:create' %}{% endblock %}
+{% block top_action %}Post a job{% endblock %}
+
+{% block content %}
+<section class="card">
+    <div class="toolbar">
+        <form class="search" method="get">
+            <input class="input" name="q" value="{{ request.GET.q }}" placeholder="Search title or location">
+            <select class="select" name="status">
+                <option value="">All statuses</option>
+                <option value="active" {% if request.GET.status == 'active' %}selected{% endif %}>Active</option>
+                <option value="draft" {% if request.GET.status == 'draft' %}selected{% endif %}>Draft</option>
+                <option value="closed" {% if request.GET.status == 'closed' %}selected{% endif %}>Closed</option>
+            </select>
+            <button class="btn primary" type="submit">Filter</button>
+            {% if request.GET.q or request.GET.status %}
+                <a class="btn btn-secondary" href="{% url 'jobs:recruiter_list' %}">Reset</a>
+            {% endif %}
+        </form>
+    </div>
+    <div class="table-wrap">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Role</th>
+                    <th>Location</th>
+                    <th>Applications</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for job in jobs %}
+                <tr>
+                    <td>
+                        <a class="title" href="{% url 'jobs:recruiter_detail' job.pk %}">{{ job.title }}</a>
+                        <div class="meta">{{ job.category|default:"Uncategorized" }}</div>
+                    </td>
+                    <td>{{ job.location }}</td>
+                    <td>
+                        {% if job.application_count > 0 %}
+                            <a href="{% url 'jobs:recruiter_applications' %}?job={{ job.pk }}" style="font-weight: 600; color: var(--teal);" title="View applicants for {{ job.title }}">
+                                {{ job.application_count }} applicant{{ job.application_count|pluralize }} &rarr;
+                            </a>
+                        {% else %}
+                            <span class="meta">0 applicants</span>
+                        {% endif %}
+                    </td>
+                    <td><span class="badge {% if job.status == 'active' %}badge-success{% endif %}">{{ job.get_status_display }}</span></td>
+                    <td>
+                        <div class="action-btns">
+                            <a class="btn btn-sm btn-secondary" href="{% url 'jobs:recruiter_detail' job.pk %}">View</a>
+                            <a class="btn btn-sm" href="{% url 'jobs:edit' job.pk %}">Edit</a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5"><div class="empty">No postings found.</div></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}
