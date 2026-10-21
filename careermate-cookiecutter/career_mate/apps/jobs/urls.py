@@ -1,4 +1,4 @@
-﻿from django.urls import path
+from django.urls import path
 from apps.recruiters import views
 
 app_name = "jobs"
@@ -11,4 +11,6 @@ urlpatterns = [
 	path("<int:pk>/delete/", views.JobDeleteView.as_view(), name="delete"),
 	path("applications/", views.ApplicationListView.as_view(), name="recruiter_applications"),
 	path("applications/<int:pk>/status/", views.ApplicationStatusView.as_view(), name="application_status"),
+	path("applications/<int:pk>/resume/", views.ApplicationResumeView.as_view(), name="application_resume_view"),
+	path("applications/<int:pk>/resume/download/", views.ApplicationResumeDownloadView.as_view(), name="application_resume_download"),
 ]

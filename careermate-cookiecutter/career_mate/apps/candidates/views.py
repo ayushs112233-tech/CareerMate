@@ -1,4 +1,4 @@
-﻿from django.contrib import messages
+from django.contrib import messages
 from django.db.models import Q
 from django.http import FileResponse, Http404
 from django.shortcuts import get_object_or_404, redirect, render
@@ -121,9 +121,13 @@ def candidate_resume(request):
 @candidate_required
 def candidate_resume_download(request, pk):
     resume = get_object_or_404(Resume, pk=pk, candidate=request.user.candidate_profile)
-    if not resume.file:
-        raise Http404("Resume file is unavailable")
-    return FileResponse(resume.file.open("rb"), as_attachment=True, filename=resume.file_name)
+    if not resume.file or not resume.file_exists:
+        raise Http404("Resume file is unavailable or missing from storage")
+    try:
+        f = resume.file.open("rb")
+    except Exception:
+        raise Http404("Unable to read resume file")
+    return FileResponse(f, as_attachment=True, filename=resume.file_name)
 
 
 @candidate_required

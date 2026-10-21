@@ -1,1 +1,116 @@
-﻿{% extends "recruiters/base.html" %}{% block title %}Applicants{% endblock %}{% block heading %}Applicants{% endblock %}{% block content %}<section class="card"><div class="table-wrap"><table class="table"><thead><tr><th>Candidate</th><th>Job</th><th>Applied</th><th>Status</th><th>Update</th></tr></thead><tbody>{% for application in applications %}<tr><td><strong>{{ application.candidate.user.get_full_name|default:application.candidate.user.username }}</strong><div class="meta">{{ application.candidate.user.email }}</div></td><td>{{ application.job.title }}</td><td>{{ application.applied_at|date:"M d, Y" }}</td><td><span class="badge">{{ application.get_status_display }}</span></td><td><form method="post" action="{% url 'jobs:application_status' application.pk %}">{% csrf_token %}<select class="select" name="status" onchange="this.form.submit()">{% for value,label in status_choices %}<option value="{{ value }}" {% if application.status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></form></td></tr>{% empty %}<tr><td colspan="5"><div class="empty">No applications found.</div></td></tr>{% endfor %}</tbody></table></div></section>{% endblock %}
+{% extends "recruiters/base.html" %}
+
+{% block title %}Applicants — CareerMate Recruiter{% endblock %}
+{% block heading %}Manage Applicants{% endblock %}
+
+{% block content %}
+<section class="card">
+    <div class="toolbar" style="margin-bottom: 20px;">
+        <form class="search" method="get" style="display: flex; gap: 10px; flex-wrap: wrap; flex: 1;">
+            <input class="input" style="flex: 1.5; min-width: 180px;" name="q" value="{{ query }}" placeholder="Search candidate name or role...">
+            
+            <select class="select" name="job" style="flex: 1.2; min-width: 180px;">
+                <option value="">All Jobs ({{ recruiter_jobs.count }})</option>
+                {% for j in recruiter_jobs %}
+                    <option value="{{ j.pk }}" {% if selected_job_id == j.pk|stringformat:"s" %}selected{% endif %}>{{ j.title }}</option>
+                {% endfor %}
+            </select>
+
+            <select class="select" name="status" style="flex: 1; min-width: 140px;">
+                <option value="">All Statuses</option>
+                {% for value, label in status_choices %}
+                    <option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+
+            <button class="btn primary" type="submit">Filter</button>
+            {% if query or selected_job_id or selected_status %}
+                <a class="btn btn-secondary" href="{% url 'jobs:recruiter_applications' %}">Reset</a>
+            {% endif %}
+        </form>
+    </div>
+
+    <div class="table-wrap">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Candidate</th>
+                    <th>Job Title</th>
+                    <th>Applied Date</th>
+                    <th>Resume</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for application in applications %}
+                <tr>
+                    <td>
+                        <strong>{{ application.candidate.user.get_full_name|default:application.candidate.user.username }}</strong>
+                        <div class="meta">{{ application.candidate.user.email }}</div>
+                        {% if application.candidate.headline %}
+                            <div class="meta" style="font-size: 11px;">{{ application.candidate.headline|truncatechars:45 }}</div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a class="title" href="{% url 'jobs:recruiter_detail' application.job.pk %}">{{ application.job.title }}</a>
+                        <div class="meta">{{ application.job.company.name }}</div>
+                    </td>
+                    <td>
+                        {{ application.applied_at|date:"M d, Y" }}
+                        <div class="meta">{{ application.applied_at|time:"H:i" }}</div>
+                    </td>
+                    <td>
+                        {% if application.has_resume_file %}
+                            <span class="badge badge-success">Available</span>
+                            <div class="meta" style="font-size: 11px; word-break: break-all;">{{ application.resume.file_name|default:"Resume file" }}</div>
+                        {% elif application.resume %}
+                            <span class="badge badge-warning" title="File not found on storage">File Missing</span>
+                        {% else %}
+                            <span class="badge badge-muted">No Resume</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form method="post" action="{% url 'jobs:application_status' application.pk %}">
+                            {% csrf_token %}
+                            <select class="select" name="status" onchange="this.form.submit()" style="padding: 6px 10px; font-size: 12px; border-radius: 5px;">
+                                {% for value, label in status_choices %}
+                                    <option value="{{ value }}" {% if application.status == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </form>
+                    </td>
+                    <td>
+                        <div class="action-btns">
+                            {% if application.has_resume_file %}
+                                <a class="btn btn-sm btn-view" href="{% url 'jobs:application_resume_view' application.pk %}" target="_blank" rel="noopener noreferrer" title="View resume inline in browser">
+                                    View Resume
+                                </a>
+                                <a class="btn btn-sm btn-secondary" href="{% url 'jobs:application_resume_download' application.pk %}" title="Download resume file">
+                                    Download Resume
+                                </a>
+                            {% else %}
+                                <span class="meta" style="font-style: italic;">Unavailable</span>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6">
+                        <div class="empty">
+                            <p style="font-size: 15px; font-weight: 600; margin-bottom: 6px;">No applications found.</p>
+                            {% if query or selected_job_id or selected_status %}
+                                <p class="meta">No applicants match your current filter criteria. <a href="{% url 'jobs:recruiter_applications' %}" style="color: var(--teal); font-weight: 600;">Clear filters</a></p>
+                            {% else %}
+                                <p class="meta">When candidates apply for your posted jobs, their applications and resumes will appear here.</p>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

@@ -1,1 +1,139 @@
-﻿{% extends "recruiters/base.html" %}{% block title %}{{ job.title }}{% endblock %}{% block heading %}{{ job.title }}{% endblock %}{% block content %}<div class="toolbar"><div class="meta">{{ job.company.name }} ┬╖ {{ job.location }}</div><div><a class="btn" href="{% url 'jobs:edit' job.pk %}">Edit</a><a class="btn" href="{% url 'jobs:delete' job.pk %}">Delete</a></div></div><div class="detail"><section class="card"><div class="detail-section"><h2>Description</h2><p class="prose">{{ job.description }}</p></div><div class="detail-section"><h2>Requirements</h2><p class="prose">{{ job.requirements|default:"No requirements added." }}</p></div><div class="detail-section"><h2>Skills</h2>{% for skill in job.skills_required.all %}<span class="badge">{{ skill.name }}</span> {% empty %}<span class="meta">No skills listed.</span>{% endfor %}</div></section><aside class="card"><h2>Details</h2><dl><dt>Status</dt><dd>{{ job.get_status_display }}</dd><dt>Employment</dt><dd>{{ job.get_employment_type_display }}</dd><dt>Experience</dt><dd>{{ job.min_experience }} year{{ job.min_experience|pluralize }}</dd><dt>Applications</dt><dd>{{ job.applications.count }}</dd></dl></aside></div>{% endblock %}
+{% extends "recruiters/base.html" %}
+
+{% block title %}{{ job.title }} — CareerMate Recruiter{% endblock %}
+{% block heading %}{{ job.title }}{% endblock %}
+
+{% block content %}
+<div class="toolbar" style="margin-bottom: 20px;">
+    <div class="meta" style="font-size: 14px;">
+        <strong>{{ job.company.name }}</strong> &bull; {{ job.location }} &bull; Posted {{ job.created_at|date:"M d, Y" }}
+    </div>
+    <div class="action-btns">
+        <a class="btn" href="{% url 'jobs:recruiter_applications' %}?job={{ job.pk }}">Filter in Applicants</a>
+        <a class="btn" href="{% url 'jobs:edit' job.pk %}">Edit</a>
+        <a class="btn" href="{% url 'jobs:delete' job.pk %}" style="color: #b54b40;">Delete</a>
+    </div>
+</div>
+
+<div class="detail" style="margin-bottom: 25px;">
+    <section class="card">
+        <div class="detail-section">
+            <h2>Job Description</h2>
+            <p class="prose">{{ job.description }}</p>
+        </div>
+        <div class="detail-section">
+            <h2>Requirements</h2>
+            <p class="prose">{{ job.requirements|default:"No specific requirements listed." }}</p>
+        </div>
+        <div class="detail-section">
+            <h2>Required Skills</h2>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px;">
+                {% for skill in job.skills_required.all %}
+                    <span class="badge">{{ skill.name }}</span>
+                {% empty %}
+                    <span class="meta">No skills listed for this posting.</span>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <aside class="card">
+        <h2>Job Details</h2>
+        <dl>
+            <dt>Status</dt>
+            <dd><span class="badge {% if job.status == 'active' %}badge-success{% endif %}">{{ job.get_status_display }}</span></dd>
+            <dt>Employment Type</dt>
+            <dd>{{ job.get_employment_type_display }}</dd>
+            <dt>Experience Required</dt>
+            <dd>{{ job.min_experience }} year{{ job.min_experience|pluralize }}</dd>
+            {% if job.salary_min or job.salary_max %}
+                <dt>Salary Range</dt>
+                <dd>&#8377;{{ job.salary_min|default:"0"|floatformat:0 }} - &#8377;{{ job.salary_max|default:"0"|floatformat:0 }}</dd>
+            {% endif %}
+            <dt>Total Applicants</dt>
+            <dd style="font-size: 20px; color: var(--teal);">{{ applications|length }}</dd>
+        </dl>
+    </aside>
+</div>
+
+<!-- Applicants for this Job Section -->
+<section class="card">
+    <div class="card-head" style="margin-bottom: 18px;">
+        <h2>Applicants for this Role ({{ applications|length }})</h2>
+    </div>
+
+    <div class="table-wrap">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Candidate</th>
+                    <th>Applied Date</th>
+                    <th>Resume</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for application in applications %}
+                <tr>
+                    <td>
+                        <strong>{{ application.candidate.user.get_full_name|default:application.candidate.user.username }}</strong>
+                        <div class="meta">{{ application.candidate.user.email }}</div>
+                        {% if application.candidate.headline %}
+                            <div class="meta" style="font-size: 11px;">{{ application.candidate.headline|truncatechars:45 }}</div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ application.applied_at|date:"M d, Y" }}
+                        <div class="meta">{{ application.applied_at|time:"H:i" }}</div>
+                    </td>
+                    <td>
+                        {% if application.has_resume_file %}
+                            <span class="badge badge-success">Available</span>
+                            <div class="meta" style="font-size: 11px; word-break: break-all;">{{ application.resume.file_name|default:"Resume file" }}</div>
+                        {% elif application.resume %}
+                            <span class="badge badge-warning" title="File not found on storage">File Missing</span>
+                        {% else %}
+                            <span class="badge badge-muted">No Resume</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form method="post" action="{% url 'jobs:application_status' application.pk %}">
+                            {% csrf_token %}
+                            <select class="select" name="status" onchange="this.form.submit()" style="padding: 6px 10px; font-size: 12px; border-radius: 5px;">
+                                {% for value, label in status_choices %}
+                                    <option value="{{ value }}" {% if application.status == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </form>
+                    </td>
+                    <td>
+                        <div class="action-btns">
+                            {% if application.has_resume_file %}
+                                <a class="btn btn-sm btn-view" href="{% url 'jobs:application_resume_view' application.pk %}" target="_blank" rel="noopener noreferrer" title="View resume inline in browser">
+                                    View Resume
+                                </a>
+                                <a class="btn btn-sm btn-secondary" href="{% url 'jobs:application_resume_download' application.pk %}" title="Download resume file">
+                                    Download Resume
+                                </a>
+                            {% else %}
+                                <span class="meta" style="font-style: italic;">Unavailable</span>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5">
+                        <div class="empty">
+                            <p style="font-size: 15px; font-weight: 600; margin-bottom: 6px;">No candidates have applied for this job yet.</p>
+                            <p class="meta">When candidates apply for this posting, their details and resumes will appear here.</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

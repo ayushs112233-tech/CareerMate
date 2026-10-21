@@ -148,3 +148,8 @@ class Application(models.Model):
 
     def __str__(self):
         return f"Application: {self.candidate} -> {self.job.title}"
+
+    @property
+    def has_resume_file(self):
+        """Check if this application has an existing, accessible resume file."""
+        return bool(self.resume and self.resume.file_exists)
